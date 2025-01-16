@@ -31,7 +31,6 @@ class AttnExplainerTG(BaseExplainerTG):
             atten_weights_list = model.atten_weights_list
         elif model_name == 'tgn':
             atten_weights_list = model.embedding_module.atten_weights_list
-        print(f'atten_weights_list: {len(atten_weights_list)}')
 
         e_idx_weight_dict = {}
         for item in atten_weights_list:

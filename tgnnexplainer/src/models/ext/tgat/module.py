@@ -494,7 +494,10 @@ class TGAN(torch.nn.Module):
 #        print('target_idx_l: ', target_idx_l)
 #        print('cut_time_l: ', cut_time_l)
 #        if edge_idx_preserve_list is not None:
-#            print('edge_idx_preserve_list: ', len(edge_idx_preserve_list))
+#            try:
+#                print('edge_idx_preserve_list: ', len(edge_idx_preserve_list))
+#            except:
+#                print('edge_idx_preserve_list: ', edge_idx_preserve_list)
 #        else:
 #            print('edge_idx_preserve_list: None')
 #        if candidate_weights_dict is not None:

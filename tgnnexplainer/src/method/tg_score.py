@@ -71,7 +71,6 @@ class TGNNRewardWraper(object):
         events_idxs: could be seen by model
         """
         self.original_scores = self._get_model_prob(target_event_idx, events_idxs, num_neighbors)
-        print('getting original score', self.original_scores)
         self.orininal_size = len(events_idxs)
         return self.original_scores
 

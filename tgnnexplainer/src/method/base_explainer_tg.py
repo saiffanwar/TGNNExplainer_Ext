@@ -120,8 +120,9 @@ class BaseExplainerTG(object):
 
 
     def _set_candidate_events(self, event_idx):
-        self.candidate_events, unique_e_idx = self.find_candidates(event_idx)
-        self.computation_graph_events, _ = self.find_candidates(event_idx, threshold_num=10000, num_neighbors=1000)
+#        self.candidate_events, unique_e_idx = self.find_candidates(event_idx)
+        self.candidate_events, unique_e_idx = self.find_candidates(event_idx, threshold_num=100)
+        self.computation_graph_events, _ = self.find_candidates(event_idx, threshold_num=10000, num_neighbors=100)
 
         # self.candidate_events = shuffle( candidate_events ) # strategy 1
         # self.candidate_events = candidate_events # strategy 2
@@ -131,14 +132,12 @@ class BaseExplainerTG(object):
         assert hasattr(self, 'ori_subgraph_df')
         # self.base_events = list(filter(lambda x: x not in candidate_events_set_, self.ori_subgraph_df.e_idx.values) ) # NOTE: ori_subgraph_df.e_idx.values
         self.base_events = list(filter(lambda x: x not in candidate_events_set_, unique_e_idx) ) # NOTE: an importanct change, need test. largely influence the speed!
-        print('--------------',len(self.base_events), len(self.candidate_events))
 
 
 
     def _set_tgnn_wraper(self, event_idx):
         assert hasattr(self, 'ori_subgraph_df')
 #        self.tgnn_reward_wraper.compute_original_score(self.base_events+self.candidate_events, event_idx)
-        print('ALL EVENTS LEN: ', len(self.all_events))
         self.tgnn_reward_wraper.compute_original_score(self.computation_graph_events, event_idx)
 
     def _initialize(self, event_idx):
@@ -146,7 +145,7 @@ class BaseExplainerTG(object):
         self._set_candidate_events(event_idx)
         self._set_tgnn_wraper(event_idx)
         # self.candidate_initial_weights = None
-        np.random.seed(1)
+#        np.random.seed(1)
         self.candidate_initial_weights = { e_idx: np.random.random() for e_idx in self.candidate_events }
 
 

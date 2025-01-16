@@ -4,6 +4,7 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 import multiprocessing as mp
 from multiprocessing import Process
+import pickle as pck
 
 from src.dataset.tg_dataset import load_tg_dataset, load_explain_idx
 from src.dataset.utils_dataset import construct_tgat_neighbor_finder
@@ -87,6 +88,7 @@ def pipeline(config: DictConfig):
                      num_layers=config.models.param.num_layers,
                      n_head=config.models.param.num_heads,
                      num_neighbors=config.models.param.num_neighbors,
+#                     num_neighbors=50,
                      drop_out=config.models.param.dropout
                      )
     elif config.models.model_name == 'tgn': # DONE: added tgn
@@ -122,12 +124,6 @@ def pipeline(config: DictConfig):
     state_dict = torch.load(config.models.ckpt_path, map_location='cpu')
     model.load_state_dict(state_dict, strict=False)
     model.to(device)
-    print(events.iloc[511])
-    data = events[events.e_idx == 511].values
-    data2 = events[events.e_idx == 512].values
-    print(data)
-    input_data = [data[:,0], data[:,1], data2[:,2]]
-    print(input_data)
 
     print('USING EXPLAINER:', config.explainers.explainer_name)
     # construct a pg_explainer_tg, the mcts_tg explainer may use it
@@ -211,51 +207,72 @@ def pipeline(config: DictConfig):
 
 #    print(explainer.computation_graph_events)
     # run the explainer
+    target_event_idxs = target_event_idxs[:50]
+
+
+
     start_time = time.time()
     if config.explainers.explainer_name == 'tgnnexplainer' and config.explainers.parallel_degree == 1:
         explainer = explainer[0]
-        explain_results = explainer(event_idxs=target_event_idxs)
+        explain_results = explainer(event_idxs=target_event_idxs, results_dict=results)
+
 
     elif config.explainers.explainer_name == 'sa_explainer' and config.explainers.parallel_degree == 1:
         print('Running SA explainer')
-        for event_idx in target_event_idxs:
-            sa_explainer = SA_Explainer(model, event_idx, tgnnexplainer=explainer[0])
-            score, exps = sa_explainer()
+        explainer = explainer[0]
+        results = {'SA': None, 'TGNNE': None}
+        sa_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
+        tgnne_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
+
+
+        sa_explainer = SA_Explainer(model, tgnnexplainer=explainer)
+        sa_results = sa_explainer(target_event_idxs, num_iter=500, sa_results=sa_results, results_dir=config.explainers.results_dir)
+#                print(f'Model Prediction: {model_pred} Explanation Prediction: {exp_pred}')
+#                print(f'Event {event_idx} Score: {score} Explanation: {exp} Sparsity: {len(exp)}')
 #
+        explainer.rollout=100
+        explain_results, results = explainer(event_idxs=target_event_idxs, results_dict=tgnne_results, results_dir=config.explainers.results_dir)
+
+        results['SA'] = sa_results
+        results['TGNNE'] = tgnne_results
+        with open(config.explainers.results_dir + f'/results_{len(target_event_idxs)}.pkl', 'wb') as f:
+            pck.dump(results, f)
+
+#                print(results)
 
     elif config.explainers.explainer_name == 'tgnnexplainer' and config.explainers.parallel_degree > 1:
         explain_results = start_multi_process(explainer, target_event_idxs, config.explainers.parallel_degree)
     else:
-        explain_results = explainer(event_idxs=target_event_idxs)
+        explain_results, results = explainer(event_idxs=target_event_idxs, results_dict=results)
     end_time = time.time()
     print(f'runtime: {end_time - start_time:.2f}s')
 
     # exit(0)
 
     # compute metric values and save
-    if config.explainers.explainer_name == 'tgnnexplainer':
-        from src.evaluation.metrics_tg import EvaluatorMCTSTG
-        evaluator = EvaluatorMCTSTG(model_name=config.models.model_name,
-                                    explainer_name=config.explainers.explainer_name,
-                                    dataset_name=config.datasets.dataset_name,
-                                    explainer=explainer[0] if isinstance(explainer, list) else explainer,
-                                    results_dir=config.explainers.results_dir
-                                    )
-    elif config.explainers.explainer_name in ['attn_explainer_tg', 'pbone_explainer_tg', 'pg_explainer_tg']:
-        from src.evaluation.metrics_tg import EvaluatorAttenTG
-        evaluator = EvaluatorAttenTG(model_name=config.models.model_name,
-                                    explainer_name=config.explainers.explainer_name,
-                                    dataset_name=config.datasets.dataset_name,
-                                    explainer=explainer,
-                                    results_dir=config.explainers.results_dir
-                                    ) # DONE: updated
-    else:
-        raise NotImplementedError
-
-    if config.evaluate:
-        evaluator.evaluate(explain_results, target_event_idxs)
-    else:
-        print('no evaluate.')
+#    if config.explainers.explainer_name == 'tgnnexplainer' or 'sa_explainer':
+#        from src.evaluation.metrics_tg import EvaluatorMCTSTG
+#        evaluator = EvaluatorMCTSTG(model_name=config.models.model_name,
+#                                    explainer_name=config.explainers.explainer_name,
+#                                    dataset_name=config.datasets.dataset_name,
+#                                    explainer=explainer[0] if isinstance(explainer, list) else explainer,
+#                                    results_dir=config.explainers.results_dir
+#                                    )
+#    elif config.explainers.explainer_name in ['attn_explainer_tg', 'pbone_explainer_tg', 'pg_explainer_tg']:
+#        from src.evaluation.metrics_tg import EvaluatorAttenTG
+#        evaluator = EvaluatorAttenTG(model_name=config.models.model_name,
+#                                    explainer_name=config.explainers.explainer_name,
+#                                    dataset_name=config.datasets.dataset_name,
+#                                    explainer=explainer,
+#                                    results_dir=config.explainers.results_dir
+#                                    ) # DONE: updated
+#    else:
+#        raise NotImplementedError
+#
+#    if config.evaluate:
+#        evaluator.evaluate(explain_results, target_event_idxs)
+#    else:
+#        print('no evaluate.')
     # import ipdb; ipdb.set_trace()
     # exit(0)
 

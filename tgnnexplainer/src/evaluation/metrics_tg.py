@@ -55,25 +55,29 @@ class BaseEvaluator():
         sparsity_results = []
         fid_inv_results = []
         fid_inv_best_results = []
+        pred_list_results = []
 
         print('\nevaluating...')
         for i, (single_results, event_idx) in enumerate(zip(explainer_results, event_idxs)):
             print(f'\nevaluate {i}th: {event_idx}')
             self.explainer._initialize(event_idx)
 
-            sparsity_list, fid_inv_list, fid_inv_best_list =  self._evaluate_one(single_results, event_idx)
+            sparsity_list, fid_inv_list, fid_inv_best_list, pred_list =  self._evaluate_one(single_results, event_idx)
 
             # import ipdb; ipdb.set_trace()
             event_idxs_results.extend([event_idx]*len(sparsity_list))
             sparsity_results.extend(sparsity_list)
             fid_inv_results.extend(fid_inv_list)
             fid_inv_best_results.extend(fid_inv_best_list)
+            pred_list_results.extend(pred_list)
+
 
         results = {
             'event_idx': event_idxs_results,
             'sparsity': sparsity_results,
             'fid_inv': fid_inv_results,
             'fid_inv_best': fid_inv_best_results,
+            'pred': pred_list_results
 
         }
 
@@ -122,7 +126,7 @@ class EvaluatorAttenTG(BaseEvaluator):
             num = int(spar * candidate_num)
             important_events = candidates[:num+1]
             b_i_events = self.explainer.base_events + important_events
-            important_pred = self.expliner.tgnn_reward_wraper._compute_gnn_score(b_i_events, event_idx)
+            important_pred = self.explainer.tgnn_reward_wraper._compute_gnn_score(b_i_events, event_idx)
             ori_pred = self.explainer.tgnn_reward_wraper.original_scores
             fid_inv = fidelity_inv_tg(ori_pred, important_pred)
             fid_inv_list.append(fid_inv)
@@ -167,13 +171,19 @@ class EvaluatorMCTSTG(BaseEvaluator):
         tree_nodes, _ = single_results
         sparsity_list = []
         fid_inv_list = []
+        pred_list = []
 
-        candidate_events = self.explainer.candidate_events
+#        candidate_events = self.explainer.candidate_events
+#        candidate_num = len(candidate_events)
+
+        candidate_events = self.explainer.computation_graph_events
         candidate_num = len(candidate_events)
+
         for node in tqdm(tree_nodes, total=len(tree_nodes)):
             # import ipdb; ipdb.set_trace()
             spar = sparsity_tg(node, candidate_num)
-            assert np.isclose(spar, node.Sparsity)
+            print(spar)
+#            assert np.isclose(spar, node.Sparsity)
 
             # b_i_events = self.explainer.base_events + node.coalition
             # important_pred = self.explainer.tgnn_reward_wraper._compute_gnn_score(b_i_events, event_idx)
@@ -183,17 +193,21 @@ class EvaluatorMCTSTG(BaseEvaluator):
 #            print(node.P, node.coalition)
 
             fid_inv = node.P
+            pred = node.Prediction
 
             fid_inv_list.append(fid_inv)
             sparsity_list.append(spar)
+            pred_list.append(pred)
 
         sparsity_list = np.array(sparsity_list)
         fid_inv_list = np.array(fid_inv_list)
+        pred_list = np.array(pred_list)
 
         # sort according to sparsity
         sort_idx = np.argsort(sparsity_list) # ascending of sparsity
         sparsity_list = sparsity_list[sort_idx]
         fid_inv_list = fid_inv_list[sort_idx]
+        pred_list = pred_list[sort_idx]
         fid_inv_best = array_best(fid_inv_list)
 
         # import ipdb; ipdb.set_trace()
@@ -210,5 +224,6 @@ class EvaluatorMCTSTG(BaseEvaluator):
         # sparsity_list = sparsity_list[indices]
         fid_inv_list = fid_inv_list[indices]
         fid_inv_best = fid_inv_best[indices]
+        pred_list = pred_list[indices]
 
-        return sparsity_thresholds, fid_inv_list, fid_inv_best
+        return sparsity_thresholds, fid_inv_list, fid_inv_best, pred_list

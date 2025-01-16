@@ -74,7 +74,7 @@ def generate_explain_index(file, explainer_idx_dir, dataset_name, explain_idx_na
     df = pd.read_csv(file)
     verify_dataframe_unify(df)
 
-    size = 500 # 100, 200, 300, 400, 500
+    size = 100 # 100, 200, 300, 400, 500
 
     if dataset_name in ['simulate_v1', 'simulate_v2']:
         indices = df.label == 1
