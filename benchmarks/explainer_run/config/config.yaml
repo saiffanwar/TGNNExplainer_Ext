@@ -3,5 +3,6 @@ defaults:
   - models: tgat
   - datasets: wikipedia
   - explainers: tgnnexplainer # ours tgnnexplainer
+results_batch: None
 device_id: 0
 evaluate: True

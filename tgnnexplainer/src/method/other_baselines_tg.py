@@ -17,6 +17,7 @@ from src.models.ext.tgn.model.tgn import TGN
 
 def _create_explainer_input(model: Union[TGAN, TGN], model_name, all_events, candidate_events=None, event_idx=None, device=None):
     # DONE: explainer input should have both the target event and the event that we want to assign a weight to.
+    print(len(candidate_events))
 
     if model_name in ['tgat', 'tgn']:
         event_idx_u, event_idx_i, event_idx_t = _set_tgat_data(all_events, event_idx)
@@ -103,6 +104,7 @@ class PGExplainerExt(BaseExplainerTG):
 
     def __call__(self, node_idxs: Union[int, None] = None, event_idxs: Union[int, None] = None):
         self.explainer_ckpt_path = self._ckpt_path(self.explainer_ckpt_dir, self.model_name, self.dataset_name, self.explainer_name)
+        print('Explainer Path: ', self.explainer_ckpt_path)
         self.explain_event_idxs = event_idxs
 
         if not self.explainer_ckpt_path.exists():
@@ -209,7 +211,6 @@ class PGExplainerExt(BaseExplainerTG):
                     skipped_num += 1
                     continue
 
-                print('')
                 original_pred, mask_values_ = self._tg_predict(event_idx, use_explainer=False)
                 masked_pred, mask_values = self._tg_predict(event_idx, use_explainer=True)
 
@@ -250,6 +251,7 @@ class PGExplainerExt(BaseExplainerTG):
         # the same as Attn explainer
         candidate_weights = { self.candidate_events[i]: event_idx_scores[i] for i in range(len(self.candidate_events)) }
         candidate_weights = dict( sorted(candidate_weights.items(), key=lambda x: x[1], reverse=True) ) # NOTE: descending, important
+        print(f'event_idx: {event_idx}, candidate_weights: {candidate_weights}')
 
         return candidate_weights
 

@@ -1,0 +1,4 @@
+- datasets=wikipedia
+- device_id=0
+- explainers=pg_explainer_tg
+- models=tgn

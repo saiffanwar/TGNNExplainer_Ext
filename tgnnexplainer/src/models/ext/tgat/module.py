@@ -520,6 +520,7 @@ class TGAN(torch.nn.Module):
         if num_neighbors is None:
             num_neighbors = self.num_neighbors
         # import ipdb; ipdb.set_trace()
+        print('Self neighbors: ', self.num_neighbors, num_neighbors)
 
         assert(curr_layers >= 0)
 

@@ -58,6 +58,7 @@ class TGNNRewardWraper(object):
         if self.model_name in ['tgat', 'tgn']:
             input_data = _set_tgat_data(self.all_events, target_event_idx)
             # seen_events_idxs = _set_tgat_events_idxs(seen_events_idxs) # NOTE: not important now
+#            print('seen_events_idxs: ', seen_events_idxs)
             score = self.model.get_prob(*input_data, edge_idx_preserve_list=seen_events_idxs, logit=True, num_neighbors=num_neighbors)
             # import ipdb; ipdb.set_trace()
         else:
@@ -66,7 +67,7 @@ class TGNNRewardWraper(object):
         return score.item()
 
 
-    def compute_original_score(self, events_idxs, target_event_idx, num_neighbors=600):
+    def compute_original_score(self, events_idxs, target_event_idx, num_neighbors=200):
         """
         events_idxs: could be seen by model
         """
@@ -81,7 +82,7 @@ class TGNNRewardWraper(object):
         """
 
         if self.model_name in ['tgat', 'tgn']:
-            scores = self._get_model_prob(target_event_idx, events_idxs)
+            scores = self._get_model_prob(target_event_idx, events_idxs, num_neighbors=200)
             # import ipdb; ipdb.set_trace()
             reward = self._compute_reward(scores, self.orininal_size-len(events_idxs))
             if final_result:
@@ -106,9 +107,11 @@ class TGNNRewardWraper(object):
 
         # import ipdb; ipdb.set_trace()
 
+#        fid_inv = abs(fidelity_inv_tg(self.original_scores, scores_petb))
+        fid_inv = abs(self.original_scores - scores_petb)
 #        print('original_scores: ', self.original_scores)
 #        print('scores_petb: ', scores_petb)
-        fid_inv = fidelity_inv_tg(self.original_scores, scores_petb)
+#        print('fid_inv: ', fid_inv)
         return fid_inv
 
         # if self.original_scores >= 0:

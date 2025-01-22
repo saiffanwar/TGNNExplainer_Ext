@@ -1,21 +1,24 @@
 export PYTHONPATH=""
 export PYTHONPATH="/home/saif/PhD/TGNNExplainer_Ext/tgnnexplainer"
-export PYTHONPATH="$PYTHONPATH:/home/saif/PhD/TGNNExplainer_Ext/tgnnexplainer/src"
+#export PYTHONPATH="$PYTHONPATH:~/TGNNExplainer_Ext/tgnnexplainer/src"
 echo "PYTHONPATH=$PYTHONPATH"
 # run all explainers
 dataset=wikipedia # wikipedia, reddit, simulate_v1, simulate_v2
-model=tgat # tgat, tgn
+model=tgn # tgat, tgn
 
 if [ "$1" == "tgnne" ]; then
-    python ~/PhD/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=tgnnexplainer models=${model}
+    python3.12 ~/PhD/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=tgnnexplainer models=${model} results_batch=${2}
 fi
 
 # SA explainer
 if [ "$1" == "sa" ]; then
-    python ~/PhD/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=sa_explainer models=${model}
+    python3.12 ~/PhD/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=sa_explainer models=${model}
+fi
+
+if [ "$1" == "temp_me" ]; then
+    python3.12 ~/PhD/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=temp_me models=${model}
 fi
 
 # baselines
 #python ~/PhD/TGNNExplainer/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=attn_explainer_tg models=${model}
-#python ~/PhD/TGNNExplainer/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=pg_explainer_tg models=${model}
 #python ~/PhD/TGNNExplainer/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=pbone_explainer_tg models=${model}

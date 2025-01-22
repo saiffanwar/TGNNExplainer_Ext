@@ -13,6 +13,7 @@ from pandas import DataFrame
 from typing import Union, Optional
 from typing import Callable, Union, Optional
 from tqdm import tqdm
+import pickle as pck
 
 from src import ROOT_DIR
 from src.method.base_explainer_tg import BaseExplainerTG
@@ -40,12 +41,17 @@ def print_nodes(tree_nodes):
         # preserved_events_gnn_score = self.tgnn_reward_wraper(preserved_events, event_idx)
         print(i, sorted(node.coalition), ': ', node.P)
 
-def find_best_node_result(all_nodes, min_atoms=6):
+def find_best_node_result(all_nodes, min_atoms=6, candidate_events=None, exp_size=40):
     """ return the highest reward tree_node with its subgraph is smaller than max_nodes """
-#    all_nodes = filter( lambda x: len(x.coalition) <= min_atoms, all_nodes ) # filter using the min_atoms
-    exp_size = 20
-    all_nodes = filter( lambda x: len(x.coalition) == exp_size, all_nodes ) # filter using the min_atoms
-    best_node = max(all_nodes, key=lambda x: x.P)
+    if candidate_events is None:
+        all_nodes = filter( lambda x: len(x.coalition) <= min_atoms, all_nodes ) # filter using the min_atoms
+    else:
+        if len(candidate_events) <= exp_size:
+            exp_size = len(candidate_events)-1
+        all_nodes = filter( lambda x: len(x.coalition) == exp_size, all_nodes ) # filter using the min_atoms
+
+    best_node = min(all_nodes, key=lambda x: x.P)
+    print(best_node.P, len(best_node.coalition), exp_size)
     return best_node
 
     # all_nodes = sorted(all_nodes, key=lambda x: len(x.coalition))
@@ -60,7 +66,7 @@ def find_best_node_result(all_nodes, min_atoms=6):
 
 class MCTSNode(object):
     def __init__(self, coalition: list = None, created_by_remove: int = None,
-                 c_puct: float = 10.0, W: float = 0, N: int = 0, P: float = 0, Sparsity: float = 1, Prediction=None
+                 c_puct: float = 10.0, W: float = 0, N: int = 0, P: float = 100, Sparsity: float = 1, Prediction=None
                  ):
         self.coalition = coalition  # in our case, the coalition should be edge indices?
         self.c_puct = c_puct
@@ -111,7 +117,7 @@ class MCTSNode(object):
 def compute_scores(score_func, base_events, children, target_event_idx):
     results = []
     for child in children:
-        if child.P == 0:
+        if child.P == 100:
             # score = score_func(child.coalition, child.data)
 #            score = score_func( child.coalition, target_event_idx)
             score = score_func( base_events + child.coalition, target_event_idx)
@@ -289,7 +295,7 @@ class MCTS(object):
         sum_count = sum([c.N for c in tree_node.children])
         # import ipdb; ipdb.set_trace()
         # selected_node = max(tree_node.children, key=lambda x: x.Q() + x.U(sum_count))
-        selected_node = max(tree_node.children, key=lambda x: self._compute_node_score(x, sum_count))
+        selected_node = min(tree_node.children, key=lambda x: self._compute_node_score(x, sum_count))
 
         v = self.mcts_rollout(selected_node)
         selected_node.W += v
@@ -331,7 +337,7 @@ class MCTS(object):
         tscore_coef = 0
         beta = -3
 
-        max_event_idx = max(self.root.coalition)
+        max_event_idx = min(self.root.coalition)
         curr_t = self.events['ts'][max_event_idx-1]
         ts = self.events['ts'][self.events.e_idx.isin(node.coalition)].values
         # np.array(node.coalition)-1].values # np array
@@ -349,11 +355,10 @@ class MCTS(object):
 
 
     def mcts(self, verbose=False):
-        if verbose:
-            print(f"The nodes in graph is {self.subgraph_num_nodes}")
 
         start_time = time.time()
         pbar = tqdm(range(self.n_rollout), total=self.n_rollout, desc='mcts simulating')
+        print('len root coalition: ', len(self.root.coalition))
         for rollout_idx in pbar:
             self.mcts_rollout(self.root)
             if verbose:
@@ -367,6 +372,8 @@ class MCTS(object):
             # self.recorder['best_reward'].append( np.max(list(map(lambda x: x.P, self.state_map.values()))) )
             curr_best_node = find_best_node_result(self.state_map.values(), self.min_atoms)
             self.recorder['best_reward'].append( curr_best_node.P )
+            if rollout_idx % 10 == 0:
+                print(self.recorder['best_reward'][-1], print(len(curr_best_node.coalition)))
             self.recorder['num_states'].append( len(self.state_map) )
 
         end_time = time.time()
@@ -384,7 +391,7 @@ class MCTS(object):
         self.root_key = self._node_key(self.root_coalition)
         self.state_map = {self.root_key: self.root}
 
-        max_event_idx = max(self.root.coalition)
+        max_event_idx = min(self.root.coalition)
         self.curr_t = self.events['ts'][self.events.e_idx==max_event_idx].values[0]
 
     def _node_key(self, coalition):
@@ -454,6 +461,7 @@ class TGNNExplainer(BaseExplainerTG):
                 node_idx: Optional[int] = None,
                 time: Optional[float] = None,
                 event_idx: Optional[int] = None,
+                exp_sizes: list = [10],
                 ):
 #        self.base_events, _ = self.find_candidates(event_idx, num_neighbors=600)
 #        self.base_events = list(set(self.base_events))
@@ -466,6 +474,7 @@ class TGNNExplainer(BaseExplainerTG):
 
         elif self.explanation_level == 'event': # we now only care node/edge(event) level explanations, graph-level explanation is temporarily suspended
             assert event_idx is not None
+            print('Computation Graph Size: ', len(self.computation_graph_events))
             # search
             self.mcts_state_map = MCTS(events=self.ori_subgraph_df,
                                        candidate_events=self.candidate_events,
@@ -489,18 +498,33 @@ class TGNNExplainer(BaseExplainerTG):
 
         else: raise NotImplementedError('Wrong explanaion level')
 
-        tree_node_x = find_best_node_result(tree_nodes, self.min_atoms)
-        important_events = tree_node_x.coalition
-        exp_fidelity_inv, exp_pred = self.tgnn_reward_wraper(important_events, event_idx, final_result=True)
-        target_model_y = self.tgnn_reward_wraper.original_scores
+        exp_sizes = [10,20,40, 80]
+        explanation_results = {e: {'important_events': [], 'target_model_y': [], 'exp_pred': [], 'delta_fidelity': []} for e in exp_sizes}
+        for exp_size in exp_sizes:
+            tree_node_x = find_best_node_result(tree_nodes, self.min_atoms, self.computation_graph_events, exp_size=exp_size)
+            important_events = tree_node_x.coalition
+            exp_fidelity_inv, exp_pred = self.tgnn_reward_wraper(important_events, event_idx, final_result=True)
+            unimportant_events = [e_idx for e_idx in self.candidate_events if e_idx not in important_events]
+            _, unimportant_pred = self.tgnn_reward_wraper(unimportant_events, event_idx, final_result=True)
 
 
-        tree_nodes = sorted(tree_nodes, key=lambda x:x.P)
+            target_model_y = self.tgnn_reward_wraper.original_scores
 
-        if self.debug_mode:
-            print_nodes(tree_nodes)
+            delta_fidelity = abs(target_model_y - unimportant_pred) - abs(target_model_y - exp_pred)
 
-        return tree_nodes, tree_node_x, important_events, target_model_y, exp_pred
+            tree_nodes = sorted(tree_nodes, key=lambda x:x.P)
+
+            if self.debug_mode:
+                print_nodes(tree_nodes)
+
+            explanation_results[exp_size]['important_events'] = important_events
+            explanation_results[exp_size]['target_model_y'] = target_model_y
+            explanation_results[exp_size]['exp_pred'] = exp_pred
+            explanation_results[exp_size]['delta_fidelity'] = delta_fidelity
+
+            print('Exp Len: ', len(important_events), 'Model Pred: ', target_model_y, 'Exp Pred: ', exp_pred, 'Unimportant Pred', unimportant_pred, 'Delta Fidelity: ', delta_fidelity)
+
+        return explanation_results
 
     @staticmethod
     def _path_suffix(pg_explainer_model, pg_positive):
@@ -570,7 +594,6 @@ class TGNNExplainer(BaseExplainerTG):
         from src.method.attn_explainer_tg import AttnExplainerTG
 
         candidate_events = self.candidate_events
-#        print('candidate events: ', len(candidate_events), type(candidate_events),)
 
         self.pg_explainer_model.eval() # mlp
         input_expl = _create_explainer_input(self.model, self.model_name, self.all_events, \
@@ -581,11 +604,9 @@ class TGNNExplainer(BaseExplainerTG):
 
 
         ################### added to original model attention scores
-        candidate_weights_dict = {'candidate_events': torch.tensor(self.candidate_events, dtype=torch.int64, device=self.device),
-                                    'edge_weights': edge_weights,
-                }
+        candidate_weights_dict = {'candidate_events': torch.tensor(self.candidate_events, dtype=torch.int64, device=self.device), 'edge_weights': edge_weights,}
         src_idx_l, target_idx_l, cut_time_l = _set_tgat_data(self.all_events, event_idx)
-        output = self.model.get_prob( src_idx_l, target_idx_l, cut_time_l, logit=True, candidate_weights_dict=candidate_weights_dict)
+        output = self.model.get_prob( src_idx_l, target_idx_l, cut_time_l, logit=True, candidate_weights_dict=candidate_weights_dict, num_neighbors=200)
         e_idx_weight_dict = AttnExplainerTG._agg_attention(self.model, self.model_name)
         edge_weights = np.array([ e_idx_weight_dict[e_idx] for e_idx in candidate_events ])
         ################### added to original model attention scores
@@ -599,57 +620,57 @@ class TGNNExplainer(BaseExplainerTG):
         candidate_initial_weights = { candidate_events[i]: edge_weights[i] for i in range(len(candidate_events)) }
         self.candidate_initial_weights = candidate_initial_weights
 
-    def _initialize(self, event_idx):
-        super(TGNNExplainer, self)._initialize(event_idx)
+    def _initialize(self, event_idx, exp_size=20):
+        self.exp_size = exp_size
+        super(TGNNExplainer, self)._initialize(event_idx, exp_size=exp_size)
         if self.pg_explainer_model is not None: # use pg model
             self._set_candidate_weights(event_idx)
 
 
-    def __call__(self, node_idxs: Union[int, None] = None, event_idxs: Union[int, None] = None, return_dict=None, device=None, results_dict=None, results_dir = None):
+    def __call__(self, node_idxs: Union[int, None] = None, event_idxs: Union[int, None] = None, return_dict=None, device=None, results_dir = None, results_batch=None):
         """
         Args:
             node_idxs: the target node index to explain for node prediction tasks
             event_idxs: the target event index to explain for edge prediction tasks
         """
+
         self.model.eval()
+        print('Rollout: ', self.rollout)
         if device is not None:
             self._to_device(device)
 
         if isinstance(event_idxs, int):
-            event_idxs = [event_idxs, ]
+            event_idxs = [event_idxs]
 
-        results_list = []
-        for i, event_idx in enumerate(event_idxs):
+        exp_sizes = [10,20,40, 80]
+        results_dict = {e: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for e in exp_sizes}
+
+        for i, event_idx in enumerate(event_idxs[1:]):
             print(f'\nexplain {i}-th: {event_idx}')
-            self._initialize(event_idx)
+            self._initialize(event_idx, exp_size=max(exp_sizes))
 
             if self.load_results:
                 tree_nodes, tree_node_x = self._load_saved_nodes_info(event_idx)
             else:
-                tree_nodes, tree_node_x, important_events, target_model_y, exp_pred = self.explain(event_idx=event_idx,
-                                                    )
+                explanation_results = self.explain(event_idx=event_idx, exp_sizes=exp_sizes)
 #                self._save_mcts_recorder(event_idx) # always store
 #                if self.save and not self.load_results: # sometimes store
 #                    self._save_mcts_nodes_info(tree_nodes, event_idx)
+            for e in exp_sizes:
+                results_dict[e]['target_event_idxs'].append(event_idx)
+                results_dict[e]['explanations'].append(explanation_results[e]['important_events'])
+                results_dict[e]['model_predictions'].append(explanation_results[e]['target_model_y'])
+                results_dict[e]['explanation_predictions'].append(explanation_results[e]['exp_pred'])
+                results_dict[e]['delta_fidelity'].append(explanation_results[e]['delta_fidelity'])
 
-            results_dict['target_event_idxs'].append(event_idx)
-            results_dict['explanations'].append(important_events)
-            results_dict['model_predictions'].append(target_model_y)
-            results_dict['explanation_predictions'].append(exp_pred)
 
-            print('Exp Length: ', len(important_events), 'Model Prediction: ', target_model_y, 'Explanation Prediction: ', exp_pred)
-
-            with open(results_dir + f'/intermediate_results/tgnne_results_{event_idxs.index(event_idx)}.pkl', 'wb') as f:
+            with open(results_dir + f'/intermediate_results/tgnne_results_{[str(results_batch)+'_' if results_batch is not None else ''][0]}.pkl', 'wb') as f:
                 pck.dump(results_dict, f)
 
-            result = [tree_nodes, tree_node_x]
-            results_list.append(result)
+        import time
+        with open(results_dir + f'/tgnne_results_{[str(results_batch)+'_' if results_batch is not None else ''][0]}{self.dataset_name}_{self.model_name}_{int(time.time())}.pkl', 'wb') as f:
+            pck.dump(results_dict, f)
 
-            if return_dict is not None:
-                return_dict[event_idx] = result
-
-        return results_list, results_dict
-        # return tree_nodes, tree_node_x
 
     def _to_device(self, device):
         pass

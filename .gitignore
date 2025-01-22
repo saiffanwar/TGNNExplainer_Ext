@@ -1,5 +1,7 @@
-tgnnexplainer/src/models/ext/tgat/processed/
-tgnnexplainer/src/dataset/data/
+tgnnexplainer/src/models/ext/tgat/processed
+tgnnexplainer/src/dataset/data
+tgnnexplainer/src/method/params/explainer/tgn/
+tgnnexplainer/src/models/ext/tgn/utils/data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

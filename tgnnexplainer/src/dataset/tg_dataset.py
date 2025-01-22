@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
 import argparse
+import sys
+import os
+
+
+sys.path.append("/home/saif/PhD/TGNNExplainer_Ext/tgnnexplainer")
 
 from torch import positive
 
@@ -74,7 +79,7 @@ def generate_explain_index(file, explainer_idx_dir, dataset_name, explain_idx_na
     df = pd.read_csv(file)
     verify_dataframe_unify(df)
 
-    size = 100 # 100, 200, 300, 400, 500
+    size = 500 # 100, 200, 300, 400, 500
 
     if dataset_name in ['simulate_v1', 'simulate_v2']:
         indices = df.label == 1
@@ -82,10 +87,10 @@ def generate_explain_index(file, explainer_idx_dir, dataset_name, explain_idx_na
         explain_idxs = np.random.choice(df[indices].e_idx.values, size=size, replace=False)
         # import ipdb; ipdb.set_trace()
     elif dataset_name in ['wikipedia', 'reddit']:
-        np.random.seed(1024)
+#        np.random.seed(1024)
         e_num = len(df)
-        start_ratio = 0.7
-        end_ratio = 0.99
+        start_ratio = 0.0
+        end_ratio = 0.5
         low = int(e_num*start_ratio)
         high = int(e_num*end_ratio)
         explain_idxs = np.random.randint(low=low, high=high, size=size)
@@ -108,7 +113,7 @@ def generate_explain_index(file, explainer_idx_dir, dataset_name, explain_idx_na
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', type=str, default='wikipedia')
-    parser.add_argument('-c', type=str, choices=['format', 'index'])
+    parser.add_argument('-c', type=str, choices=['format', 'index'], default='index')
     args = parser.parse_args()
 
     data_dir = ROOT_DIR/'models'/'ext'/'tgat'/'processed'
