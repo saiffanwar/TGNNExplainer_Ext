@@ -249,7 +249,6 @@ class NeighborFinder:
                                                                                                  ngh_t_est,
                                                                                                  num_neighbors,
                                                                                                  e_idx_l=ngh_e_est)
-
             out_ngh_node_batch = out_ngh_node_batch.reshape(batch, -1) #[batch, num_neighbors* num_neighbors]
             out_ngh_eidx_batch = out_ngh_eidx_batch.reshape(batch, -1)
             out_ngh_t_batch = out_ngh_t_batch.reshape(batch, -1)

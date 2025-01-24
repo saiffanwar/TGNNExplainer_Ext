@@ -4,10 +4,10 @@ export PYTHONPATH="/home/saif/PhD/TGNNExplainer_Ext/tgnnexplainer"
 echo "PYTHONPATH=$PYTHONPATH"
 # run all explainers
 dataset=wikipedia # wikipedia, reddit, simulate_v1, simulate_v2
-model=tgn # tgat, tgn
+model=${2} # tgat, tgn
 
 if [ "$1" == "tgnne" ]; then
-    python3.12 ~/PhD/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=tgnnexplainer models=${model} results_batch=${2}
+    python3.12 ~/PhD/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=tgnnexplainer models=${model} results_batch=${3}
 fi
 
 # SA explainer

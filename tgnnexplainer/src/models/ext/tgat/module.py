@@ -27,6 +27,24 @@ class MergeLayer(torch.nn.Module):
         h = self.act(self.fc1(x))
         return self.fc2(h)
 
+class MergeLayer_final(torch.nn.Module):
+    def __init__(self, dim1, dim2, dim3, dim4):
+        super().__init__()
+        # self.layer_norm = torch.nn.LayerNorm(dim1 + dim2)
+        self.fc1 = torch.nn.Linear(dim1 + dim2, dim3)
+        self.fc2 = torch.nn.Linear(dim3, dim4)
+        self.act = torch.nn.ReLU()
+
+        torch.nn.init.xavier_normal_(self.fc1.weight)
+        torch.nn.init.xavier_normal_(self.fc2.weight)
+
+    def forward(self, x1, x2):
+        x = torch.cat([x1, x2], dim=1)
+        # x = self.layer_norm(x)
+        h = self.act(self.fc1(x))
+        return self.fc2(h)
+
+
 
 class ScaledDotProductAttention(torch.nn.Module):
     ''' Scaled Dot-Product Attention '''
@@ -37,7 +55,7 @@ class ScaledDotProductAttention(torch.nn.Module):
         self.dropout = torch.nn.Dropout(attn_dropout)
         self.softmax = torch.nn.Softmax(dim=2)
 
-    def forward(self, q, k, v, mask=None):
+    def forward(self, q, k, v, mask=None, explain_weight=None):
         # import ipdb; ipdb.set_trace()
         attn = torch.bmm(q, k.transpose(1, 2))
         attn = attn / self.temperature
@@ -57,6 +75,9 @@ class ScaledDotProductAttention(torch.nn.Module):
 
         attn = self.softmax(attn) # [n * b, l_q, l_k]
         attn = self.dropout(attn) # [n * b, l_v, d]
+        if explain_weight is not None:
+            for a in range(len(attn)):
+                attn[a] = attn[a] * explain_weight[1][0]  #if exp ==0 => masked!
 
         output = torch.bmm(attn, v)
 
@@ -89,7 +110,7 @@ class MultiHeadAttention(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
 
-    def forward(self, q, k, v, mask=None):
+    def forward(self, q, k, v, mask=None, explain_weight=None):
 
         d_k, d_v, n_head = self.d_k, self.d_v, self.n_head
 
@@ -107,8 +128,11 @@ class MultiHeadAttention(nn.Module):
         k = k.permute(2, 0, 1, 3).contiguous().view(-1, len_k, d_k) # (n*b) x lk x dk
         v = v.permute(2, 0, 1, 3).contiguous().view(-1, len_v, d_v) # (n*b) x lv x dv
 
+
+#        if explain_weight is not None:
+#            explain_weight = explain_weight.view(B*N_src, 1, num_neighbors).repeat(n_head, 1, 1)  # [B*N_src*n_head, 1, num_neighbors]
         mask = mask.repeat(n_head, 1, 1) # (n*b) x .. x ..
-        output, attn = self.attention(q, k, v, mask=mask)
+        output, attn = self.attention(q, k, v, mask=mask, explain_weight=explain_weight)
 
         output = output.view(n_head, sz_b, len_q, d_v)
 
@@ -360,7 +384,7 @@ class AttnModel(torch.nn.Module):
             raise ValueError('attn_mode can only be prod or map')
 
 
-    def forward(self, src, src_t, seq, seq_t, seq_e, mask):
+    def forward(self, src, src_t, seq, seq_t, seq_e, mask, explain_weight=None):
         """"Attention based temporal attention forward pass
         args:
           src: float Tensor of shape [B, D]
@@ -377,8 +401,10 @@ class AttnModel(torch.nn.Module):
           weight: float Tensor of shape [B, N]
         """
 
-        src_ext = torch.unsqueeze(src, dim=1) # src [B, 1, D]
+        src_ext = torch.unsqueeze(src, dim=1)
+#            src_ext = torch.unsqueeze(src, dim=1) # src [B, 1, D]
         src_e_ph = torch.zeros_like(src_ext)
+
         q = torch.cat([src_ext, src_e_ph, src_t], dim=2) # [B, 1, D + De + Dt] -> [B, 1, D]
         k = torch.cat([seq, seq_e, seq_t], dim=2) # [B, 1, D + De + Dt] -> [B, 1, D]
 
@@ -386,7 +412,7 @@ class AttnModel(torch.nn.Module):
         mask = mask.permute([0, 2, 1]) #mask [B, 1, N]
 
         # # target-attention
-        output, attn = self.multi_head_target(q=q, k=k, v=k, mask=mask) # output: [B, 1, D + Dt], attn: [B, 1, N]
+        output, attn = self.multi_head_target(q=q, k=k, v=k, mask=mask, explain_weight=explain_weight) # output: [B, 1, D + Dt], attn: [B, 1, N]
         # output = output.squeeze()
         # attn = attn.squeeze()
         output = output.squeeze(1)
@@ -400,7 +426,7 @@ class AttnModel(torch.nn.Module):
 class TGAN(torch.nn.Module):
     def __init__(self, ngh_finder: NeighborFinder, n_feat, e_feat, device='cuda:0',
                  attn_mode='prod', use_time='time', agg_method='attn',
-                 num_layers=2, n_head=4, null_idx=0, num_neighbors=20, drop_out=0.1):
+                 num_layers=2, n_head=4, null_idx=0, num_neighbors=20, drop_out=0.1, mode='tgnne'):
         super(TGAN, self).__init__()
 
         self.num_layers = num_layers
@@ -414,6 +440,7 @@ class TGAN(torch.nn.Module):
         self.node_raw_embed = torch.from_numpy(n_feat.astype(np.float32)).to(device)
         self.edge_raw_embed = torch.from_numpy(e_feat.astype(np.float32)).to(device)
 
+
         self.feat_dim = n_feat.shape[1]
 
         self.n_feat_dim = self.feat_dim # NOTE: equal dime assumption
@@ -422,6 +449,9 @@ class TGAN(torch.nn.Module):
         self.model_dim = self.feat_dim
 
         self.use_time = use_time
+
+        self.verbosity = 0
+        self.mode=mode
         # self.merge_layer = MergeLayer(self.feat_dim, self.feat_dim, self.feat_dim, self.feat_dim)
 
         self.atten_weights_list = []
@@ -462,7 +492,10 @@ class TGAN(torch.nn.Module):
         else:
             raise ValueError('invalid time option!')
 
-        self.affinity_score = MergeLayer(self.feat_dim, self.feat_dim, self.feat_dim, 1) #torch.nn.Bilinear(self.feat_dim, self.feat_dim, 1, bias=True)
+        if self.mode == 'temp_me':
+            self.affinity_score = MergeLayer_final(self.feat_dim, self.feat_dim, self.feat_dim, 1)
+        else:
+            self.affinity_score = MergeLayer(self.feat_dim, self.feat_dim, self.feat_dim, 1) #torch.nn.Bilinear(self.feat_dim, self.feat_dim, 1, bias=True)
 
     def forward(self, src_idx_l, target_idx_l, cut_time_l):
         self.atten_weights_list = []
@@ -485,6 +518,20 @@ class TGAN(torch.nn.Module):
         neg_score = self.affinity_score(src_embed, background_embed).squeeze(dim=-1)
         return pos_score.sigmoid(), neg_score.sigmoid()
 
+    def get_temp_me_prob(self, src_idx_l, target_idx_l, cut_time_l, subgraph_src, subgraph_tgt, explain_weight=None, logit=True):
+        subgraph_src = [np.array(subgraph_src[0][1]), np.array(subgraph_src[1][1]), np.array(subgraph_src[2][1])]
+        subgraph_tgt = [np.array(subgraph_tgt[0][1]), np.array(subgraph_tgt[1][1]), np.array(subgraph_tgt[2][1])]
+#        print(subgraph_src[1].shape, subgraph_tgt[1].shape)
+        self.atten_weights_list = []
+        self.batch_size = len(src_idx_l)
+        src_embed = self.tem_conv_temp(src_idx_l, cut_time_l, 1, subgraph_src, explain_weight=explain_weight)
+        target_embed = self.tem_conv_temp(target_idx_l, cut_time_l, 1, subgraph_tgt, explain_weight=explain_weight)
+        pos_score = self.affinity_score(src_embed, target_embed).squeeze(dim=-1)
+        if logit:
+            return pos_score
+        else:
+            return pos_score.sigmoid()
+#
     def get_prob(self, src_idx_l, target_idx_l, cut_time_l, edge_idx_preserve_list=None, logit=False, candidate_weights_dict=None, num_neighbors=None):
 #        if edge_idx_preserve_list is not None:
 #            print(f'Getting probabilities with {len(edge_idx_preserve_list)} events')
@@ -515,12 +562,128 @@ class TGAN(torch.nn.Module):
         else:
             return pos_score.sigmoid()
 
+    def tem_conv_temp(self, src_idx_l, cut_time_l, curr_layers, subgraph_src, explain_weight=None):
+
+        assert(curr_layers >= 0)
+
+        device = self.device
+        batch_size = len(src_idx_l)
+
+        src_node_batch_th = torch.from_numpy(src_idx_l).long().to(device)
+        cut_time_l_th = torch.from_numpy(cut_time_l).float().to(device)
+
+        cut_time_l_th = torch.unsqueeze(cut_time_l_th, dim=1)
+        # query node always has the start time -> time span == 0
+        src_node_t_embed = self.time_encoder(torch.zeros_like(cut_time_l_th))
+        src_node_feat = self.node_raw_embed[src_node_batch_th, :]
+
+#        if edge_idx_preserve_list is not None:
+#            print('edge_idx_preserve_list: ', len(edge_idx_preserve_list))
+        if curr_layers == 0:
+            return src_node_feat
+        else:
+            src_node_conv_feat = self.tem_conv_temp(src_idx_l,
+                                           cut_time_l,
+                                           curr_layers=curr_layers - 1,
+                                            subgraph_src=subgraph_src)
+
+
+            src_ngh_node_batch, src_ngh_eidx_batch, src_ngh_t_batch = subgraph_src
+#
+#            src_ngh_node_batch = np.array(src_ngh_node_batch[1])
+#            src_ngh_eidx_batch = np.array(src_ngh_eidx_batch[1])
+#            src_ngh_t_batch = np.array(src_ngh_t_batch[1])
+
+            num_neighbors = src_ngh_node_batch.shape[1]
+
+#            print(src_ngh_node_batch.shape, src_ngh_eidx_batch.shape, src_ngh_t_batch.shape)
+
+            src_ngh_node_batch_th = torch.from_numpy(src_ngh_node_batch).long().to(device)
+            src_ngh_eidx_batch = torch.from_numpy(src_ngh_eidx_batch).long().to(device)
+
+#            try:
+            src_ngh_t_batch_delta = cut_time_l[:, np.newaxis] - src_ngh_t_batch
+#            except:
+#                src_ngh_t_batch_delta = []
+#                for i in range(src_ngh_t_batch.shape[0]):
+#                    src_ngh_t_batch_delta.append(cut_time_l - src_ngh_t_batch[i])
+            src_ngh_t_batch_delta = np.array(src_ngh_t_batch_delta)
+            src_ngh_t_batch_th = torch.from_numpy(src_ngh_t_batch_delta).float().to(device)
+
+            # get previous layer's node features
+            src_ngh_node_batch_flat = src_ngh_node_batch.flatten() #reshape(batch_size, -1)
+            src_ngh_t_batch_flat = src_ngh_t_batch.flatten() #reshape(batch_size, -1)
+            src_ngh_node_conv_feat = self.tem_conv_temp(src_ngh_node_batch_flat,
+                                                   src_ngh_t_batch_flat,
+                                                   curr_layers=curr_layers - 1,
+                                                   subgraph_src=subgraph_src)
+            src_ngh_feat = src_ngh_node_conv_feat.view(len(src_idx_l), num_neighbors, -1)
+
+            # get edge time features and node features
+            src_ngh_t_embed = self.time_encoder(src_ngh_t_batch_th)
+            src_ngn_edge_feat = self.edge_raw_embed[src_ngh_eidx_batch, :]
+
+            # attention aggregation
+            mask = src_ngh_node_batch_th == 0
+            attn_m = self.attn_model_list[curr_layers - 1]
+
+            # import ipdb; ipdb.set_trace()
+#            # support for explainer
+#            if candidate_weights_dict is not None:
+#                event_idxs = candidate_weights_dict['candidate_events']
+#                event_weights = candidate_weights_dict['edge_weights']
+#
+#
+#                ###### version 1, event_weights not [0, 1]
+#                position0 = src_ngh_node_batch_th == 0
+#                mask = torch.zeros_like(src_ngh_node_batch_th).to(dtype=torch.float32) # NOTE: for +, 0 mean no influence
+#                # import ipdb; ipdb.set_trace()
+#                for i, e_idx in enumerate(event_idxs):
+#                    indices = src_ngh_eidx_batch == e_idx
+#                    mask[indices] = event_weights[i]
+#                mask[position0] = -1e10 # addition attention, as 0 masks
+                # import ipdb; ipdb.set_trace()
+
+
+                ###### version 2, event_weights [0, 1]
+                # assert event_weights.max() <= 1 and event_weights.min() >= 0
+                # position0 = src_ngh_node_batch_th == 0
+                # mask = torch.ones_like(src_ngh_node_batch_th).to(dtype=torch.float32) # NOTE: for *, 1 mean no influence
+                # for i, e_idx in enumerate(event_idxs):
+                #     indices = src_ngh_eidx_batch == e_idx
+                #     mask[indices] = event_weights[i]
+                # mask[position0] = 0
+
+
+#            breakpoint()
+            local, weight = attn_m(src_node_conv_feat,
+                                   src_node_t_embed,
+                                   src_ngh_feat,
+                                   src_ngh_t_embed,
+                                   src_ngn_edge_feat,
+                                   mask,
+                                   explain_weight=explain_weight)
+
+            # print(f'current layer: {curr_layers}')
+            # print('src_idx_l: ', src_idx_l)
+            # print('src_ngh_node_batch: ', src_ngh_node_batch)
+            weight = weight.reshape((self.n_head, src_node_batch_th.shape[0], src_ngh_node_batch_th.shape[1]))
+            self.atten_weights_list.append({
+                'layer': curr_layers,
+                'src_nodes': src_node_batch_th,
+                'src_ngh_nodes': src_ngh_node_batch_th,
+                'src_ngh_eidx': src_ngh_eidx_batch,
+                'attn_weight': weight,
+            })
+
+            return local
+
+
     def tem_conv(self, src_idx_l, cut_time_l, curr_layers, edge_idx_preserve_list=None, candidate_weights_dict=None, num_neighbors=None):
 
         if num_neighbors is None:
             num_neighbors = self.num_neighbors
         # import ipdb; ipdb.set_trace()
-        print('Self neighbors: ', self.num_neighbors, num_neighbors)
 
         assert(curr_layers >= 0)
 
@@ -557,6 +720,7 @@ class TGAN(torch.nn.Module):
 
             src_ngh_node_batch_th = torch.from_numpy(src_ngh_node_batch).long().to(device)
             src_ngh_eidx_batch = torch.from_numpy(src_ngh_eidx_batch).long().to(device)
+
 
             src_ngh_t_batch_delta = cut_time_l[:, np.newaxis] - src_ngh_t_batch
             src_ngh_t_batch_th = torch.from_numpy(src_ngh_t_batch_delta).float().to(device)
@@ -619,6 +783,7 @@ class TGAN(torch.nn.Module):
             # print(f'current layer: {curr_layers}')
             # print('src_idx_l: ', src_idx_l)
             # print('src_ngh_node_batch: ', src_ngh_node_batch)
+
             weight = weight.reshape((self.n_head, src_node_batch_th.shape[0], src_ngh_node_batch_th.shape[1]))
             self.atten_weights_list.append({
                 'layer': curr_layers,
@@ -629,3 +794,283 @@ class TGAN(torch.nn.Module):
             })
 
             return local
+#
+#    def contrast(self, src_idx_l, tgt_idx_l, bgd_idx_l, cut_time_l, e_idx_l, subgraph_src, subgraph_tgt, subgraph_bgd,
+#                 test=False, if_explain=False, exp_weights=None):
+#        '''
+#        1. grab subgraph for src, tgt, bgd
+#        2. add positional encoding for src & tgt nodes
+#        3. forward propagate to get src embeddings and tgt embeddings (and finally pos_score (shape: [batch, ]))
+#        4. forward propagate to get src embeddings and bgd embeddings (and finally neg_score (shape: [batch, ]))
+#        '''
+#        if self.verbosity > 1:
+#            self.logger.info('grab subgraph for the minibatch, time eclipsed: {} seconds'.format(str(end-start)))
+#        self.flag_for_cur_edge = True
+#        if if_explain == False:
+#            exp_tgt = exp_bgd = None
+#        else:
+#            exp_tgt, exp_bgd = exp_weights[0], exp_weights[1]
+#        pos_score = self.forward(src_idx_l, tgt_idx_l, cut_time_l, (subgraph_src, subgraph_tgt), test=test, explain_weights=exp_tgt)
+#        self.flag_for_cur_edge = False
+#        neg_score1 = self.forward(src_idx_l, bgd_idx_l, cut_time_l, (subgraph_src, subgraph_bgd), test=test, explain_weights=exp_bgd)
+#        return pos_score, neg_score1 #[B,N]
+#
+#    def get_attn_map(self, src_idx_l, tgt_idx_l, bgd_idx_l, cut_time_l, e_idx_l, subgraph_src, subgraph_tgt, subgraph_bgd,
+#                 test=False, if_explain=False, exp_weights=None):
+#        '''
+#        1. grab subgraph for src, tgt, bgd
+#        2. add positional encoding for src & tgt nodes
+#        3. forward propagate to get src embeddings and tgt embeddings (and finally pos_score (shape: [batch, ]))
+#        4. forward propagate to get src embeddings and bgd embeddings (and finally neg_score (shape: [batch, ]))
+#        '''
+#        start = time.time()
+#        end = time.time()
+#        if self.verbosity > 1:
+#            self.logger.info('grab subgraph for the minibatch, time eclipsed: {} seconds'.format(str(end-start)))
+#        self.flag_for_cur_edge = True
+#        if if_explain == False:
+#            exp_tgt = exp_bgd = None
+#        else:
+#            exp_tgt, exp_bgd = exp_weights[0], exp_weights[1]
+#        pos_score, attn_pos = self.forward_attn(src_idx_l, tgt_idx_l, cut_time_l, (subgraph_src, subgraph_tgt), test=test, explain_weights=exp_tgt)
+#        self.flag_for_cur_edge = False
+#        neg_score1, attn_neg = self.forward_attn(src_idx_l, bgd_idx_l, cut_time_l, (subgraph_src, subgraph_bgd), test=test, explain_weights=exp_bgd)
+#
+#        return attn_pos, attn_neg #[B,N]
+#
+#
+#    def get_node_emb(self, src_idx_l, tgt_idx_l, bgd_idx_l, cut_time_l, e_idx_l, subgraph_src, subgraph_tgt, subgraph_bgd,
+#                 test=False):
+#        '''
+#        1. grab subgraph for src, tgt, bgd
+#        2. add positional encoding for src & tgt nodes
+#        3. forward propagate to get src embeddings and tgt embeddings (and finally pos_score (shape: [batch, ]))
+#        4. forward propagate to get src embeddings and bgd embeddings (and finally neg_score (shape: [batch, ]))
+#        '''
+#        src_embed = self.forward_msg(src_idx_l, cut_time_l, subgraph_src, test=test)
+#        tgt_emded = self.forward_msg(tgt_idx_l, cut_time_l, subgraph_tgt, test=test)
+#        bgd_emded = self.forward_msg(bgd_idx_l, cut_time_l, subgraph_bgd, test=test)
+#
+#        return src_embed, tgt_emded, bgd_emded #[B,N]
+#
+#
+#
+#    def contrast_attr(self, src_idx_l, tgt_idx_l, bgd_idx_l, cut_time_l, e_idx_l, subgraph_src, subgraph_tgt, subgraph_bgd,
+#                      src_edge_attr, tgt_edge_attr, bgd_edge_attr, test=False, if_explain=False, exp_weights=None):
+#        start = time.time()
+#        end = time.time()
+#        if self.verbosity > 1:
+#            self.logger.info('grab subgraph for the minibatch, time eclipsed: {} seconds'.format(str(end-start)))
+#        self.flag_for_cur_edge = True
+#        if if_explain == False:
+#            exp_tgt = exp_bgd = None
+#        else:
+#            exp_tgt, exp_bgd = exp_weights[0], exp_weights[1]
+#        pos_score = self.forward_attr(src_idx_l, tgt_idx_l, cut_time_l, src_edge_attr, tgt_edge_attr, (subgraph_src, subgraph_tgt), test=test, explain_weights=exp_tgt)
+#        self.flag_for_cur_edge = False
+#        neg_score1 = self.forward_attr(src_idx_l, bgd_idx_l, cut_time_l, src_edge_attr, bgd_edge_attr, (subgraph_src, subgraph_bgd), test=test, explain_weights=exp_bgd)
+#        # neg_score2 = self.forward(tgt_idx_l, bgd_idx_l, cut_time_l, (subgraph_tgt, subgraph_bgd))
+#        # return pos_score.sigmoid(), (neg_score1.sigmoid() + neg_score2.sigmoid())/2.0
+#        return pos_score, neg_score1 #[B,N]
+#
+#    def forward(self, src_idx_l, tgt_idx_l, cut_time_l, subgraphs=None, test=False, explain_weights=None):
+#        subgraph_src, subgraph_tgt = subgraphs
+#        if explain_weights is not None:
+#            exp_src, exp_tgt = explain_weights[0],explain_weights[1]
+#        else:
+#            exp_src = exp_tgt = None
+#        src_embed = self.forward_msg(src_idx_l, cut_time_l, subgraph_src, test=test, explain_weights=exp_src)
+#        tgt_embed = self.forward_msg(tgt_idx_l, cut_time_l, subgraph_tgt, test=test, explain_weights=exp_tgt)
+#        score = self.affinity_score(src_embed, tgt_embed) # score shape: [B,1]
+#        # score = score.squeeze(-1)
+#        return score  #[B,N]
+#
+#    def forward_attn(self, src_idx_l, tgt_idx_l, cut_time_l, subgraphs=None, test=False, explain_weights=None):
+#        subgraph_src, subgraph_tgt = subgraphs
+#        if explain_weights is not None:
+#            exp_src, exp_tgt = explain_weights[0],explain_weights[1]
+#        else:
+#            exp_src = exp_tgt = None
+#        src_embed, attn_src = self.forward_msg_attn(src_idx_l, cut_time_l, subgraph_src, test=test, explain_weights=exp_src)
+#        tgt_embed, attn_tgt = self.forward_msg_attn(tgt_idx_l, cut_time_l, subgraph_tgt, test=test, explain_weights=exp_tgt)
+#        score = self.affinity_score(src_embed, tgt_embed) # score shape: [B,1]
+#        # score = score.squeeze(-1)
+#        attn_for_explanation = [attn_src, attn_tgt]
+#        return score, attn_for_explanation
+#
+#
+#    def forward_attr(self, src_idx_l, tgt_idx_l, cut_time_l, src_edge_attr, tgt_edge_attr, subgraphs=None, test=False, explain_weights=None):
+#        subgraph_src, subgraph_tgt = subgraphs
+#        if explain_weights is not None:
+#            exp_src, exp_tgt = explain_weights[0], explain_weights[1]
+#        else:
+#            exp_src = exp_tgt = None
+#        ### for src subgraph:
+#        node_records, eidx_records, t_records = subgraph_src
+#        hidden_embeddings, masks = self.init_hidden_embeddings(src_idx_l, node_records)  # length self.num_layers+1
+#        time_features = self.retrieve_time_features(cut_time_l, t_records)  # length self.num_layers+1
+#        n_layer = self.num_layers
+#        for layer in range(n_layer):
+#            hidden_embeddings = self.forward_msg_layer(hidden_embeddings, time_features[:n_layer + 1 - layer],
+#                                                       src_edge_attr[:n_layer - layer],
+#                                                       masks[:n_layer - layer], self.attn_model_list[layer],
+#                                                       explain_weights=exp_src)
+#        src_embed = hidden_embeddings[0].squeeze(1)
+#
+#        ### for tgt subgrah:
+#        node_records, eidx_records, t_records = subgraph_tgt
+#        hidden_embeddings, masks = self.init_hidden_embeddings(tgt_idx_l, node_records)  # length self.num_layers+1
+#        time_features = self.retrieve_time_features(cut_time_l, t_records)  # length self.num_layers+1
+#        n_layer = self.num_layers
+#        for layer in range(n_layer):
+#            hidden_embeddings = self.forward_msg_layer(hidden_embeddings, time_features[:n_layer + 1 - layer],
+#                                                       tgt_edge_attr[:n_layer - layer],
+#                                                       masks[:n_layer - layer], self.attn_model_list[layer],
+#                                                       explain_weights=exp_tgt)
+#        tgt_embed = hidden_embeddings[0].squeeze(1)
+#        score = self.affinity_score(src_embed, tgt_embed) # score shape: [B,1]
+#        # score = score.squeeze(-1)
+#        return score  #[B,1]
+#
+    def set_neighbor_sampler(self, neighbor_sampler):
+        self.ngh_finder = neighbor_sampler
+
+    def grab_subgraph(self, src_idx_l, cut_time_l, e_idx_l=None):
+        subgraph = self.ngh_finder.find_k_hop(self.num_layers, src_idx_l, cut_time_l, num_neighbors=self.num_neighbors, e_idx_l=e_idx_l)
+        return subgraph
+#
+#    def forward_msg(self, src_idx_l, cut_time_l, subgraph_src, test=False, explain_weights=None):
+#        node_records, eidx_records, t_records = subgraph_src
+#        hidden_embeddings, masks = self.init_hidden_embeddings(src_idx_l, node_records)  # length self.num_layers+1
+#        time_features = self.retrieve_time_features(cut_time_l, t_records)  # length self.num_layers+1
+#        edge_features = self.retrieve_edge_features(eidx_records)  # length self.num_layers
+#        n_layer = self.num_layers
+#        for layer in range(n_layer):
+#            hidden_embeddings = self.forward_msg_layer(hidden_embeddings, time_features[:n_layer+1-layer],
+#                                                           edge_features[:n_layer-layer],
+#                                                       masks[:n_layer-layer], self.attn_model_list[layer],
+#                                                       explain_weights=explain_weights)
+#        final_node_embeddings = hidden_embeddings[0].squeeze(1)
+#        return final_node_embeddings
+#
+#
+#
+#    def forward_msg_attn(self, src_idx_l, cut_time_l, subgraph_src, test=False, explain_weights=None):
+#        node_records, eidx_records, t_records = subgraph_src
+#        hidden_embeddings, masks = self.init_hidden_embeddings(src_idx_l, node_records)  # length self.num_layers+1
+#        time_features = self.retrieve_time_features(cut_time_l, t_records)  # length self.num_layers+1
+#        edge_features = self.retrieve_edge_features(eidx_records)  # length self.num_layers
+#        n_layer = self.num_layers
+#        attn_map_list = []
+#        for layer in range(n_layer):
+#            hidden_embeddings, attn_map = self.retrieve_attn_map_layer(hidden_embeddings, time_features[:n_layer+1-layer],
+#                                                           edge_features[:n_layer-layer],
+#                                                       masks[:n_layer-layer], self.attn_model_list[layer],
+#                                                       explain_weights=explain_weights)
+#            attn_map_list.append(attn_map)
+#        final_node_embeddings = hidden_embeddings[0].squeeze(1)
+#        return final_node_embeddings, attn_map_list
+#
+#
+#    def tune_msg(self, src_embed, tgt_embed):
+#        return self.random_walk_attn_model.mutual_query(src_embed, tgt_embed)
+#
+#    def init_hidden_embeddings(self, src_idx_l, node_records):
+#        device = self.node_raw_embed.device
+#        hidden_embeddings, masks = [], []
+#        hidden_embeddings.append(self.node_raw_embed[torch.from_numpy(np.expand_dims(src_idx_l, 1)).long().to(device)])
+#        for i in range(len(node_records)):
+#            batch_node_idx = torch.from_numpy(node_records[i]).long().to(device)
+#            hidden_embeddings.append(self.node_raw_embed[batch_node_idx])
+#            masks.append(batch_node_idx == 0)
+#        return hidden_embeddings, masks
+#
+#    def retrieve_time_features(self, cut_time_l, t_records):
+#        device = self.node_raw_embed.device
+#        batch = len(cut_time_l)
+#        first_time_stamp = np.expand_dims(cut_time_l, 1)
+#        time_features = [self.time_encoder(torch.from_numpy(np.zeros_like(first_time_stamp)).float().to(device))]
+#        standard_timestamps = np.expand_dims(first_time_stamp, 2)
+#        for layer_i in range(len(t_records)):
+#            t_record = t_records[layer_i]
+#            time_delta = standard_timestamps - t_record.reshape(batch, -1, self.num_neighbors)
+#            time_delta = time_delta.reshape(batch, -1)
+#            time_delta = torch.from_numpy(time_delta).float().to(device)
+#            time_features.append(self.time_encoder(time_delta))
+#            standard_timestamps = np.expand_dims(t_record, 2)
+#        return time_features
+#
+#    def retrieve_edge_features(self, eidx_records):
+#        # Notice that if subgraph is tree, then len(eidx_records) is just the number of hops, excluding the src node
+#        # but if subgraph is walk, then eidx_records contains the random walks of length len_walk+1, including the src node
+#        device = self.node_raw_embed.device
+#        edge_features = []
+#        for i in range(len(eidx_records)):
+#            batch_edge_idx = torch.from_numpy(eidx_records[i]).long().to(device)
+#            edge_features.append(self.edge_raw_embed[batch_edge_idx])
+#        return edge_features
+#
+#    def forward_msg_layer(self, hidden_embeddings, time_features, edge_features, masks, attn_m, explain_weights=None):
+#        assert(len(hidden_embeddings) == len(time_features))
+#        assert(len(hidden_embeddings) == (len(edge_features) + 1))
+#        assert(len(masks) == len(edge_features))
+#        new_src_embeddings = []
+#        for i in range(len(edge_features)):  #num_layer
+#            src_embedding = hidden_embeddings[i]
+#            src_time_feature = time_features[i]
+#            ngh_embedding = hidden_embeddings[i+1]
+#            ngh_time_feature = time_features[i+1]
+#            ngh_edge_feature = edge_features[i]
+#            ngh_mask = masks[i]
+#            if explain_weights is not None:
+#                explain_weight = explain_weights[i]
+#            else:
+#                explain_weight = None
+#            # NOTE: n_neighbor_support = n_source_support * num_neighbor this layer
+#            # new_src_embedding shape: [batch, n_source_support, feat_dim]
+#            # attn_map shape: [batch, n_source_support, n_head, num_neighbors]
+#            print('src_embedding: ', src_embedding.shape)
+#            new_src_embedding, attn_map = attn_m(src_embedding,  # shape [batch, n_source_support, feat_dim]
+#                                                 src_time_feature,  # shape [batch, n_source_support, time_feat_dim]
+#                                                 ngh_embedding,  # shape [batch, n_neighbor_support, feat_dim]
+#                                                 ngh_time_feature,  # shape [batch, n_neighbor_support, time_feat_dim]
+#                                                 ngh_edge_feature,  # shape [batch, n_neighbor_support, edge_feat_dim]
+#                                                 ngh_mask,
+#                                                 explain_weight=explain_weight)  # shape [batch, n_neighbor_support]
+#
+#            new_src_embeddings.append(new_src_embedding)
+#        return new_src_embeddings
+#
+#
+#
+#    def retrieve_attn_map_layer(self, hidden_embeddings, time_features, edge_features, masks, attn_m, explain_weights=None):
+#        assert(len(hidden_embeddings) == len(time_features))
+#        assert(len(hidden_embeddings) == (len(edge_features) + 1))
+#        assert(len(masks) == len(edge_features))
+#        attn_map_list = []
+#        new_src_embeddings = []
+#        for i in range(len(edge_features)):  #num_layer
+#            src_embedding = hidden_embeddings[i]
+#            src_time_feature = time_features[i]
+#            ngh_embedding = hidden_embeddings[i+1]
+#            ngh_time_feature = time_features[i+1]
+#            ngh_edge_feature = edge_features[i]
+#            ngh_mask = masks[i]
+#            if explain_weights is not None:
+#                explain_weight = explain_weights[i]
+#            else:
+#                explain_weight = None
+#            # NOTE: n_neighbor_support = n_source_support * num_neighbor this layer
+#            # new_src_embedding shape: [batch, n_source_support, feat_dim]
+#            # attn_map shape: [batch, n_source_support, n_head, num_neighbors]
+#            new_src_embedding, attn_map = attn_m(src_embedding,  # shape [batch, n_source_support, feat_dim]
+#                                                 src_time_feature,  # shape [batch, n_source_support, time_feat_dim]
+#                                                 ngh_embedding,  # shape [batch, n_neighbor_support, feat_dim]
+#                                                 ngh_time_feature,  # shape [batch, n_neighbor_support, time_feat_dim]
+#                                                 ngh_edge_feature,  # shape [batch, n_neighbor_support, edge_feat_dim]
+#                                                 ngh_mask,
+#                                                 explain_weight=explain_weight)  # shape [batch, n_neighbor_support]
+#            new_src_embeddings.append(new_src_embedding)
+#            attn_map_list.append(attn_map)
+#        return new_src_embeddings, attn_map_list
+#

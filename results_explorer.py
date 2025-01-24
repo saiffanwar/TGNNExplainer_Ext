@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 #data = pd.read_csv(data_dir + 'wikipedia.csv')
 
 combined_tgnne_results = None
-for i in [0,15,17,20]:
+for i in [1,2,3,4,5,15,17,20]:
     with open(f'tgnnexplainer/benchmarks/results/tgnne_results_{i}_wikipedia_tgn.pkl', 'rb') as file:
         tgnne_results = pck.load(file)
         sub_keys = list(tgnne_results.values())[0].keys()
@@ -23,7 +23,7 @@ for i in [0,15,17,20]:
 with open(f'tgnnexplainer/benchmarks/results/sa_results_wikipedia_tgn_exp_sizes.pkl', 'rb') as file:
     sa_results = pck.load(file)
 
-with open(f'tgnnexplainer/benchmarks/results/temp_me_results_wikipedia_tgn_exp_sizes.pkl', 'rb') as file:
+with open(f'tgnnexplainer/benchmarks/results/temp_me_results_wikipedia_tgat_exp_sizes.pkl', 'rb') as file:
     temp_me_results = pck.load(file)
 
 
@@ -40,7 +40,6 @@ for k in sa_results.keys():
     sa_error = np.mean(errors)
     print('Exp Size: ', k, 'Avg Error', sa_error)
     sa_errors.append(sa_error)
-    print(sa_results[k]['delta_fidelity'])
     sa_delta_fidelities.append(np.mean(sa_results[k]['delta_fidelity']))
 #    combined_sa_results[k].append(sa_results[k][])
 
@@ -98,8 +97,8 @@ axes[1][0].set_ylabel('Avg Delta Fidelity')
 axes[1][1].set_ylabel('Avg Delta Fidelity')
 axes[1][2].set_ylabel('Avg Delta Fidelity')
 axes[1][0].plot(sa_results.keys(), sa_delta_fidelities, label='STX-Search')
-axes[1][0].plot(tgnne_results.keys(), tgnne_delta_fidelities, label='SA')
-axes[1][0].plot(temp_me_results.keys(), temp_me_delta_fidelities, label='TGNNE')
+axes[1][1].plot(tgnne_results.keys(), tgnne_delta_fidelities, label='SA')
+axes[1][2].plot(temp_me_results.keys(), temp_me_delta_fidelities, label='TGNNE')
 
 #plt.scatter([, sa_errors, label='STX-Search')
 #plt.scatter(tgnne_sizes, tgnne_errors, label='SA')

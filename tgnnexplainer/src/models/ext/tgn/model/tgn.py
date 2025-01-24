@@ -452,7 +452,6 @@ class TGN(torch.nn.Module):
 
         return source_node_embedding, destination_node_embedding, negative_node_embedding
 
-
     def contrast(self, src_idx, tgt_idx, bgd_idx, cut_time, e_idx,
                      subgraph_src, subgraph_tgt, subgraph_bgd,
                  explain_weights=None, edge_attr=None):

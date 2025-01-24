@@ -21,6 +21,7 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score
 
 from src.method.temp_me_utils import RandEdgeSampler, load_subgraph, load_subgraph_margin, get_item, get_item_edge, NeighborFinder
+import copy
 from src.method.tempme_explainer import *
 #from GraphM import GraphMixer
 #from TGN.tgn import TGN
@@ -477,8 +478,11 @@ def eval_one_epoch(args, base_model, explainer, full_ngh_finder, src, dst, ts, v
 
 def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
     if args.base_type == "tgat":
-        Explainer = TempME_TGAT(base_model, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim, temp=args.temp,
-                                dropout_p=args.drop_out, device=args.device)
+        Explainer = TempME(base_model, base_model_type=args.base_type, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim,
+                                temp=args.temp, if_cat_feature=True,
+                                dropout_p=args.drop_out, device=args.device, data_dir=args.data_dir)
+#        Explainer = TempME_TGAT(base_model, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim, temp=args.temp,
+#                                dropout_p=args.drop_out, device=args.device, data_dir=args.data_dir)
     else:
         Explainer = TempME(base_model, base_model_type=args.base_type, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim,
                                 temp=args.temp, if_cat_feature=True,
@@ -488,7 +492,8 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                                  lr=args.lr,
                                  betas=(0.9, 0.999), eps=1e-8,
                                  weight_decay=args.weight_decay)
-    criterion = torch.nn.BCEWithLogitsLoss()
+#    criterion = torch.nn.BCEWithLogitsLoss()
+    criterion = torch.nn.L1Loss()
     rand_sampler, src_l, dst_l, ts_l, label_l, e_idx_l, ngh_finder = load_data(mode="training", args=args)
     test_rand_sampler, test_src_l, test_dst_l, test_ts_l, test_label_l, test_e_idx_l, full_ngh_finder = load_data(
         mode="test", args=args)
@@ -501,7 +506,7 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
     print('num of batches per epoch: {}'.format(num_batch))
     idx_list = np.arange(num_instance)
 #    np.random.shuffle(idx_list)
-
+    torch.autograd.set_detect_anomaly(True)
     for epoch in range(args.n_epoch):
         base_model.set_neighbor_sampler(ngh_finder)
         train_aps = []
@@ -521,7 +526,7 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                 continue
             batch_idx = idx_list[s_idx:e_idx]
 #            print(batch_idx)
-#            batch_idx = [10]
+            batch_idx = [10]
             src_l_cut, dst_l_cut = src_l[batch_idx], dst_l[batch_idx]
             ts_l_cut = ts_l[batch_idx]
             e_l_cut = e_idx_l[batch_idx]
@@ -529,14 +534,17 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                                                                                                              batch_idx)
             src_edge, tgt_edge, bgd_edge = get_item_edge(train_edge, batch_idx)
             with torch.no_grad():
+                subgraph_src = base_model.grab_subgraph(src_l_cut, ts_l_cut)
+                subgraph_tgt = base_model.grab_subgraph(dst_l_cut, ts_l_cut)
+                subgraph_bgd = base_model.grab_subgraph(dst_l_fake, ts_l_cut)
                 if args.base_type == "tgat":
-                    pos_out_ori, neg_out_ori = base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
-                                                         subgraph_src, subgraph_tgt, subgraph_bgd, test=True,
-                                                         if_explain=False)  #[B, 1]
+#                    pos_out_ori, neg_out_ori = base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
+#                                                         subgraph_src, subgraph_tgt, subgraph_bgd, test=True,
+#                                                         if_explain=False)  #[B, 1]
+                    pos_out_ori = base_model.get_temp_me_prob(src_l_cut, dst_l_cut, ts_l_cut,
+                                                              subgraph_src, subgraph_tgt, explain_weight=None)
+                    neg_out_ori = copy.copy(pos_out_ori)
                 else:
-                    subgraph_src = base_model.grab_subgraph(src_l_cut, ts_l_cut)
-                    subgraph_tgt = base_model.grab_subgraph(dst_l_cut, ts_l_cut)
-                    subgraph_bgd = base_model.grab_subgraph(dst_l_fake, ts_l_cut)
                     pos_out_ori, neg_out_ori = base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
                                                             subgraph_src, subgraph_tgt, subgraph_bgd)  # [B, 1]
                 y_pred = torch.cat([pos_out_ori, neg_out_ori], dim=0).sigmoid()  # [B*2, 1]
@@ -546,13 +554,24 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
             graphlet_imp_tgt = Explainer(walks_tgt, ts_l_cut, tgt_edge)
             graphlet_imp_bgd = Explainer(walks_bgd, ts_l_cut, bgd_edge)
             if args.base_type == "tgat":
-                edge_imp_src = Explainer.retrieve_edge_imp(subgraph_src, graphlet_imp_src, walks_src, training=args.if_bern)
-                edge_imp_tgt = Explainer.retrieve_edge_imp(subgraph_tgt, graphlet_imp_tgt, walks_tgt, training=args.if_bern)
-                edge_imp_bgd = Explainer.retrieve_edge_imp(subgraph_bgd, graphlet_imp_bgd, walks_bgd, training=args.if_bern)
-                explain_weight = [[edge_imp_src, edge_imp_tgt], [edge_imp_src, edge_imp_bgd]]
-                pos_logit, neg_logit = base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
-                                                    subgraph_src, subgraph_tgt, subgraph_bgd, test=True,
-                                                    if_explain=True, exp_weights=explain_weight)
+#
+#                edge_imp_src = Explainer.retrieve_edge_imp(subgraph_src, graphlet_imp_src, walks_src, training=args.if_bern)
+#                edge_imp_tgt = Explainer.retrieve_edge_imp(subgraph_tgt, graphlet_imp_tgt, walks_tgt, training=args.if_bern)
+#                edge_imp_bgd = Explainer.retrieve_edge_imp(subgraph_bgd, graphlet_imp_bgd, walks_bgd, training=args.if_bern)
+                explanation = Explainer.retrieve_explanation(subgraph_src, graphlet_imp_src, walks_src,
+                                                            subgraph_tgt, graphlet_imp_tgt, walks_tgt,
+                                                            subgraph_bgd, graphlet_imp_bgd, walks_bgd,
+                                                            training=args.if_bern)
+#                breakpoint()
+#                print
+#                explain_weight = [[edge_imp_src, edge_imp_tgt], [edge_imp_src, edge_imp_bgd]]
+#                explain_weight = [[explanation[0], explanation[1]], [explanation[0], explanation[2]]]
+#                pos_logit, neg_logit = base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
+#                                                    subgraph_src, subgraph_tgt, subgraph_bgd, test=True,
+#                                                    if_explain=True, exp_weights=explain_weight)
+                pos_logit = base_model.get_temp_me_prob(src_l_cut, dst_l_cut, ts_l_cut,
+                                                              subgraph_src, subgraph_tgt, explain_weight=explanation)
+                neg_logit = copy.copy(pos_logit)
             else:
                 explanation = Explainer.retrieve_explanation(subgraph_src, graphlet_imp_src, walks_src,
                                                             subgraph_tgt, graphlet_imp_tgt, walks_tgt,
@@ -562,7 +581,8 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                                                     subgraph_src, subgraph_tgt, subgraph_bgd, explain_weights=explanation)
 
             pred = torch.cat([pos_logit, neg_logit], dim=0).to(args.device)
-            pred_loss = criterion(pred, y_ori)
+#            pred_loss = criterion(pred, y_ori)
+            pred_loss = criterion(pos_logit, pos_out_ori)
             kl_loss = Explainer.kl_loss(graphlet_imp_src, walks_src, target=args.prior_p) + \
                       Explainer.kl_loss(graphlet_imp_tgt, walks_tgt, target=args.prior_p) + \
                       Explainer.kl_loss(graphlet_imp_bgd, walks_bgd, target=args.prior_p)
@@ -606,20 +626,18 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                                       test_dst_l, test_ts_l, test_e_idx_l, epoch, best_acc, test_pack, test_edge)
 
 class TempME_Executor():
-    def __init__(self, tgnnexplainer, args, base_model, eval_model, train_pack, test_pack, train_edge, test_edge, results_dir):
-        self.tgnnexplainer = tgnnexplainer
+    def __init__(self, args, base_model, train_pack, test_pack, train_edge, test_edge, results_dir):
         self.args = args
         self.base_model = base_model
-        self.eval_model = eval_model
         self.train_pack = train_pack
         self.test_pack = test_pack
         self.train_edge = train_edge
         self.test_edge = test_edge
         self.results_dir = results_dir
 
-        if args.base_type == "tgat":
+        if args.base_type == "tgaat":
             self.Explainer = TempME_TGAT(base_model, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim, temp=args.temp,
-                                    dropout_p=args.drop_out, device=args.device)
+                                dropout_p=args.drop_out, device=args.device, data_dir=args.data_dir)
         else:
             self.Explainer = TempME(base_model, base_model_type=args.base_type, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim,
                                temp=args.temp, if_cat_feature=True,
@@ -656,18 +674,20 @@ class TempME_Executor():
                                                                                                              batch_idx)
             src_edge, tgt_edge, bgd_edge = get_item_edge(self.train_edge, batch_idx)
             with torch.no_grad():
+                subgraph_src = self.base_model.grab_subgraph(src_l_cut, ts_l_cut)
+                subgraph_tgt = self.base_model.grab_subgraph(dst_l_cut, ts_l_cut)
+                subgraph_bgd = self.base_model.grab_subgraph(dst_l_fake, ts_l_cut)
                 if self.args.base_type == "tgat":
-                    pos_out_ori, neg_out_ori = self.base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
-                                                         subgraph_src, subgraph_tgt, subgraph_bgd, test=True,
-                                                         if_explain=True)  #[B, 1]
+#                    pos_out_ori, neg_out_ori = self.base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
+#                                                         subgraph_src, subgraph_tgt, subgraph_bgd, test=True,
+#                                                         if_explain=True)  #[B, 1]
+                    pos_out_ori = self.base_model.get_temp_me_prob(src_l_cut, dst_l_cut, ts_l_cut,
+                                                         subgraph_src, subgraph_tgt)
                 else:
-                    subgraph_src = self.base_model.grab_subgraph(src_l_cut, ts_l_cut)
-                    subgraph_tgt = self.base_model.grab_subgraph(dst_l_cut, ts_l_cut)
-                    subgraph_bgd = self.base_model.grab_subgraph(dst_l_fake, ts_l_cut)
                     pos_out_ori, neg_out_ori = self.base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
                                                             subgraph_src, subgraph_tgt, subgraph_bgd)  # [B, 1]
-                y_pred = torch.cat([pos_out_ori, neg_out_ori], dim=0).sigmoid()  # [B*2, 1]
-                y_ori = torch.where(y_pred > 0.5, 1., 0.).view(y_pred.size(0), 1)
+#                y_pred = torch.cat([pos_out_ori, neg_out_ori], dim=0).sigmoid()  # [B*2, 1]
+#                y_ori = torch.where(y_pred > 0.5, 1., 0.).view(y_pred.size(0), 1)
                 curr_result.append(pos_out_ori.detach().cpu().float().float())
                 graphlet_imp_src = self.Explainer(walks_src, ts_l_cut, src_edge)
                 graphlet_imp_tgt = self.Explainer(walks_tgt, ts_l_cut, tgt_edge)
@@ -675,13 +695,20 @@ class TempME_Executor():
 
 
             if self.args.base_type == "tgat":
-                edge_imp_src = self.Explainer.retrieve_edge_imp(subgraph_src, graphlet_imp_src, walks_src, training=self.args.if_bern)
-                edge_imp_tgt = self.Explainer.retrieve_edge_imp(subgraph_tgt, graphlet_imp_tgt, walks_tgt, training=self.args.if_bern)
-                edge_imp_bgd = self.Explainer.retrieve_edge_imp(subgraph_bgd, graphlet_imp_bgd, walks_bgd, training=self.args.if_bern)
-                explain_weight = [[edge_imp_src, edge_imp_tgt], [edge_imp_src, edge_imp_bgd]]
-                pos_logit, neg_logit = self.base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
-                                                    subgraph_src, subgraph_tgt, subgraph_bgd, test=False,
-                                                    if_explain=True, exp_weights=explain_weight)
+                explanation = self.Explainer.retrieve_explanation(subgraph_src, graphlet_imp_src, walks_src,
+                                                            subgraph_tgt, graphlet_imp_tgt, walks_tgt,
+                                                            subgraph_bgd, graphlet_imp_bgd, walks_bgd,
+                                                            training=self.args.if_bern)
+#                breakpoint()
+#                print
+#                explain_weight = [[edge_imp_src, edge_imp_tgt], [edge_imp_src, edge_imp_bgd]]
+#                explain_weight = [[explanation[0], explanation[1]], [explanation[0], explanation[2]]]
+#                pos_logit, neg_logit = base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
+#                                                    subgraph_src, subgraph_tgt, subgraph_bgd, test=True,
+#                                                    if_explain=True, exp_weights=explain_weight)
+                pos_logit = self.base_model.get_temp_me_prob(src_l_cut, dst_l_cut, ts_l_cut,
+                                                              subgraph_src, subgraph_tgt, explain_weight=explanation)
+                neg_logit = copy.copy(pos_logit)
             else:
                 explanation = self.Explainer.retrieve_explanation(subgraph_src, graphlet_imp_src, walks_src,
                                                             subgraph_tgt, graphlet_imp_tgt, walks_tgt,
@@ -690,24 +717,33 @@ class TempME_Executor():
 
                 pos_logit, neg_logit = self.base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
                                                                 subgraph_src, subgraph_tgt, subgraph_bgd, explain_weights=explanation)
-                for exp_size in exp_sizes:
-                    reconstructed_explanation, inverse_explanation = self.extract_important_events(explanation, exp_size=exp_size)
+            for exp_size in exp_sizes:
+                reconstructed_explanation, inverse_explanation = self.extract_important_events(explanation, exp_size=exp_size)
+                if self.args.base_type == "tgn":
                     exp_pos_logit, exp_neg_logit = self.base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut, subgraph_src, subgraph_tgt, subgraph_bgd, explain_weights=reconstructed_explanation)
 
                     inverse_pos_logit, inverse_neg_logit = self.base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut, subgraph_src, subgraph_tgt, subgraph_bgd, explain_weights=inverse_explanation)
+                else:
+                    exp_pos_logit = self.base_model.get_temp_me_prob(src_l_cut, dst_l_cut, ts_l_cut,
+                                          subgraph_src, subgraph_tgt, explain_weight=reconstructed_explanation)
 
-                    exp_pos_logit = exp_pos_logit.detach().cpu().float()
-                    exp_neg_logit = exp_neg_logit.detach().cpu().float()
-                    inverse_pos_logit = inverse_pos_logit.detach().cpu().float()
-                    inverse_neg_logit = inverse_neg_logit.detach().cpu().float()
+                    inverse_pos_logit = self.base_model.get_temp_me_prob(src_l_cut, dst_l_cut, ts_l_cut,
+                                            subgraph_src, subgraph_tgt, explain_weight=inverse_explanation)
+                pos_out_ori = pos_out_ori.detach().cpu().float()
+#                    neg_out_ori = neg_out_ori.detach().cpu().float()
+                exp_pos_logit = exp_pos_logit.detach().cpu().float()
+#                    exp_neg_logit = exp_neg_logit.detach().cpu().float()
+                inverse_pos_logit = inverse_pos_logit.detach().cpu().float()
+#                    inverse_neg_logit = inverse_neg_logit.detach().cpu().float()
 
-                    delta_fidelity = np.mean([abs(exp_pos_logit - inverse_pos_logit), abs(exp_neg_logit - inverse_neg_logit)])
-                    print(f"Exp Size: {exp_size}, Delta Fidelity: {delta_fidelity}")
-                    results[exp_size]['target_event_idxs'].append(target_idx)
+                delta_fidelity = abs(pos_out_ori - inverse_pos_logit) - abs(pos_out_ori - exp_pos_logit)
+#                    delta_fidelity = np.mean([abs(exp_pos_logit - inverse_pos_logit), abs(exp_neg_logit - inverse_neg_logit)])
+                print(f"Exp Size: {exp_size}, Model Pred: {pos_out_ori}, Exp Pred: {exp_pos_logit}, Unimp Pred: {inverse_pos_logit}, Delta Fidelity: {delta_fidelity}")
+                results[exp_size]['target_event_idxs'].append(target_idx)
 #                    results[exp_size]['explanations'].append(exp_events)
-                    results[exp_size]['explanation_predictions'].append(exp_pos_logit.detach().cpu().float())
-                    results[exp_size]['model_predictions'].append(pos_out_ori.detach().cpu().float())
-                    results[exp_size]['delta_fidelity'].append(delta_fidelity)
+                results[exp_size]['explanation_predictions'].append(exp_pos_logit.detach().cpu().float())
+                results[exp_size]['model_predictions'].append(pos_out_ori.detach().cpu().float())
+                results[exp_size]['delta_fidelity'].append(delta_fidelity)
 #            print(curr_result)
 #            for exp_size in exp_sizes:
 #                exp_events, sorted_data = self.extract_important_events_(explanation, subgraph_src, subgraph_tgt, exp_size=exp_size)
@@ -715,7 +751,7 @@ class TempME_Executor():
 #
 #                print(f"Exp Error: {exp_absolute_error}, Exp Size: {len(exp_events)}, Model Prediction: {target_model_y}, Explanation Prediction: {target_explanation_y}")
 #
-        with open(self.results_dir + f'/temp_me_results_{self.args.data}_{self.args.base_type}_exp_sizes_{int(time.time())}.pkl', 'wb') as f:
+        with open(self.results_dir + f'/temp_me_results_{self.args.data}_{self.args.base_type}_exp_sizes.pkl', 'wb') as f:
             pck.dump(results, f)
 
     def extract_important_events_(self, explanation, subgraph_src, subgraph_tgt, exp_size=None):
@@ -793,34 +829,12 @@ class TempME_Executor():
             df = df[:exp_size]
 #            df = df[:np.random.randint(1, len(df))]
             for i, row in df.iterrows():
-                reconstructed_explanation[exp_part][int(row['sub_loc']), int(row['loc index'])] = 1.0
-                inverse_explanation[exp_part][int(row['sub_loc']), int(row['loc index'])] = 0.0
+                reconstructed_explanation[exp_part][int(row['sub_loc']), int(row['loc index'])] = explanation[exp_part][int(row['sub_loc']), int(row['loc index'])]
+#                inverse_explanation[exp_part][int(row['sub_loc']), int(row['loc index'])] = 0.0
 
 
         reconstructed_explanation = [reconstructed_explanation[0].to(self.args.device), reconstructed_explanation[1].to(self.args.device)]
         inverse_explanation = [inverse_explanation[0].to(self.args.device), inverse_explanation[1].to(self.args.device)]
 
         return reconstructed_explanation, inverse_explanation
-
-
-    def calculate_scores(self, exp_events, target_idx):
-
-        self.tgnnexplainer._initialize(target_idx, exp_size = len(exp_events))
-
-        present_candidates = []
-        for i in exp_events:
-            if i in self.tgnnexplainer.computation_graph_events:
-                present_candidates.append(i)
-
-        print(f"Present candidates: {len(present_candidates)}")
-
-
-
-        self.tgnnexplainer.tgnn_reward_wraper.model.eval()
-        target_model_y = self.tgnnexplainer.tgnn_reward_wraper.original_scores
-        target_explanation_y = self.tgnnexplainer.tgnn_reward_wraper._get_model_prob(target_idx, exp_events, num_neighbors=200)
-        exp_absolute_error = abs(target_model_y - target_explanation_y)
-
-        return exp_absolute_error, target_model_y, target_explanation_y
-
 

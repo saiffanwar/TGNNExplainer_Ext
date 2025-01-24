@@ -103,8 +103,16 @@ class TempME(nn.Module):
         super(TempME, self).__init__()
 #        self.node_dim = base.n_feat_th.shape[1]  # node feature dimension
 #        self.edge_dim = base.e_feat_th.shape[1]  # edge feature dimension
-        self.node_dim = base.node_raw_features.shape[1]
-        self.edge_dim = base.edge_raw_features.shape[1]
+        try:
+            self.node_dim = base.node_raw_features.shape[1]
+            self.edge_dim = base.edge_raw_features.shape[1]
+            self.edge_raw_embed = base.edge_raw_features
+            self.node_raw_embed = base.node_raw_features
+        except:
+            self.node_dim = base.node_raw_embed.shape[1]
+            self.edge_dim = base.edge_raw_embed.shape[1]
+            self.edge_raw_embed = base.edge_raw_embed
+            self.node_raw_embed = base.node_raw_embed
         self.time_dim = self.node_dim  # default to be time feature dimension
         self.out_dim = out_dim
         self.hid_dim = hid_dim
@@ -125,8 +133,6 @@ class TempME(nn.Module):
         self.final_linear = nn.Linear(2 * self.hid_dim, self.hid_dim)
         self.node_emd_dim = self.hid_dim + 12 + self.node_dim if self.if_cat else self.hid_dim + self.node_dim
         self.affinity_score = _MergeLayer(self.node_emd_dim, self.node_emd_dim)
-        self.edge_raw_embed = base.edge_raw_features
-        self.node_raw_embed = base.node_raw_features
         self.time_encoder = TimeEncode(expand_dim=self.time_dim)
         self.null_model = get_null_distribution(data_name=data, data_dir=data_dir)
 
@@ -147,6 +153,7 @@ class TempME(nn.Module):
         src_feature = self.attention(updated_feature)  # [bsz, n_walks, hid_dim]
         if self.if_cat:
             event_cat_f = self.compute_catogory_feautres(cat_feat, level="event")  #[bsz, n_walks, 12]
+            print(src_feature.shape, event_cat_f.shape)
             src_feature = torch.cat([src_feature, event_cat_f], dim=-1)
         else:
             src_feature = src_feature
@@ -283,10 +290,10 @@ class TempME(nn.Module):
         ''' EXPLANATION IS HERE '''
 #        print(src_0, src_1, tgt_0, tgt_1)
 
-        if self.base_type == "tgn":
-            edge_imp = [torch.cat([src_0, tgt_0, bgd_0], dim=0), torch.cat([src_1, tgt_1, bgd_1], dim=0)]
-        else:
-            edge_imp = [torch.cat([src_0, tgt_0, bgd_0], dim=0)]
+#        if self.base_type == "tgn":
+        edge_imp = [torch.cat([src_0, tgt_0, bgd_0], dim=0), torch.cat([src_1, tgt_1, bgd_1], dim=0)]
+#        else:
+#            edge_imp = [torch.cat([src_0, tgt_0, bgd_0], dim=0)]
 #        breakpoint()
 #        print(edge_imp[0].shape, edge_imp[1].shape)
         return edge_imp
@@ -347,12 +354,12 @@ class MergeLayer_final(torch.nn.Module):
         return z_final
 
 class TempME_TGAT(nn.Module):
-    def __init__(self, base, data, out_dim, hid_dim, temp, prior="empirical",  if_attn=True, n_head=8, dropout_p=0.1, device=None):
+    def __init__(self, base, data, out_dim, hid_dim, temp, prior="empirical",  if_attn=True, n_head=8, dropout_p=0.1, device=None, data_dir=None):
         super(TempME_TGAT, self).__init__()
         # self.n_feat_th = torch.nn.Parameter(torch.from_numpy(n_feat.astype(np.float32)), requires_grad=False)
         # self.e_feat_th = torch.nn.Parameter(torch.from_numpy(e_feat.astype(np.float32)), requires_grad=False)
-        self.node_dim = base.node_raw_features.shape[1]
-        self.edge_dim = base.edge_raw_features.shape[1]
+        self.node_dim = base.node_raw_embed.shape[1]
+        self.edge_dim = base.edge_raw_embed.shape[1]
 #        self.node_dim = base.n_feat_th.shape[1]  # node feature dimension
 #        self.edge_dim = base.e_feat_th.shape[1]  # edge feature dimension
         self.time_dim = self.node_dim  # default to be time feature dimension
@@ -380,7 +387,7 @@ class TempME_TGAT(nn.Module):
         self.edge_raw_embed = base.edge_raw_embed
         self.node_raw_embed = base.node_raw_embed
         self.time_encoder = TimeEncode(expand_dim=self.time_dim)
-        self.null_model = get_null_distribution(data_name=data)
+        self.null_model = get_null_distribution(data_name=data, data_dir=data_dir)
         self.prior = prior
 
 
@@ -402,11 +409,15 @@ class TempME_TGAT(nn.Module):
         node_features = self.retrieve_node_features(node_idx)  #[bsz, n_walk, len_walk, node_dim * 2]
         combined_features = torch.cat([edge_features, time_features, node_features], dim=-1).to(self.device)  #[bsz, n_walk, len_walk, gru_dim]
         n_walk = combined_features.size(1)
-        src_emb = self.node_raw_embed(torch.from_numpy(np.expand_dims(src_idx_l, 1)).long().to(self.device))  #[bsz, 1, node_dim]
-        tgt_emb = self.node_raw_embed(torch.from_numpy(np.expand_dims(tgt_idx_l, 1)).long().to(self.device))  # [bsz, 1, node_dim]
+#        print(src_idx_l.shape, tgt_idx_l.shape)
+        src_emb = self.node_raw_embed[torch.from_numpy(np.expand_dims(src_idx_l, 1)).long().to(self.device)]  #[bsz, 1, node_dim]
+        tgt_emb = self.node_raw_embed[torch.from_numpy(np.expand_dims(tgt_idx_l, 1)).long().to(self.device)]  # [bsz, 1, node_dim]
+        print(n_walk)
         src_emb = src_emb.repeat(1, n_walk, 1)
+        breakpoint()
         tgt_emb = tgt_emb.repeat(1, n_walk, 1)
         assert combined_features.size(-1) == self.gru_dim
+        graphlet_emb = self.attention_encode(combined_features)  # [bsz, n_walk, out_dim]
         if self.if_attn:
             graphlet_emb = self.self_attention(graphlet_emb)  #[bsz, n_walk, out_dim]
         graphlet_features = torch.cat((graphlet_emb, src_emb, tgt_emb), dim=-1)
@@ -465,7 +476,7 @@ class TempME_TGAT(nn.Module):
         :return: tensor shape [bsz, n_walk, len_walk, edge_dim]
         '''
         eidx_records_th = torch.from_numpy(eidx_records).long().to(self.device)
-        edge_features = self.edge_raw_embed(eidx_records_th)  # shape [batch, n_walk, len_walk+1, edge_dim]
+        edge_features = self.edge_raw_embed[eidx_records_th]  # shape [batch, n_walk, len_walk+1, edge_dim]
         masks = (eidx_records_th == 0).sum(dim=-1).long().to(self.device)  #[bsz, n_walk] the number of null edges in each ealk
         return edge_features, masks
 
@@ -476,8 +487,8 @@ class TempME_TGAT(nn.Module):
         '''
         src_node = torch.from_numpy(n_id[:,:,[0,2,4]]).long().to(self.device)
         tgt_node = torch.from_numpy(n_id[:,:,[1,3,5]]).long().to(self.device)
-        src_features = self.node_raw_embed(src_node)  #[bsz, n_walk, len_walk, node_dim]
-        tgt_features = self.node_raw_embed(tgt_node)
+        src_features = self.node_raw_embed[src_node]  #[bsz, n_walk, len_walk, node_dim]
+        tgt_features = self.node_raw_embed[tgt_node]
         node_features = torch.cat([src_features, tgt_features], dim=-1)
         return node_features
 
@@ -495,6 +506,7 @@ class TempME_TGAT(nn.Module):
             X = pack_padded_sequence(X, lengths, batch_first=True, enforce_sorted=False)
         encoded_features = self.self_attention_cat(X)  #[bsz*n_walks, len_walks, out_dim]
         encoded_features = encoded_features.mean(1).view(batch, n_walk, gru_dim)
+        print(encoded_features.shape)
         if mask is not None:
             encoded_features, lengths = pad_packed_sequence(encoded_features, batch_first=True)
         encoded_features = self.MLP_attn(encoded_features)

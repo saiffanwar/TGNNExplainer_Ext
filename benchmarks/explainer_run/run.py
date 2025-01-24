@@ -113,7 +113,8 @@ def pipeline(config: DictConfig):
                      n_head=config.models.param.num_heads,
                      num_neighbors=config.models.param.num_neighbors,
 #                     num_neighbors=50,
-                     drop_out=config.models.param.dropout
+                     drop_out=config.models.param.dropout,
+                     mode=['temp_me' if config.explainers.explainer_name == 'temp_me' else 'tgnne'][0],
                      )
     elif config.models.model_name == 'tgn': # DONE: added tgn
         mean_time_shift_src, std_time_shift_src, mean_time_shift_dst, std_time_shift_dst = compute_time_statistics(events.u.values, events.i.values, events.ts.values )
@@ -236,6 +237,7 @@ def pipeline(config: DictConfig):
         args.device = device
         args.n_degree = degree_dict[args.data]
         args.ratios = [0.01, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.30]
+        args.temp_me_train = False
         args.data_dir = data_dir
         base_model = model
 
@@ -250,80 +252,12 @@ def pipeline(config: DictConfig):
         train_edge = np.load(osp.join(data_dir, f'{args.data}_train_edge.npy'))
         test_edge = np.load(osp.join(data_dir, f'{args.data}_test_edge.npy'))
 
-        eval_model = TGN(ngh_finder, node_feats, edge_feats,
-                    device=device,
-                    n_layers=config.models.param.num_layers,
-                    n_heads=config.models.param.num_heads,
-                    dropout=config.models.param.dropout,
-                    use_memory=True, # True
-                    forbidden_memory_update=True, # True
-                    memory_update_at_start=False, # False
-                    message_dimension=config.models.param.message_dimension,
-                    memory_dimension=config.models.param.memory_dimension,
-                    embedding_module_type='graph_attention', # fix
-                    message_function='identity', # fix
-                    mean_time_shift_src=mean_time_shift_src,
-                    std_time_shift_src=std_time_shift_src,
-                    mean_time_shift_dst=mean_time_shift_dst,
-                    std_time_shift_dst=std_time_shift_dst,
-                    n_neighbors=config.models.param.num_neighbors,
-                    aggregator_type='last', # fix
-                    memory_updater_type='gru', # fix
-                    use_destination_embedding_in_message=False,
-                    use_source_embedding_in_message=False,
-                    dyrep=False,
-                    mode='tgnne',
-                    )
+        if args.temp_me_train:
+#            execute_temp_me_trainer(model, args)
+            train(args, base_model, train_pack=train_pack, test_pack=test_pack, train_edge=train_edge, test_edge=test_edge)
 
-        from src.method.tgnnexplainer import TGNNExplainer
-        from src.method.other_baselines_tg import PGExplainerExt
-        pg_explainer_model, explainer_ckpt_path = PGExplainerExt.expose_explainer_model(model, # load a trained mlp model
-                                model_name=config.models.model_name,
-                                explainer_name='pg_explainer_tg', # fixed
-                                dataset_name=config.datasets.dataset_name,
-                                ckpt_dir=config.explainers.explainer_ckpt_dir,
-                                device=device,
-                                )
-        assert config.explainers.parallel_degree >= 1
-        explainer = [TGNNExplainer(model,
-                                config.models.model_name,
-                                config.explainers.explainer_name,
-                                config.datasets.dataset_name,
-                                events,
-                                config.explainers.param.explanation_level,
-                                device=device,
-                                results_dir=config.explainers.results_dir,
-                                debug_mode=config.explainers.debug_mode,
-                                save_results=config.explainers.results_save,
-                                mcts_saved_dir=config.explainers.mcts_saved_dir,
-                                load_results=config.explainers.load_results,
-                                rollout=config.explainers.param.rollout,
-                                min_atoms=config.explainers.param.min_atoms,
-                                c_puct=config.explainers.param.c_puct,
-                                pg_explainer_model=pg_explainer_model if config.explainers.use_pg_explainer else None,
-                                pg_positive=config.explainers.pg_positive,
-        ) for i in range(config.explainers.parallel_degree)]
-        tgnnexplainer = [TGNNExplainer(eval_model,
-                    config.models.model_name,
-                    config.explainers.explainer_name,
-                    config.datasets.dataset_name,
-                    events,
-                    config.explainers.param.explanation_level,
-                    device=device,
-                    results_dir=config.explainers.results_dir,
-                    debug_mode=config.explainers.debug_mode,
-                    save_results=config.explainers.results_save,
-                    mcts_saved_dir=config.explainers.mcts_saved_dir,
-                    load_results=config.explainers.load_results,
-                    rollout=config.explainers.param.rollout,
-                    min_atoms=config.explainers.param.min_atoms,
-                    c_puct=config.explainers.param.c_puct,
-                    pg_explainer_model=pg_explainer_model if config.explainers.use_pg_explainer else None,
-                    pg_positive=config.explainers.pg_positive,
-                    ) for i in range(config.explainers.parallel_degree)]
-
-
-        temp_me_explainer = TempME_Executor(tgnnexplainer[0], args, model, eval_model, train_pack, test_pack, train_edge, test_edge, results_dir=config.explainers.results_dir)
+        else:
+            temp_me_explainer = TempME_Executor(args, model, train_pack, test_pack, train_edge, test_edge, results_dir=config.explainers.results_dir)
 #        if args.preload:
 #            explainer.load_state_dict(torch.load(f'~/../../tgnnexplainer/src/method/params/explainer/{config.models.model_name}/{config.datasets.dataset_name}.pt'))
 #        train(args, base_model, train_pack=train_pack, test_pack=test_pack, train_edge=train_edge, test_edge=test_edge)
@@ -331,10 +265,10 @@ def pipeline(config: DictConfig):
 
 
 #    print(explainer.computation_graph_events)
-    if config.explainers.explainer_name == 'tgnnexplainer':
-        target_event_idxs = target_event_idxs[config.results_batch*15:config.results_batch*15+15]
-        print(config.results_batch*15, config.results_batch*15+15)
-
+#    if config.explainers.explainer_name == 'tgnnexplainer':
+#        target_event_idxs = target_event_idxs[config.results_batch*15:config.results_batch*15+15]
+#        print(config.results_batch*15, config.results_batch*15+15)
+#
 
 
     start_time = time.time()
@@ -345,7 +279,8 @@ def pipeline(config: DictConfig):
 
     elif config.explainers.explainer_name == 'temp_me':
 
-        temp_me_explainer(target_event_idxs=target_event_idxs)
+        if not args.temp_me_train:
+            temp_me_explainer(target_event_idxs=target_event_idxs)
 
     elif config.explainers.explainer_name == 'sa_explainer' and config.explainers.parallel_degree == 1:
         print('Running SA explainer')
