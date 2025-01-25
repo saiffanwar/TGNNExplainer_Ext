@@ -1,1 +1,5 @@
+<<<<<<< Updated upstream
 /var/spool/slurmd/job1027393/slurm_script: line 14: /dcs/pg21/u2188448/TGNNExplainer_Ext/benchmarks/explainer_run/batch_run.sh: No such file or directory
+=======
+slurmstepd: error: *** JOB 1027387 ON gecko-01 CANCELLED AT 2025-01-25T13:53:23 ***
+>>>>>>> Stashed changes

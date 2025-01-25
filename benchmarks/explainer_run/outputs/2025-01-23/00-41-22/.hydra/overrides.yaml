@@ -1,0 +1,5 @@
+- datasets=wikipedia
+- device_id=0
+- explainers=tgnnexplainer
+- models=tgn
+- results_batch=4
