@@ -616,7 +616,7 @@ class TGNNExplainer(BaseExplainerTG):
 
     def _initialize(self, event_idx, exp_size=20):
         self.exp_size = exp_size
-        super(TGNNExplainer, self)._initialize(event_idx, exp_size=exp_size)
+        super(TGNNExplainer, self)._initialize(event_idx)
         if self.pg_explainer_model is not None: # use pg model
             self._set_candidate_weights(event_idx)
 
@@ -641,7 +641,7 @@ class TGNNExplainer(BaseExplainerTG):
         print(f'Running results batch {rb} with {len(event_idxs)} events')
 
         for i, event_idx in enumerate(event_idxs[1:]):
-            try:
+#            try:
                 print(f'\nexplain {i}-th: {event_idx} on batch {rb}')
                 self._initialize(event_idx, exp_size=max(exp_sizes))
 
@@ -663,8 +663,8 @@ class TGNNExplainer(BaseExplainerTG):
 #                print(results_dict)
                 with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:
                     pck.dump(results_dict, f)
-            except:
-                pass
+#            except:
+#                pass
 
         import time
         with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:

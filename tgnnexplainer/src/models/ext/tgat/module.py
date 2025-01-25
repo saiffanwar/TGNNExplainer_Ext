@@ -1,5 +1,3 @@
-import sys
-sys.path.append('./')
 import logging
 
 import numpy as np

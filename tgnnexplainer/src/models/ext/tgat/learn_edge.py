@@ -277,7 +277,6 @@ for epoch in range(NUM_EPOCH):
         s_idx = k * BATCH_SIZE
         e_idx = min(num_instance - 1, s_idx + BATCH_SIZE)
         src_l_cut, dst_l_cut = train_src_l[s_idx:e_idx], train_dst_l[s_idx:e_idx]
-        print('e_idx', e_idx)
         ts_l_cut = train_ts_l[s_idx:e_idx]
         label_l_cut = train_label_l[s_idx:e_idx]
         size = len(src_l_cut)

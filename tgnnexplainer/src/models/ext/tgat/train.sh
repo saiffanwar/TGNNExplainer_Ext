@@ -1,4 +1,6 @@
 
+export PYTHONPATH=""
+export PYTHONPATH="/home/saif/PhD/TGNNExplainer_Ext/tgnnexplainer"
 # simulate_v1, simulate_v2, wikipedia, reddit
 
 for i in 0
@@ -8,7 +10,7 @@ do
 #    dataset=simulate_v1
 #    python learn_simulate.py -d ${dataset} --bs 256 --n_degree 10 --n_epoch 90 --agg_method attn --attn_mode prod --gpu 1 --n_head 2 --prefix ${dataset}
 
-    dataset=wikipedia
+    dataset=reddit
     python src/models/ext/tgat/learn_edge.py -d ${dataset} --bs 512 --n_degree 10 --n_epoch 10 --agg_method attn --attn_mode prod --gpu 0 --n_head 2 --prefix ${dataset}
 
 

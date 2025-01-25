@@ -1,0 +1,4 @@
+- datasets=reddit
+- device_id=0
+- explainers=sa_explainer
+- models=tgat

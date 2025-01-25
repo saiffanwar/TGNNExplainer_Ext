@@ -17,7 +17,6 @@ from src.models.ext.tgn.model.tgn import TGN
 
 def _create_explainer_input(model: Union[TGAN, TGN], model_name, all_events, candidate_events=None, event_idx=None, device=None):
     # DONE: explainer input should have both the target event and the event that we want to assign a weight to.
-    print(len(candidate_events))
 
     if model_name in ['tgat', 'tgn']:
         event_idx_u, event_idx_i, event_idx_t = _set_tgat_data(all_events, event_idx)
@@ -53,7 +52,7 @@ class PGExplainerExt(BaseExplainerTG):
     def __init__(self, model, model_name: str, explainer_name: str, dataset_name: str,
                  all_events: DataFrame,  explanation_level: str, device, verbose: bool = True, results_dir = None, debug_mode=True,
                  # specific params for PGExplainerExt
-                 train_epochs: int = 50, explainer_ckpt_dir = None, reg_coefs = None, batch_size = 64, lr=1e-4
+                 train_epochs: int = 50, explainer_ckpt_dir = None, reg_coefs = None, batch_size = 64, lr=1e-4, exp_size=20,
                 ):
         super(PGExplainerExt, self).__init__(model=model,
                                               model_name=model_name,
@@ -64,7 +63,7 @@ class PGExplainerExt(BaseExplainerTG):
                                               device=device,
                                               verbose=verbose,
                                               results_dir=results_dir,
-                                              debug_mode=debug_mode
+                                              debug_mode=debug_mode,
                                               )
         self.train_epochs = train_epochs
         self.explainer_ckpt_dir = explainer_ckpt_dir
@@ -72,6 +71,7 @@ class PGExplainerExt(BaseExplainerTG):
         self.batch_size = batch_size
         self.lr = lr
         self.expl_input_dim = None
+        self.exp_size = exp_size
         self._init_explainer()
 
     @staticmethod
@@ -93,7 +93,7 @@ class PGExplainerExt(BaseExplainerTG):
         return explainer_model
 
     @staticmethod
-    def _ckpt_path(ckpt_dir, model_name, dataset_name, explainer_name, epoch=None):
+    def _ckpt_path(ckpt_dir, model_name, dataset_name, explainer_name, epoch=0):
         if epoch is None:
             return Path(ckpt_dir)/f'{model_name}_{dataset_name}_{explainer_name}_expl_ckpt.pt'
         else:
@@ -175,7 +175,7 @@ class PGExplainerExt(BaseExplainerTG):
         return error_loss
 
     def _obtain_train_idxs(self,):
-        size = 1000
+        size = 500
         # np.random.seed( np.random.randint(10000) )
         if self.dataset_name in ['wikipedia', 'reddit']:
             train_e_idxs = np.random.randint(int(len(self.all_events)*0.2), int(len(self.all_events)*0.6), (size, ))

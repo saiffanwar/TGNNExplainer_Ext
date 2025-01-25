@@ -141,7 +141,7 @@ class BaseExplainerTG(object):
 #        self.tgnn_reward_wraper.compute_original_score(self.base_events+self.candidate_events, event_idx)
         self.tgnn_reward_wraper.compute_original_score(self.computation_graph_events, event_idx, num_neighbors=200)
 
-    def _initialize(self, event_idx, exp_size):
+    def _initialize(self, event_idx):
         self._set_ori_subgraph(num_hops=3, event_idx=event_idx)
         self._set_candidate_events(event_idx)
         self._set_tgnn_wraper(event_idx)

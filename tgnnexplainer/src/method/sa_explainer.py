@@ -73,14 +73,14 @@ class SimulatedAnnealing:
                 print('Model pred:', model_pred, 'Exp pred:', exp_pred)
                 print('Best score: ', self.best_score, 'Best pred:', self.best_pred)
 
-        if delta < 0:
+        if delta > 0:
             current_score = copy.copy(new_score)
             current_events = copy.copy(new_events)
             current_absolute_error = new_absolute_error
             if self.expmode == 'fidelity+size':
                 current_percentage_error = new_percentage_error
                 current_percentage_size = new_percentage_size
-            if new_score < self.best_score:
+            if new_score > self.best_score:
                 self.best_score = copy.copy(new_score)
                 self.best_events = copy.copy(new_events)
                 self.best_pred = exp_pred
@@ -222,8 +222,7 @@ class SA_Explainer:
         remaining_events = list(set(self.tgnnexplainer.computation_graph_events) - set(exp_events))
         remaining_explanation_y = self.tgnnexplainer.tgnn_reward_wraper._get_model_prob(target_index, remaining_events, num_neighbors=200)
 
-        delta_fidelity = abs(target_explanation_y - remaining_explanation_y)
-        print('Delta Fidelity', delta_fidelity)
+        delta_fidelity = abs(remaining_explanation_y - target_model_y) - abs(target_explanation_y - target_model_y)
 
         return delta_fidelity
 
@@ -247,7 +246,8 @@ class SA_Explainer:
 
         if mode == 'fidelity':
 #            exp_score = exp_percentage_error
-            exp_score = exp_absolute_error
+#            exp_score = exp_absolute_error
+            exp_score = self.delta_fidelity(exp_events, self.target_index)
             return exp_score, exp_absolute_error, target_model_y, target_explanation_y
 
         elif mode == 'fidelity+size':
@@ -259,20 +259,24 @@ class SA_Explainer:
         else:
             RuntimeError('Invalid mode. Choose either fidelity or fidelity+size')
 
-    def __call__(self, event_idxs, num_iter=500, sa_results=None, results_dir=None):
+    def __call__(self, event_idxs, num_iter=500, sa_results=None, results_dir=None, results_batch=None):
         testing_gammas = False
         testing_sparsity = True
+
+        rb = [str(results_batch) if results_batch is not None else ''][0]
+        print(f'Running results batch {rb} with {len(event_idxs)} events')
 
         if testing_gammas:
             gammas = [1.0, 0.99, 0.98, 0.97, 0.96]
             sa_results = {g: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for g in gammas}
-            filename = f'/sa_results_{self.dataset}_{self.model_name}_gammas'
+            filename = f'/sa_results_{self.dataset}_{self.model_name}_gammas_{rb}'
             exp_sizes = [self.subgraph_size]
 
         elif testing_sparsity:
             exp_sizes = [10,20,30,40, 50, 60, 70, 80, 90, 100]
             sa_results = {s: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for s in exp_sizes}
-            filename = f'/sa_results_{self.dataset}_{self.model_name}_exp_sizes'
+            filename = f'/sa_results_{self.dataset}_{self.model_name}_exp_sizes_{rb}'
+
 
         for target_index in event_idxs:
             try:
@@ -289,8 +293,8 @@ class SA_Explainer:
                     sa = SimulatedAnnealing(self, self.target_index, self.candidate_events, exp_size, score_func=self.score_func, verbose=False)
 #                sa.reinitialize()
                     score, exp, model_pred, exp_pred = sa.run(iterations=num_iter, expmode='fidelity')
-                    print('Score: ', score, 'Exp Length: ', len(exp), 'Model Pred: ', model_pred, 'Exp Pred: ', exp_pred)
                     delta_fidelity = self.delta_fidelity(exp, self.target_index)
+                    print('Score: ', score, 'Exp Length: ', len(exp), 'Model Pred: ', model_pred, 'Exp Pred: ', exp_pred, 'Delta Fidelity: ', delta_fidelity)
 
                     if not testing_gammas:
                         sa_results[exp_size]['target_event_idxs'].append(target_index)
@@ -312,7 +316,7 @@ class SA_Explainer:
                         sa.reinitialize()
                         t_score, t_exp, t_model_pred, t_exp_pred = sa.run(iterations=num_iter, expmode='fidelity+size', best_events=exp)
                         delta_fidelity = self.delta_fidelity(t_exp, self.target_index)
-                        print('Score: ', t_score, 'Exp Length: ', len(t_exp), 'Model Pred: ', t_model_pred, 'Exp Pred: ', t_exp_pred)
+                        print('Score: ', t_score, 'Exp Length: ', len(t_exp), 'Model Pred: ', t_model_pred, 'Exp Pred: ', t_exp_pred, 'Delta Fidelity: ', delta_fidelity)
                         sa_results[gamma]['target_event_idxs'].append(target_index)
                         sa_results[gamma]['explanations'].append(t_exp)
                         sa_results[gamma]['explanation_predictions'].append(t_exp_pred)

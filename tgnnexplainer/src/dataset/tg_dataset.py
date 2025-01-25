@@ -112,7 +112,7 @@ def generate_explain_index(file, explainer_idx_dir, dataset_name, explain_idx_na
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', type=str, default='wikipedia')
+    parser.add_argument('-d', type=str, default='reddit')
     parser.add_argument('-c', type=str, choices=['format', 'index'], default='index')
     args = parser.parse_args()
 
