@@ -3,7 +3,7 @@ tgnnexplainer/src/dataset/data
 tgnnexplainer/src/method/params/explainer/tgn/
 tgnnexplainer/src/method/params/explainer/tgat/
 tgnnexplainer/src/models/ext/tgn/utils/data
-tgnnexplaienr/benchmarks/results/
+tgnnexplainer/benchmarks/results/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
