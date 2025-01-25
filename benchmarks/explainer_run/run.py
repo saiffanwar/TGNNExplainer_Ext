@@ -264,10 +264,9 @@ def pipeline(config: DictConfig):
 
 
 
-#    print(explainer.computation_graph_events)
-#    if config.explainers.explainer_name == 'tgnnexplainer':
-#        target_event_idxs = target_event_idxs[config.results_batch*15:config.results_batch*15+15]
-#        print(config.results_batch*15, config.results_batch*15+15)
+    if config.explainers.explainer_name == 'tgnnexplainer':
+        target_event_idxs = target_event_idxs[config.results_batch*30:config.results_batch*30+30]
+        print(config.results_batch*30, config.results_batch*30+30)
 #
 
 
@@ -290,7 +289,6 @@ def pipeline(config: DictConfig):
         tgnne_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
 
 
-        print(model)
         sa_explainer = SA_Explainer(model, tgnnexplainer=explainer, model_name=config.models.model_name)
         sa_results = sa_explainer(target_event_idxs, num_iter=500, sa_results=sa_results, results_dir=config.explainers.results_dir)
 #                print(f'Model Prediction: {model_pred} Explanation Prediction: {exp_pred}')

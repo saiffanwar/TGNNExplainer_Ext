@@ -51,7 +51,6 @@ def find_best_node_result(all_nodes, min_atoms=6, candidate_events=None, exp_siz
         all_nodes = filter( lambda x: len(x.coalition) == exp_size, all_nodes ) # filter using the min_atoms
 
     best_node = min(all_nodes, key=lambda x: x.P)
-    print(best_node.P, len(best_node.coalition), exp_size)
     return best_node
 
     # all_nodes = sorted(all_nodes, key=lambda x: len(x.coalition))
@@ -358,8 +357,7 @@ class MCTS(object):
 
         start_time = time.time()
         pbar = tqdm(range(self.n_rollout), total=self.n_rollout, desc='mcts simulating')
-        print('len root coalition: ', len(self.root.coalition))
-        for rollout_idx in pbar:
+        for rollout_idx in range(self.n_rollout):
             self.mcts_rollout(self.root)
             if verbose:
                 elapsed_time = time.time() - start_time
@@ -372,8 +370,6 @@ class MCTS(object):
             # self.recorder['best_reward'].append( np.max(list(map(lambda x: x.P, self.state_map.values()))) )
             curr_best_node = find_best_node_result(self.state_map.values(), self.min_atoms)
             self.recorder['best_reward'].append( curr_best_node.P )
-            if rollout_idx % 10 == 0:
-                print(self.recorder['best_reward'][-1], print(len(curr_best_node.coalition)))
             self.recorder['num_states'].append( len(self.state_map) )
 
         end_time = time.time()
@@ -474,7 +470,6 @@ class TGNNExplainer(BaseExplainerTG):
 
         elif self.explanation_level == 'event': # we now only care node/edge(event) level explanations, graph-level explanation is temporarily suspended
             assert event_idx is not None
-            print('Computation Graph Size: ', len(self.computation_graph_events))
             # search
             self.mcts_state_map = MCTS(events=self.ori_subgraph_df,
                                        candidate_events=self.candidate_events,
@@ -498,7 +493,6 @@ class TGNNExplainer(BaseExplainerTG):
 
         else: raise NotImplementedError('Wrong explanaion level')
 
-        exp_sizes = [10,20,40, 80]
         explanation_results = {e: {'important_events': [], 'target_model_y': [], 'exp_pred': [], 'delta_fidelity': []} for e in exp_sizes}
         for exp_size in exp_sizes:
             tree_node_x = find_best_node_result(tree_nodes, self.min_atoms, self.computation_graph_events, exp_size=exp_size)
@@ -635,40 +629,45 @@ class TGNNExplainer(BaseExplainerTG):
         """
 
         self.model.eval()
-        print('Rollout: ', self.rollout)
         if device is not None:
             self._to_device(device)
 
         if isinstance(event_idxs, int):
             event_idxs = [event_idxs]
 
-        exp_sizes = [10,20,40, 80]
+        exp_sizes = [10,20,30, 40, 50, 60, 70, 80, 90, 100]
         results_dict = {e: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for e in exp_sizes}
+        rb = [str(results_batch) if results_batch is not None else ''][0]
+        print(f'Running results batch {rb} with {len(event_idxs)} events')
 
         for i, event_idx in enumerate(event_idxs[1:]):
-            print(f'\nexplain {i}-th: {event_idx}')
-            self._initialize(event_idx, exp_size=max(exp_sizes))
+            try:
+                print(f'\nexplain {i}-th: {event_idx} on batch {rb}')
+                self._initialize(event_idx, exp_size=max(exp_sizes))
 
-            if self.load_results:
-                tree_nodes, tree_node_x = self._load_saved_nodes_info(event_idx)
-            else:
-                explanation_results = self.explain(event_idx=event_idx, exp_sizes=exp_sizes)
+                if self.load_results:
+                    tree_nodes, tree_node_x = self._load_saved_nodes_info(event_idx)
+                else:
+                    explanation_results = self.explain(event_idx=event_idx, exp_sizes=exp_sizes)
 #                self._save_mcts_recorder(event_idx) # always store
 #                if self.save and not self.load_results: # sometimes store
 #                    self._save_mcts_nodes_info(tree_nodes, event_idx)
-            for e in exp_sizes:
-                results_dict[e]['target_event_idxs'].append(event_idx)
-                results_dict[e]['explanations'].append(explanation_results[e]['important_events'])
-                results_dict[e]['model_predictions'].append(explanation_results[e]['target_model_y'])
-                results_dict[e]['explanation_predictions'].append(explanation_results[e]['exp_pred'])
-                results_dict[e]['delta_fidelity'].append(explanation_results[e]['delta_fidelity'])
+                for e in exp_sizes:
+                    results_dict[e]['target_event_idxs'].append(event_idx)
+                    results_dict[e]['explanations'].append(explanation_results[e]['important_events'])
+                    results_dict[e]['model_predictions'].append(explanation_results[e]['target_model_y'])
+                    results_dict[e]['explanation_predictions'].append(explanation_results[e]['exp_pred'])
+                    results_dict[e]['delta_fidelity'].append(explanation_results[e]['delta_fidelity'])
 
 
-            with open(results_dir + f'/intermediate_results/tgnne_results_{[str(results_batch)+'_' if results_batch is not None else ''][0]}.pkl', 'wb') as f:
-                pck.dump(results_dict, f)
+#                print(results_dict)
+                with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:
+                    pck.dump(results_dict, f)
+            except:
+                pass
 
         import time
-        with open(results_dir + f'/tgnne_results_{[str(results_batch)+'_' if results_batch is not None else ''][0]}{self.dataset_name}_{self.model_name}_{int(time.time())}.pkl', 'wb') as f:
+        with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:
             pck.dump(results_dict, f)
 
 

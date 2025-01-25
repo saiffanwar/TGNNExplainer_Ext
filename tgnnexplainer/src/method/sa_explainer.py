@@ -270,7 +270,7 @@ class SA_Explainer:
             exp_sizes = [self.subgraph_size]
 
         elif testing_sparsity:
-            exp_sizes = [10,20,40,80]
+            exp_sizes = [10,20,30,40, 50, 60, 70, 80, 90, 100]
             sa_results = {s: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for s in exp_sizes}
             filename = f'/sa_results_{self.dataset}_{self.model_name}_exp_sizes'
 
