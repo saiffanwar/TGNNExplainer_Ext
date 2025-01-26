@@ -225,10 +225,11 @@ def pipeline(config: DictConfig):
                                 results_dir=config.explainers.results_dir,
                                 train_epochs=config.explainers.param.train_epochs,
                                 explainer_ckpt_dir=config.explainers.explainer_ckpt_dir,
-                                reg_coefs=config.explainer.param.reg_coefs,
+                                reg_coefs=config.explainers.param.reg_coefs,
                                 batch_size=config.explainers.param.batch_size,
                                 lr=config.explainers.param.lr,
                                 debug_mode=config.explainers.debug_mode,
+                                exp_size=20
         )
     if config.explainers.explainer_name == 'temp_me':
 
@@ -264,7 +265,7 @@ def pipeline(config: DictConfig):
 
 
 
-    if config.explainers.explainer_name == 'tgnnexplainer':
+    if config.explainers.explainer_name in ['tgnnexplainer', 'sa_explainer']:
         target_event_idxs = target_event_idxs[config.results_batch*30:config.results_batch*30+30]
         print(config.results_batch*30, config.results_batch*30+30)
 #
@@ -284,13 +285,9 @@ def pipeline(config: DictConfig):
     elif config.explainers.explainer_name == 'sa_explainer' and config.explainers.parallel_degree == 1:
         print('Running SA explainer')
         explainer = explainer[0]
-        results = {'SA': None, 'TGNNE': None}
-        sa_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
-        tgnne_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
 
-
-        sa_explainer = SA_Explainer(model, tgnnexplainer=explainer, model_name=config.models.model_name)
-        sa_results = sa_explainer(target_event_idxs, num_iter=500, sa_results=sa_results, results_dir=config.explainers.results_dir)
+        sa_explainer = SA_Explainer(model, tgnnexplainer=explainer, model_name=config.models.model_name, dataset_name=config.datasets.dataset_name)
+        sa_explainer(target_event_idxs, num_iter=100, results_dir=config.explainers.results_dir, results_batch=config.results_batch)
 #                print(f'Model Prediction: {model_pred} Explanation Prediction: {exp_pred}')
 #                print(f'Event {event_idx} Score: {score} Explanation: {exp} Sparsity: {len(exp)}')
 #
@@ -308,8 +305,7 @@ def pipeline(config: DictConfig):
         explain_results = start_multi_process(explainer, target_event_idxs, config.explainers.parallel_degree)
     else:
         tgnne_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
-        explainer.rollout=100
-        explainer(event_idxs=target_event_idxs, results_dict=tgnne_results, results_dir=config.explainers.results_dir)
+        explainer(event_idxs=target_event_idxs)
     end_time = time.time()
     print(f'runtime: {end_time - start_time:.2f}s')
 

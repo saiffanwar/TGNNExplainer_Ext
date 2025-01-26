@@ -12,7 +12,7 @@ fi
 
 # SA explainer
 if [ "$1" == "sa" ]; then
-    python3.12 ~/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=sa_explainer models=${model}
+    python3.12 ~/TGNNExplainer_Ext/benchmarks/explainer_run/run.py datasets=${dataset} device_id=0 explainers=sa_explainer models=${model} results_batch=${2}
 fi
 
 if [ "$1" == "temp_me" ]; then

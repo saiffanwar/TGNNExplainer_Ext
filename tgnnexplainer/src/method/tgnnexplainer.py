@@ -357,7 +357,8 @@ class MCTS(object):
 
         start_time = time.time()
         pbar = tqdm(range(self.n_rollout), total=self.n_rollout, desc='mcts simulating')
-        for rollout_idx in range(self.n_rollout):
+#        for rollout_idx in range(self.n_rollout):
+        for rollout_idx in pbar:
             self.mcts_rollout(self.root)
             if verbose:
                 elapsed_time = time.time() - start_time
@@ -382,6 +383,7 @@ class MCTS(object):
     def _initialize_tree(self):
         # reset the search tree
         # self.root_coalition = self.events.index.values.tolist()
+        print('Candidate events:', len(self.candidate_events))
         self.root_coalition = copy.copy( self.candidate_events )
         self.root = MCTSNode(self.root_coalition, created_by_remove=-1, c_puct=self.c_puct, Sparsity=1.0)
         self.root_key = self._node_key(self.root_coalition)
@@ -493,7 +495,7 @@ class TGNNExplainer(BaseExplainerTG):
 
         else: raise NotImplementedError('Wrong explanaion level')
 
-        explanation_results = {e: {'important_events': [], 'target_model_y': [], 'exp_pred': [], 'delta_fidelity': []} for e in exp_sizes}
+        explanation_results = {e: {'important_events': [], 'target_model_y': [], 'exp_pred': [], 'unimportant_pred': [], 'delta_fidelity': []} for e in exp_sizes}
         for exp_size in exp_sizes:
             tree_node_x = find_best_node_result(tree_nodes, self.min_atoms, self.computation_graph_events, exp_size=exp_size)
             important_events = tree_node_x.coalition
@@ -504,7 +506,7 @@ class TGNNExplainer(BaseExplainerTG):
 
             target_model_y = self.tgnn_reward_wraper.original_scores
 
-            delta_fidelity = abs(target_model_y - unimportant_pred) - abs(target_model_y - exp_pred)
+            delta_fidelity = abs(target_model_y - unimportant_pred)/abs(target_model_y - exp_pred)
 
             tree_nodes = sorted(tree_nodes, key=lambda x:x.P)
 
@@ -514,6 +516,7 @@ class TGNNExplainer(BaseExplainerTG):
             explanation_results[exp_size]['important_events'] = important_events
             explanation_results[exp_size]['target_model_y'] = target_model_y
             explanation_results[exp_size]['exp_pred'] = exp_pred
+            explanation_results[exp_size]['unimportant_pred'] = unimportant_pred
             explanation_results[exp_size]['delta_fidelity'] = delta_fidelity
 
             print('Exp Len: ', len(important_events), 'Model Pred: ', target_model_y, 'Exp Pred: ', exp_pred, 'Unimportant Pred', unimportant_pred, 'Delta Fidelity: ', delta_fidelity)
@@ -616,7 +619,7 @@ class TGNNExplainer(BaseExplainerTG):
 
     def _initialize(self, event_idx, exp_size=20):
         self.exp_size = exp_size
-        super(TGNNExplainer, self)._initialize(event_idx, exp_size=exp_size)
+        super(TGNNExplainer, self)._initialize(event_idx)
         if self.pg_explainer_model is not None: # use pg model
             self._set_candidate_weights(event_idx)
 
@@ -635,13 +638,14 @@ class TGNNExplainer(BaseExplainerTG):
         if isinstance(event_idxs, int):
             event_idxs = [event_idxs]
 
-        exp_sizes = [10,20,30, 40, 50, 60, 70, 80, 90, 100]
-        results_dict = {e: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for e in exp_sizes}
+#        exp_sizes = [10,20,30, 40, 50, 60, 70, 80, 90, 100]
+        exp_sizes = [10,25,50,75,100]
+        results_dict = {e: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'unimportant_predictions': [], 'delta_fidelity': []} for e in exp_sizes}
         rb = [str(results_batch) if results_batch is not None else ''][0]
         print(f'Running results batch {rb} with {len(event_idxs)} events')
 
         for i, event_idx in enumerate(event_idxs[1:]):
-            try:
+#            try:
                 print(f'\nexplain {i}-th: {event_idx} on batch {rb}')
                 self._initialize(event_idx, exp_size=max(exp_sizes))
 
@@ -657,14 +661,15 @@ class TGNNExplainer(BaseExplainerTG):
                     results_dict[e]['explanations'].append(explanation_results[e]['important_events'])
                     results_dict[e]['model_predictions'].append(explanation_results[e]['target_model_y'])
                     results_dict[e]['explanation_predictions'].append(explanation_results[e]['exp_pred'])
+                    results_dict[e]['unimportant_predictions'].append(explanation_results[e]['unimportant_pred'])
                     results_dict[e]['delta_fidelity'].append(explanation_results[e]['delta_fidelity'])
 
 
 #                print(results_dict)
                 with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:
                     pck.dump(results_dict, f)
-            except:
-                pass
+#            except:
+#                pass
 
         import time
         with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:
