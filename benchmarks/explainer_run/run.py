@@ -285,12 +285,9 @@ def pipeline(config: DictConfig):
     elif config.explainers.explainer_name == 'sa_explainer' and config.explainers.parallel_degree == 1:
         print('Running SA explainer')
         explainer = explainer[0]
-        results = {'SA': None, 'TGNNE': None}
-        sa_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
-        tgnne_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
 
-        sa_explainer = SA_Explainer(model, tgnnexplainer=explainer, model_name=config.models.model_name)
-        sa_results = sa_explainer(target_event_idxs, num_iter=500, sa_results=sa_results, results_dir=config.explainers.results_dir)
+        sa_explainer = SA_Explainer(model, tgnnexplainer=explainer, model_name=config.models.model_name, dataset_name=config.datasets.dataset_name)
+        sa_explainer(target_event_idxs, num_iter=100, results_dir=config.explainers.results_dir, results_batch=config.results_batch)
 #                print(f'Model Prediction: {model_pred} Explanation Prediction: {exp_pred}')
 #                print(f'Event {event_idx} Score: {score} Explanation: {exp} Sparsity: {len(exp)}')
 #
