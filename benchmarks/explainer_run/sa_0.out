@@ -1,8 +1,0 @@
-PYTHONPATH=/dcs/pg21/u2188448/TGNNExplainer_Ext/tgnnexplainer
-#Dataset: wikipedia, #Users: 8227, #Items: 1000, #Interactions: 157474, #Timestamps: 152757
-#node feats shape: (9228, 172), #edge feats shape: (157475, 172)
-443 events to explain
-[2025-01-25 21:53:08,399][src.models.ext.tgat.module][INFO] - Aggregation uses attention model
-[2025-01-25 21:53:08,410][src.models.ext.tgat.module][INFO] - Using scaled prod attention
-[2025-01-25 21:53:08,421][src.models.ext.tgat.module][INFO] - Using scaled prod attention
-[2025-01-25 21:53:08,421][src.models.ext.tgat.module][INFO] - Using time encoding

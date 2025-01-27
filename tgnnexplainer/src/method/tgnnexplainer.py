@@ -496,32 +496,38 @@ class TGNNExplainer(BaseExplainerTG):
         else: raise NotImplementedError('Wrong explanaion level')
 
         explanation_results = {e: {'important_events': [], 'target_model_y': [], 'exp_pred': [], 'unimportant_pred': [], 'delta_fidelity': []} for e in exp_sizes}
-        for exp_size in exp_sizes:
-            tree_node_x = find_best_node_result(tree_nodes, self.min_atoms, self.computation_graph_events, exp_size=exp_size)
-            important_events = tree_node_x.coalition
-            exp_fidelity_inv, exp_pred = self.tgnn_reward_wraper(important_events, event_idx, final_result=True)
-            unimportant_events = [e_idx for e_idx in self.candidate_events if e_idx not in important_events]
-            _, unimportant_pred = self.tgnn_reward_wraper(unimportant_events, event_idx, final_result=True)
+        if len(self.candidate_events) > max(exp_sizes):
+            for exp_size in exp_sizes:
+                tree_node_x = find_best_node_result(tree_nodes, self.min_atoms, self.computation_graph_events, exp_size=exp_size)
+                important_events = tree_node_x.coalition
+                exp_fidelity_inv, exp_pred = self.tgnn_reward_wraper(important_events, event_idx, final_result=True)
+                unimportant_events = [e_idx for e_idx in self.candidate_events if e_idx not in important_events]
+                _, unimportant_pred = self.tgnn_reward_wraper(unimportant_events, event_idx, final_result=True)
 
 
-            target_model_y = self.tgnn_reward_wraper.original_scores
+                target_model_y = self.tgnn_reward_wraper.original_scores
 
-            delta_fidelity = abs(target_model_y - unimportant_pred)/abs(target_model_y - exp_pred)
+                if target_model_y == exp_pred:
+                    delta_fidelity = np.inf
+                else:
+                    delta_fidelity = abs(target_model_y - unimportant_pred)/abs(target_model_y - exp_pred)
 
-            tree_nodes = sorted(tree_nodes, key=lambda x:x.P)
+                tree_nodes = sorted(tree_nodes, key=lambda x:x.P)
 
-            if self.debug_mode:
-                print_nodes(tree_nodes)
+                if self.debug_mode:
+                    print_nodes(tree_nodes)
 
-            explanation_results[exp_size]['important_events'] = important_events
-            explanation_results[exp_size]['target_model_y'] = target_model_y
-            explanation_results[exp_size]['exp_pred'] = exp_pred
-            explanation_results[exp_size]['unimportant_pred'] = unimportant_pred
-            explanation_results[exp_size]['delta_fidelity'] = delta_fidelity
+                explanation_results[exp_size]['important_events'] = important_events
+                explanation_results[exp_size]['target_model_y'] = target_model_y
+                explanation_results[exp_size]['exp_pred'] = exp_pred
+                explanation_results[exp_size]['unimportant_pred'] = unimportant_pred
+                explanation_results[exp_size]['delta_fidelity'] = delta_fidelity
 
-            print('Exp Len: ', len(important_events), 'Model Pred: ', target_model_y, 'Exp Pred: ', exp_pred, 'Unimportant Pred', unimportant_pred, 'Delta Fidelity: ', delta_fidelity)
+                print('Exp Len: ', len(important_events), 'Model Pred: ', target_model_y, 'Exp Pred: ', exp_pred, 'Unimportant Pred', unimportant_pred, 'Delta Fidelity: ', delta_fidelity)
 
-        return explanation_results
+            return explanation_results
+        else:
+            return None
 
     @staticmethod
     def _path_suffix(pg_explainer_model, pg_positive):
@@ -656,18 +662,19 @@ class TGNNExplainer(BaseExplainerTG):
 #                self._save_mcts_recorder(event_idx) # always store
 #                if self.save and not self.load_results: # sometimes store
 #                    self._save_mcts_nodes_info(tree_nodes, event_idx)
-                for e in exp_sizes:
-                    results_dict[e]['target_event_idxs'].append(event_idx)
-                    results_dict[e]['explanations'].append(explanation_results[e]['important_events'])
-                    results_dict[e]['model_predictions'].append(explanation_results[e]['target_model_y'])
-                    results_dict[e]['explanation_predictions'].append(explanation_results[e]['exp_pred'])
-                    results_dict[e]['unimportant_predictions'].append(explanation_results[e]['unimportant_pred'])
-                    results_dict[e]['delta_fidelity'].append(explanation_results[e]['delta_fidelity'])
+                if explanation_results is not None:
+                    for e in exp_sizes:
+                        results_dict[e]['target_event_idxs'].append(event_idx)
+                        results_dict[e]['explanations'].append(explanation_results[e]['important_events'])
+                        results_dict[e]['model_predictions'].append(explanation_results[e]['target_model_y'])
+                        results_dict[e]['explanation_predictions'].append(explanation_results[e]['exp_pred'])
+                        results_dict[e]['unimportant_predictions'].append(explanation_results[e]['unimportant_pred'])
+                        results_dict[e]['delta_fidelity'].append(explanation_results[e]['delta_fidelity'])
 
 
 #                print(results_dict)
-                with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:
-                    pck.dump(results_dict, f)
+                    with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:
+                        pck.dump(results_dict, f)
 #            except:
 #                pass
 
