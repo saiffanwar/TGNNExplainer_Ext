@@ -235,10 +235,11 @@ def pipeline(config: DictConfig):
 
         args = ArgDefaults()
         args.base_type = config.models.model_name
+        args.data = config.datasets.dataset_name
         args.device = device
         args.n_degree = degree_dict[args.data]
         args.ratios = [0.01, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.30]
-        args.temp_me_train = False
+        args.temp_me_train = True
         args.data_dir = data_dir
         base_model = model
 
@@ -265,9 +266,9 @@ def pipeline(config: DictConfig):
 
 
 
-    if config.explainers.explainer_name in ['tgnnexplainer', 'sa_explainer']:
-        target_event_idxs = target_event_idxs[config.results_batch*30:config.results_batch*30+30]
-        print(config.results_batch*30, config.results_batch*30+30)
+    if config.explainers.explainer_name in ['tgnnexplainer', 'sa_explainer', 'temp_me']:
+        target_event_idxs = target_event_idxs[config.results_batch*40:config.results_batch*40+40]
+        print(config.results_batch*40, config.results_batch*40+40)
 #
 
 
@@ -280,7 +281,7 @@ def pipeline(config: DictConfig):
     elif config.explainers.explainer_name == 'temp_me':
 
         if not args.temp_me_train:
-            temp_me_explainer(target_event_idxs=target_event_idxs)
+            temp_me_explainer(target_event_idxs=target_event_idxs, results_batch=config.results_batch)
 
     elif config.explainers.explainer_name == 'sa_explainer' and config.explainers.parallel_degree == 1:
         print('Running SA explainer')

@@ -656,9 +656,10 @@ class TempME_Executor():
 
         self.base_model.set_neighbor_sampler(self.ngh_finder)
 
-    def __call__(self, target_event_idxs):
+    def __call__(self, target_event_idxs, results_batch=None):
 
-        exp_sizes = [10, 20, 40, 80]
+        rb = ['' if results_batch is None else f'_{results_batch}'][0]
+        exp_sizes = [10, 25, 50, 75, 100]
 #        results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
         results = {e:{'target_event_idxs': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for e in exp_sizes}
         for target_idx in tqdm(target_event_idxs):
@@ -736,7 +737,7 @@ class TempME_Executor():
                 inverse_pos_logit = inverse_pos_logit.detach().cpu().float()
 #                    inverse_neg_logit = inverse_neg_logit.detach().cpu().float()
 
-                delta_fidelity = abs(pos_out_ori - inverse_pos_logit) - abs(pos_out_ori - exp_pos_logit)
+                delta_fidelity = abs(pos_out_ori - inverse_pos_logit)/abs(pos_out_ori - exp_pos_logit)
 #                    delta_fidelity = np.mean([abs(exp_pos_logit - inverse_pos_logit), abs(exp_neg_logit - inverse_neg_logit)])
                 print(f"Exp Size: {exp_size}, Model Pred: {pos_out_ori}, Exp Pred: {exp_pos_logit}, Unimp Pred: {inverse_pos_logit}, Delta Fidelity: {delta_fidelity}")
                 results[exp_size]['target_event_idxs'].append(target_idx)
@@ -751,7 +752,7 @@ class TempME_Executor():
 #
 #                print(f"Exp Error: {exp_absolute_error}, Exp Size: {len(exp_events)}, Model Prediction: {target_model_y}, Explanation Prediction: {target_explanation_y}")
 #
-        with open(self.results_dir + f'/temp_me_results_{self.args.data}_{self.args.base_type}_exp_sizes.pkl', 'wb') as f:
+        with open(self.results_dir + f'/temp_me_results_{self.args.data}_{self.args.base_type}_exp_sizes{rb}.pkl', 'wb') as f:
             pck.dump(results, f)
 
     def extract_important_events_(self, explanation, subgraph_src, subgraph_tgt, exp_size=None):

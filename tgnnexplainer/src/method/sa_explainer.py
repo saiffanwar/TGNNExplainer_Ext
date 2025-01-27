@@ -285,26 +285,27 @@ class SA_Explainer:
                 original_score = self.tgnnexplainer.tgnn_reward_wraper.compute_original_score(self.candidate_events, self.target_index)
 
                 if testing_sparsity:
-                    for exp_size in exp_sizes:
-                        sa = SimulatedAnnealing(self, self.target_index, self.candidate_events, exp_size, score_func=self.score_func, verbose=True)
+                    if len(self.candidate_events) > max(exp_sizes):
+                        for exp_size in exp_sizes:
+                            sa = SimulatedAnnealing(self, self.target_index, self.candidate_events, exp_size, score_func=self.score_func, verbose=True)
 #                sa.reinitialize()
-                        score, exp, model_pred, exp_pred = sa.run(iterations=num_iter, expmode='fidelity')
+                            score, exp, model_pred, exp_pred = sa.run(iterations=num_iter, expmode='fidelity')
 #                    sa.reinitialize()
-                        score, exp, model_pred, exp_pred = sa.run(iterations=num_iter, expmode='delta_fidelity', best_events=exp)
-                        if exp_size == 50:
-                            g_score, g_exp, g_model_pred, g_exp_pred = copy.copy(score), copy.copy(exp), copy.copy(model_pred), copy.copy(exp_pred)
+                            score, exp, model_pred, exp_pred = sa.run(iterations=num_iter, expmode='delta_fidelity', best_events=exp)
+                            if exp_size == 50:
+                                g_score, g_exp, g_model_pred, g_exp_pred = copy.copy(score), copy.copy(exp), copy.copy(model_pred), copy.copy(exp_pred)
 
-                        delta_fidelity = self.delta_fidelity(exp, self.target_index)[0]
-                        print('Score: ', score, 'Exp Length: ', len(exp), 'Model Pred: ', model_pred, 'Exp Pred: ', exp_pred, 'Delta Fidelity: ', delta_fidelity)
+                            delta_fidelity = self.delta_fidelity(exp, self.target_index)[0]
+                            print('Score: ', score, 'Exp Length: ', len(exp), 'Model Pred: ', model_pred, 'Exp Pred: ', exp_pred, 'Delta Fidelity: ', delta_fidelity)
 
-                        sa_results_exp_sizes[exp_size]['target_event_idxs'].append(target_index)
-                        sa_results_exp_sizes[exp_size]['explanations'].append(exp)
-                        sa_results_exp_sizes[exp_size]['explanation_predictions'].append(exp_pred)
-                        sa_results_exp_sizes[exp_size]['model_predictions'].append(model_pred)
-                        sa_results_exp_sizes[exp_size]['delta_fidelity'].append(delta_fidelity)
+                            sa_results_exp_sizes[exp_size]['target_event_idxs'].append(target_index)
+                            sa_results_exp_sizes[exp_size]['explanations'].append(exp)
+                            sa_results_exp_sizes[exp_size]['explanation_predictions'].append(exp_pred)
+                            sa_results_exp_sizes[exp_size]['model_predictions'].append(model_pred)
+                            sa_results_exp_sizes[exp_size]['delta_fidelity'].append(delta_fidelity)
 
-                    with open(results_dir + f'/intermediate_results/sa_results_{self.dataset}_{self.model_name}_exp_sizes_{rb}.pkl', 'wb') as f:
-                        pck.dump(sa_results_exp_sizes, f)
+                        with open(results_dir + f'/intermediate_results/sa_results_{self.dataset}_{self.model_name}_exp_sizes_{rb}.pkl', 'wb') as f:
+                            pck.dump(sa_results_exp_sizes, f)
                 else:
                     sa = SimulatedAnnealing(self, self.target_index, self.candidate_events, self.subgraph_size, score_func=self.score_func, verbose=True)
                     score, exp, model_pred, exp_pred = sa.run(iterations=num_iter, expmode='fidelity')
@@ -321,11 +322,12 @@ class SA_Explainer:
                         t_score, t_exp, t_model_pred, t_exp_pred = sa.run(iterations=num_iter, expmode='fidelity+size', best_events=g_exp)
                         delta_fidelity = self.delta_fidelity(t_exp, self.target_index)[0]
                         print('Score: ', t_score, 'Exp Length: ', len(t_exp), 'Model Pred: ', t_model_pred, 'Exp Pred: ', t_exp_pred, 'Delta Fidelity: ', delta_fidelity)
-                        sa_results_gammas[gamma]['target_event_idxs'].append(target_index)
-                        sa_results_gammas[gamma]['explanations'].append(t_exp)
-                        sa_results_gammas[gamma]['explanation_predictions'].append(t_exp_pred)
-                        sa_results_gammas[gamma]['model_predictions'].append(t_model_pred)
-                        sa_results_gammas[gamma]['delta_fidelity'].append(delta_fidelity)
+                        if abs(t_exp_pred - t_model_pred) != 0:
+                            sa_results_gammas[gamma]['target_event_idxs'].append(target_index)
+                            sa_results_gammas[gamma]['explanations'].append(t_exp)
+                            sa_results_gammas[gamma]['explanation_predictions'].append(t_exp_pred)
+                            sa_results_gammas[gamma]['model_predictions'].append(t_model_pred)
+                            sa_results_gammas[gamma]['delta_fidelity'].append(delta_fidelity)
 
                     with open(results_dir + f'/intermediate_results/sa_results_{self.dataset}_{self.model_name}_gammas_{rb}.pkl', 'wb') as f:
                         pck.dump(sa_results_gammas, f)
