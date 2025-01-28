@@ -3,7 +3,7 @@ export PYTHONPATH="/home/saif/PhD/TGNNExplainer_Ext/tgnnexplainer"
 #export PYTHONPATH="$PYTHONPATH:~/TGNNExplainer_Ext/tgnnexplainer/src"
 echo "PYTHONPATH=$PYTHONPATH"
 # run all explainers
-dataset=reddit # wikipedia, reddit, simulate_v1, simulate_v2
+dataset=wikipedia # wikipedia, reddit, simulate_v1, simulate_v2
 model=${2} # tgat, tgn
 
 if [ "$1" == "tgnne" ]; then

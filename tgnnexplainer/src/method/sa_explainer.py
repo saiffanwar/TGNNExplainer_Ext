@@ -254,14 +254,14 @@ class SA_Explainer:
         return exp_score, exp_absolute_error, target_model_y, target_explanation_y, unimportant_explanation_y
 
     def __call__(self, event_idxs, num_iter=500, results_dir=None, results_batch=None):
-        testing_gammas = False
-        testing_sparsity = True
+        testing_gammas = True
+        testing_sparsity = False
 
         rb = [str(results_batch) if results_batch is not None else ''][0]
         print(f'Running results batch {rb} with {len(event_idxs)} events')
 
         if testing_gammas:
-            gammas = [1.0, 0.9, 0.8, 0.7, 0.6]
+            gammas = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
             sa_results_gammas = {g: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for g in gammas}
             filename = f'/sa_results_{self.dataset}_{self.model_name}_gammas_{rb}'
 #            exp_sizes = [self.subgraph_size]
