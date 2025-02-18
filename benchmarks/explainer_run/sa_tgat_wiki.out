@@ -1,0 +1,834 @@
+PYTHONPATH=/dcs/pg21/u2188448/TGNNExplainer_Ext/tgnnexplainer
+#Dataset: wikipedia, #Users: 8227, #Items: 1000, #Interactions: 157474, #Timestamps: 152757
+#node feats shape: (9228, 172), #edge feats shape: (157475, 172)
+443 events to explain
+[2025-01-28 14:16:40,757][src.models.ext.tgat.module][INFO] - Aggregation uses attention model
+[2025-01-28 14:16:40,789][src.models.ext.tgat.module][INFO] - Using scaled prod attention
+[2025-01-28 14:16:40,800][src.models.ext.tgat.module][INFO] - Using scaled prod attention
+[2025-01-28 14:16:40,800][src.models.ext.tgat.module][INFO] - Using time encoding
+USING EXPLAINER: sa_explainer
+USING MODEL: tgat
+Initializing TGNNExplainer
+80 120
+Running SA explainer
+Running results batch 2 with 40 events
+---- Explaining event: 0 out of 40 ------
+---- Explaining event: 1 out of 40 ------
+---- Explaining event: 2 out of 40 ------
+---- Explaining event: 3 out of 40 ------
+---- Explaining event: 4 out of 40 ------
+---- Explaining event: 5 out of 40 ------
+---- Explaining event: 6 out of 40 ------
+---- Explaining event: 7 out of 40 ------
+---- Explaining event: 8 out of 40 ------
+---- Explaining event: 9 out of 40 ------
+---- Explaining event: 10 out of 40 ------
+---- Explaining event: 11 out of 40 ------
+---- Explaining event: 12 out of 40 ------
+---- Explaining event: 13 out of 40 ------
+---- Explaining event: 14 out of 40 ------
+---- Explaining event: 15 out of 40 ------
+---- Explaining event: 16 out of 40 ------
+---- Explaining event: 17 out of 40 ------
+---- Explaining event: 18 out of 40 ------
+---- Explaining event: 19 out of 40 ------
+---- Explaining event: 20 out of 40 ------
+---- Explaining event: 21 out of 40 ------
+---- Explaining event: 22 out of 40 ------
+---- Explaining event: 23 out of 40 ------
+---- Explaining event: 24 out of 40 ------
+---- Explaining event: 25 out of 40 ------
+---- Explaining event: 26 out of 40 ------
+---- Explaining event: 27 out of 40 ------
+---- Explaining event: 28 out of 40 ------
+---- Explaining event: 29 out of 40 ------
+---- Explaining event: 30 out of 40 ------
+---- Explaining event: 31 out of 40 ------
+---- Explaining event: 32 out of 40 ------
+---- Explaining event: 33 out of 40 ------
+---- Explaining event: 34 out of 40 ------
+---- Explaining event: 35 out of 40 ------
+---- Explaining event: 36 out of 40 ------
+---- Explaining event: 37 out of 40 ------
+---- Explaining event: 38 out of 40 ------
+---- Explaining event: 39 out of 40 ------
+runtime: 5050.58s
+PYTHONPATH=/dcs/pg21/u2188448/TGNNExplainer_Ext/tgnnexplainer
+#Dataset: wikipedia, #Users: 8227, #Items: 1000, #Interactions: 157474, #Timestamps: 152757
+#node feats shape: (9228, 172), #edge feats shape: (157475, 172)
+443 events to explain
+[2025-01-28 15:41:03,253][src.models.ext.tgat.module][INFO] - Aggregation uses attention model
+[2025-01-28 15:41:03,264][src.models.ext.tgat.module][INFO] - Using scaled prod attention
+[2025-01-28 15:41:03,274][src.models.ext.tgat.module][INFO] - Using scaled prod attention
+[2025-01-28 15:41:03,274][src.models.ext.tgat.module][INFO] - Using time encoding
+USING EXPLAINER: sa_explainer
+USING MODEL: tgat
+Initializing TGNNExplainer
+120 160
+Running SA explainer
+Running results batch 3 with 40 events
+---- Explaining event: 0 out of 40 ------
+---- Explaining event: 1 out of 40 ------
+---- Explaining event: 2 out of 40 ------
+---- Explaining event: 3 out of 40 ------
+---- Explaining event: 4 out of 40 ------
+---- Explaining event: 5 out of 40 ------
+---- Explaining event: 6 out of 40 ------
+---- Explaining event: 7 out of 40 ------
+---- Explaining event: 8 out of 40 ------
+---- Explaining event: 9 out of 40 ------
+---- Explaining event: 10 out of 40 ------
+---- Explaining event: 11 out of 40 ------
+---- Explaining event: 12 out of 40 ------
+---- Explaining event: 13 out of 40 ------
+---- Explaining event: 14 out of 40 ------
+---- Explaining event: 15 out of 40 ------
+---- Explaining event: 16 out of 40 ------
+---- Explaining event: 17 out of 40 ------
+---- Explaining event: 18 out of 40 ------
+---- Explaining event: 19 out of 40 ------
+---- Explaining event: 20 out of 40 ------
+---- Explaining event: 21 out of 40 ------
+---- Explaining event: 22 out of 40 ------
+---- Explaining event: 22 out of 40 ------
+---- Explaining event: 24 out of 40 ------
+---- Explaining event: 25 out of 40 ------
+---- Explaining event: 26 out of 40 ------
+---- Explaining event: 27 out of 40 ------
+---- Explaining event: 28 out of 40 ------
+---- Explaining event: 29 out of 40 ------
+---- Explaining event: 30 out of 40 ------
+---- Explaining event: 31 out of 40 ------
+---- Explaining event: 32 out of 40 ------
+---- Explaining event: 33 out of 40 ------
+---- Explaining event: 34 out of 40 ------
+---- Explaining event: 35 out of 40 ------
+---- Explaining event: 36 out of 40 ------
+---- Explaining event: 37 out of 40 ------
+---- Explaining event: 38 out of 40 ------
+---- Explaining event: 39 out of 40 ------
+runtime: 5882.81s
+PYTHONPATH=/dcs/pg21/u2188448/TGNNExplainer_Ext/tgnnexplainer
+#Dataset: wikipedia, #Users: 8227, #Items: 1000, #Interactions: 157474, #Timestamps: 152757
+#node feats shape: (9228, 172), #edge feats shape: (157475, 172)
+443 events to explain
+[2025-01-28 17:19:15,886][src.models.ext.tgat.module][INFO] - Aggregation uses attention model
+[2025-01-28 17:19:15,898][src.models.ext.tgat.module][INFO] - Using scaled prod attention
+[2025-01-28 17:19:15,908][src.models.ext.tgat.module][INFO] - Using scaled prod attention
+[2025-01-28 17:19:15,908][src.models.ext.tgat.module][INFO] - Using time encoding
+USING EXPLAINER: tgnnexplainer
+USING MODEL: tgat
+Initializing TGNNExplainer
+80 120
+Running results batch 2 with 40 events
+
+explain 0-th: 24376 on batch 2
+
+explain 1-th: 24626 on batch 2
+
+explain 2-th: 24635 on batch 2
+Exp Len:  10 Model Pred:  0.5790383815765381 Exp Pred:  0.5937386751174927 Unimportant Pred 0.2354673445224762 Delta Fidelity:  23.371712687021045
+Exp Len:  20 Model Pred:  0.5790383815765381 Exp Pred:  0.5667020082473755 Unimportant Pred 0.0742129385471344 Delta Fidelity:  40.92170604435425
+Exp Len:  30 Model Pred:  0.5790383815765381 Exp Pred:  1.2599014043807983 Unimportant Pred -0.16428515315055847 Delta Fidelity:  1.0917372655451036
+Exp Len:  40 Model Pred:  0.5790383815765381 Exp Pred:  1.1483936309814453 Unimportant Pred -0.24096587300300598 Delta Fidelity:  1.4402330626381619
+Exp Len:  50 Model Pred:  0.5790383815765381 Exp Pred:  0.780697226524353 Unimportant Pred -0.37264397740364075 Delta Fidelity:  4.71926911624657
+Exp Len:  60 Model Pred:  0.5790383815765381 Exp Pred:  0.8644514083862305 Unimportant Pred -0.4566502869129181 Delta Fidelity:  3.628736501855721
+Exp Len:  70 Model Pred:  0.5790383815765381 Exp Pred:  0.8454445600509644 Unimportant Pred -0.46761491894721985 Delta Fidelity:  3.928787637424226
+Exp Len:  80 Model Pred:  0.5790383815765381 Exp Pred:  0.6755911111831665 Unimportant Pred -0.686994194984436 Delta Fidelity:  13.112343708137486
+Exp Len:  90 Model Pred:  0.5790383815765381 Exp Pred:  0.6126790046691895 Unimportant Pred -0.3991020619869232 Delta Fidelity:  29.076169037342574
+Exp Len:  100 Model Pred:  0.5790383815765381 Exp Pred:  0.5789052248001099 Unimportant Pred -0.8207662105560303 Delta Fidelity:  10512.45478961504
+
+explain 3-th: 24690 on batch 2
+Exp Len:  10 Model Pred:  0.5826774835586548 Exp Pred:  0.4139711856842041 Unimportant Pred 0.33608293533325195 Delta Fidelity:  1.4616795658032617
+Exp Len:  20 Model Pred:  0.5826774835586548 Exp Pred:  0.536522626876831 Unimportant Pred 0.32808709144592285 Delta Fidelity:  5.516004390779363
+Exp Len:  30 Model Pred:  0.5826774835586548 Exp Pred:  0.537743091583252 Unimportant Pred 0.6466819047927856 Delta Fidelity:  1.424397180430682
+Exp Len:  40 Model Pred:  0.5826774835586548 Exp Pred:  0.6689637899398804 Unimportant Pred 0.8219884634017944 Delta Fidelity:  2.773452589172476
+Exp Len:  50 Model Pred:  0.5826774835586548 Exp Pred:  0.6739932298660278 Unimportant Pred 0.7715376615524292 Delta Fidelity:  2.0682104196801094
+Exp Len:  60 Model Pred:  0.5826774835586548 Exp Pred:  0.6097238063812256 Unimportant Pred 0.6914077997207642 Delta Fidelity:  4.020151533182593
+Exp Len:  70 Model Pred:  0.5826774835586548 Exp Pred:  0.5881633758544922 Unimportant Pred 0.6716737747192383 Delta Fidelity:  16.222755818248984
+Exp Len:  80 Model Pred:  0.5826774835586548 Exp Pred:  0.5821210145950317 Unimportant Pred 0.3910713493824005 Delta Fidelity:  344.3249250214225
+Exp Len:  90 Model Pred:  0.5826774835586548 Exp Pred:  0.5647621154785156 Unimportant Pred 0.5772497653961182 Delta Fidelity:  0.3029643677013674
+Exp Len:  100 Model Pred:  0.5826774835586548 Exp Pred:  0.6023976802825928 Unimportant Pred 0.13557767868041992 Delta Fidelity:  22.67217772404413
+
+explain 4-th: 24731 on batch 2
+
+explain 5-th: 24797 on batch 2
+Exp Len:  10 Model Pred:  3.9426326751708984 Exp Pred:  5.689146995544434 Unimportant Pred 0.06201013922691345 Delta Fidelity:  2.2219242583215797
+Exp Len:  20 Model Pred:  3.9426326751708984 Exp Pred:  5.512555122375488 Unimportant Pred 0.16719108819961548 Delta Fidelity:  2.4048586563583756
+Exp Len:  30 Model Pred:  3.9426326751708984 Exp Pred:  5.2966203689575195 Unimportant Pred 0.21700245141983032 Delta Fidelity:  2.7515982906253806
+Exp Len:  40 Model Pred:  3.9426326751708984 Exp Pred:  5.203415870666504 Unimportant Pred 0.178720623254776 Delta Fidelity:  2.9853761260170932
+Exp Len:  50 Model Pred:  3.9426326751708984 Exp Pred:  4.964728355407715 Unimportant Pred 0.22814062237739563 Delta Fidelity:  3.634192106097999
+Exp Len:  60 Model Pred:  3.9426326751708984 Exp Pred:  4.548175811767578 Unimportant Pred 0.30147597193717957 Delta Fidelity:  6.013042644159142
+Exp Len:  70 Model Pred:  3.9426326751708984 Exp Pred:  4.2686767578125 Unimportant Pred 0.5621956586837769 Delta Fidelity:  10.368036705646977
+Exp Len:  80 Model Pred:  3.9426326751708984 Exp Pred:  4.160430908203125 Unimportant Pred 0.7038172483444214 Delta Fidelity:  14.870714889350113
+Exp Len:  90 Model Pred:  3.9426326751708984 Exp Pred:  4.085116863250732 Unimportant Pred 0.7136726379394531 Delta Fidelity:  22.661883264003
+Exp Len:  100 Model Pred:  3.9426326751708984 Exp Pred:  4.066164016723633 Unimportant Pred 0.792981743812561 Delta Fidelity:  25.496775893215577
+
+explain 6-th: 25000 on batch 2
+Exp Len:  10 Model Pred:  -0.4178203046321869 Exp Pred:  0.11023595929145813 Unimportant Pred -0.7551043033599854 Delta Fidelity:  0.6387273890506646
+Exp Len:  20 Model Pred:  -0.4178203046321869 Exp Pred:  0.41532036662101746 Unimportant Pred -0.6518858671188354 Delta Fidelity:  0.28094362760441016
+Exp Len:  30 Model Pred:  -0.4178203046321869 Exp Pred:  0.22289729118347168 Unimportant Pred -0.30984628200531006 Delta Fidelity:  0.16852045789287506
+Exp Len:  40 Model Pred:  -0.4178203046321869 Exp Pred:  0.3080553114414215 Unimportant Pred -0.23540589213371277 Delta Fidelity:  0.2513025764457917
+Exp Len:  50 Model Pred:  -0.4178203046321869 Exp Pred:  -0.1861245334148407 Unimportant Pred 0.1026194840669632 Delta Fidelity:  2.2462204897600078
+Exp Len:  60 Model Pred:  -0.4178203046321869 Exp Pred:  -0.4876497983932495 Unimportant Pred 0.108030766248703 Delta Fidelity:  7.530500975421762
+Exp Len:  70 Model Pred:  -0.4178203046321869 Exp Pred:  -0.5505523681640625 Unimportant Pred 0.020216546952724457 Delta Fidelity:  3.3001585293648117
+Exp Len:  80 Model Pred:  -0.4178203046321869 Exp Pred:  -0.6268607378005981 Unimportant Pred -0.002275511622428894 Delta Fidelity:  1.9878680249144847
+Exp Len:  90 Model Pred:  -0.4178203046321869 Exp Pred:  -0.5570203065872192 Unimportant Pred -0.043355897068977356 Delta Fidelity:  2.6901178326432627
+Exp Len:  100 Model Pred:  -0.4178203046321869 Exp Pred:  -0.5434322357177734 Unimportant Pred -0.3808766305446625 Delta Fidelity:  0.29410959427375244
+
+explain 7-th: 25011 on batch 2
+Exp Len:  10 Model Pred:  4.94419002532959 Exp Pred:  5.47695255279541 Unimportant Pred 4.363522529602051 Delta Fidelity:  1.0899180512743403
+Exp Len:  20 Model Pred:  4.94419002532959 Exp Pred:  5.3422746658325195 Unimportant Pred 2.4868741035461426 Delta Fidelity:  6.17284786139686
+Exp Len:  30 Model Pred:  4.94419002532959 Exp Pred:  5.241092681884766 Unimportant Pred -0.22433848679065704 Delta Fidelity:  17.408158526057978
+Exp Len:  40 Model Pred:  4.94419002532959 Exp Pred:  5.148987770080566 Unimportant Pred -0.5419811010360718 Delta Fidelity:  26.788239943933764
+Exp Len:  50 Model Pred:  4.94419002532959 Exp Pred:  5.083954811096191 Unimportant Pred -0.6840204000473022 Delta Fidelity:  40.269159320114085
+Exp Len:  60 Model Pred:  4.94419002532959 Exp Pred:  5.008545875549316 Unimportant Pred -0.5889085531234741 Delta Fidelity:  85.97662154352271
+Exp Len:  70 Model Pred:  4.94419002532959 Exp Pred:  4.961360454559326 Unimportant Pred -1.2302231788635254 Delta Fidelity:  359.5957399539004
+Exp Len:  80 Model Pred:  4.94419002532959 Exp Pred:  4.984431266784668 Unimportant Pred -1.39283287525177 Delta Fidelity:  157.47583005498151
+Exp Len:  90 Model Pred:  4.94419002532959 Exp Pred:  5.026066303253174 Unimportant Pred -1.299818515777588 Delta Fidelity:  76.26150943176458
+Exp Len:  100 Model Pred:  4.94419002532959 Exp Pred:  5.027331352233887 Unimportant Pred -1.0456990003585815 Delta Fidelity:  72.04466477403074
+
+explain 8-th: 25324 on batch 2
+
+explain 9-th: 25326 on batch 2
+Exp Len:  10 Model Pred:  0.6362426280975342 Exp Pred:  0.5049188137054443 Unimportant Pred 0.8023711442947388 Delta Fidelity:  1.265029628984118
+Exp Len:  20 Model Pred:  0.6362426280975342 Exp Pred:  0.2947251498699188 Unimportant Pred 0.9896001815795898 Delta Fidelity:  1.0346690169881996
+Exp Len:  30 Model Pred:  0.6362426280975342 Exp Pred:  0.42244836688041687 Unimportant Pred 0.968224048614502 Delta Fidelity:  1.5528079127429257
+Exp Len:  40 Model Pred:  0.6362426280975342 Exp Pred:  0.5315457582473755 Unimportant Pred 1.0691871643066406 Delta Fidelity:  4.135219484868394
+Exp Len:  50 Model Pred:  0.6362426280975342 Exp Pred:  0.5074151754379272 Unimportant Pred 0.9646778106689453 Delta Fidelity:  2.549419209888561
+Exp Len:  60 Model Pred:  0.6362426280975342 Exp Pred:  0.549920916557312 Unimportant Pred 0.962993860244751 Delta Fidelity:  3.785272862609599
+Exp Len:  70 Model Pred:  0.6362426280975342 Exp Pred:  0.5472235679626465 Unimportant Pred 2.026888847351074 Delta Fidelity:  15.621892852455856
+Exp Len:  80 Model Pred:  0.6362426280975342 Exp Pred:  0.5300099849700928 Unimportant Pred 4.323019504547119 Delta Fidelity:  34.704745809880336
+Exp Len:  90 Model Pred:  0.6362426280975342 Exp Pred:  0.6180899143218994 Unimportant Pred 4.154268264770508 Delta Fidelity:  193.80163650214084
+Exp Len:  100 Model Pred:  0.6362426280975342 Exp Pred:  0.6182831525802612 Unimportant Pred 4.154268264770508 Delta Fidelity:  195.88688062128705
+
+explain 10-th: 25374 on batch 2
+
+explain 11-th: 25406 on batch 2
+
+explain 12-th: 25454 on batch 2
+
+explain 13-th: 25455 on batch 2
+
+explain 14-th: 25554 on batch 2
+Exp Len:  10 Model Pred:  2.327934980392456 Exp Pred:  3.8204007148742676 Unimportant Pred 2.131910800933838 Delta Fidelity:  0.13134249914734447
+Exp Len:  20 Model Pred:  2.327934980392456 Exp Pred:  5.168437957763672 Unimportant Pred -0.4374642074108124 Delta Fidelity:  0.9735596863772862
+Exp Len:  30 Model Pred:  2.327934980392456 Exp Pred:  5.214382648468018 Unimportant Pred -0.4467575252056122 Delta Fidelity:  0.9612828031793135
+Exp Len:  40 Model Pred:  2.327934980392456 Exp Pred:  4.83759880065918 Unimportant Pred -0.4157874882221222 Delta Fidelity:  1.0932629487892842
+Exp Len:  50 Model Pred:  2.327934980392456 Exp Pred:  4.327191352844238 Unimportant Pred -0.45149898529052734 Delta Fidelity:  1.3902338909513805
+Exp Len:  60 Model Pred:  2.327934980392456 Exp Pred:  4.063207149505615 Unimportant Pred -0.3870755434036255 Delta Fidelity:  1.564602125315958
+Exp Len:  70 Model Pred:  2.327934980392456 Exp Pred:  3.994365692138672 Unimportant Pred -0.450277715921402 Delta Fidelity:  1.667163643067182
+Exp Len:  80 Model Pred:  2.327934980392456 Exp Pred:  3.7640490531921387 Unimportant Pred -0.07426813244819641 Delta Fidelity:  1.6727105167611052
+Exp Len:  90 Model Pred:  2.327934980392456 Exp Pred:  3.7664718627929688 Unimportant Pred -0.01840031147003174 Delta Fidelity:  1.6310567497908814
+Exp Len:  100 Model Pred:  2.327934980392456 Exp Pred:  3.6168465614318848 Unimportant Pred 0.007697492837905884 Delta Fidelity:  1.8001525641374252
+
+explain 15-th: 25760 on batch 2
+Exp Len:  10 Model Pred:  0.8268964290618896 Exp Pred:  -0.7964671850204468 Unimportant Pred 0.8557416200637817 Delta Fidelity:  0.017768780051287434
+Exp Len:  20 Model Pred:  0.8268964290618896 Exp Pred:  3.409853458404541 Unimportant Pred 0.1698206663131714 Delta Fidelity:  0.2543889639991187
+Exp Len:  30 Model Pred:  0.8268964290618896 Exp Pred:  2.960204601287842 Unimportant Pred 0.16653820872306824 Delta Fidelity:  0.309546566659324
+Exp Len:  40 Model Pred:  0.8268964290618896 Exp Pred:  2.6002626419067383 Unimportant Pred 0.1901748776435852 Delta Fidelity:  0.35904684932328246
+Exp Len:  50 Model Pred:  0.8268964290618896 Exp Pred:  2.3593387603759766 Unimportant Pred 0.1844346821308136 Delta Fidelity:  0.41924040716113453
+Exp Len:  60 Model Pred:  0.8268964290618896 Exp Pred:  2.1921958923339844 Unimportant Pred 0.21100959181785583 Delta Fidelity:  0.4511001826427085
+Exp Len:  70 Model Pred:  0.8268964290618896 Exp Pred:  1.980036973953247 Unimportant Pred 0.15580788254737854 Delta Fidelity:  0.5819659619875194
+Exp Len:  80 Model Pred:  0.8268964290618896 Exp Pred:  1.9322247505187988 Unimportant Pred 0.15791121125221252 Delta Fidelity:  0.6052366566776307
+Exp Len:  90 Model Pred:  0.8268964290618896 Exp Pred:  1.7593472003936768 Unimportant Pred 0.18042993545532227 Delta Fidelity:  0.6932982560390204
+Exp Len:  100 Model Pred:  0.8268964290618896 Exp Pred:  1.5645368099212646 Unimportant Pred 0.1495870053768158 Delta Fidelity:  0.9182108806136486
+
+explain 16-th: 25858 on batch 2
+Exp Len:  10 Model Pred:  1.5735266208648682 Exp Pred:  1.9152469635009766 Unimportant Pred 0.5989364385604858 Delta Fidelity:  2.8520110180920812
+Exp Len:  20 Model Pred:  1.5735266208648682 Exp Pred:  2.2142653465270996 Unimportant Pred 0.7139283418655396 Delta Fidelity:  1.3415737875229818
+Exp Len:  30 Model Pred:  1.5735266208648682 Exp Pred:  2.9888253211975098 Unimportant Pred 0.8074684143066406 Delta Fidelity:  0.5412696319004453
+Exp Len:  40 Model Pred:  1.5735266208648682 Exp Pred:  2.86061692237854 Unimportant Pred 0.9317115545272827 Delta Fidelity:  0.49865581737566056
+Exp Len:  50 Model Pred:  1.5735266208648682 Exp Pred:  2.576711416244507 Unimportant Pred 0.9015018939971924 Delta Fidelity:  0.669891260277085
+Exp Len:  60 Model Pred:  1.5735266208648682 Exp Pred:  2.312356948852539 Unimportant Pred 0.8730556964874268 Delta Fidelity:  0.9480809028038849
+Exp Len:  70 Model Pred:  1.5735266208648682 Exp Pred:  2.3061554431915283 Unimportant Pred 0.8040380477905273 Delta Fidelity:  1.050311630698097
+Exp Len:  80 Model Pred:  1.5735266208648682 Exp Pred:  2.277858257293701 Unimportant Pred 0.8505922555923462 Delta Fidelity:  1.0264118887772957
+Exp Len:  90 Model Pred:  1.5735266208648682 Exp Pred:  2.3254146575927734 Unimportant Pred 0.7863099575042725 Delta Fidelity:  1.0469865523947353
+Exp Len:  100 Model Pred:  1.5735266208648682 Exp Pred:  2.3259687423706055 Unimportant Pred 0.7652624845504761 Delta Fidelity:  1.0741877856292088
+
+explain 17-th: 25887 on batch 2
+Exp Len:  10 Model Pred:  1.860175371170044 Exp Pred:  4.522668361663818 Unimportant Pred 1.789868712425232 Delta Fidelity:  0.02640632632492799
+Exp Len:  20 Model Pred:  1.860175371170044 Exp Pred:  3.255923271179199 Unimportant Pred 0.7355308532714844 Delta Fidelity:  0.8057647931200058
+Exp Len:  30 Model Pred:  1.860175371170044 Exp Pred:  3.4279494285583496 Unimportant Pred 0.7780532836914062 Delta Fidelity:  0.6902283415004986
+Exp Len:  40 Model Pred:  1.860175371170044 Exp Pred:  3.072939395904541 Unimportant Pred 0.8151029348373413 Delta Fidelity:  0.8617277681546448
+Exp Len:  50 Model Pred:  1.860175371170044 Exp Pred:  3.0445868968963623 Unimportant Pred 0.8283697366714478 Delta Fidelity:  0.8711546722460849
+Exp Len:  60 Model Pred:  1.860175371170044 Exp Pred:  2.941291332244873 Unimportant Pred 0.8220998048782349 Delta Fidelity:  0.9601889192901842
+Exp Len:  70 Model Pred:  1.860175371170044 Exp Pred:  2.9680564403533936 Unimportant Pred 0.8462260961532593 Delta Fidelity:  0.9152149117993281
+Exp Len:  80 Model Pred:  1.860175371170044 Exp Pred:  2.9232397079467773 Unimportant Pred 0.8405970335006714 Delta Fidelity:  0.9590937278178171
+Exp Len:  90 Model Pred:  1.860175371170044 Exp Pred:  2.856752872467041 Unimportant Pred 0.842974066734314 Delta Fidelity:  1.020694630484726
+Exp Len:  100 Model Pred:  1.860175371170044 Exp Pred:  2.885941743850708 Unimportant Pred 0.8036839962005615 Delta Fidelity:  1.0299532165482514
+
+explain 18-th: 26139 on batch 2
+Exp Len:  10 Model Pred:  2.470945119857788 Exp Pred:  4.308901309967041 Unimportant Pred 0.43085142970085144 Delta Fidelity:  1.1099794984970062
+Exp Len:  20 Model Pred:  2.470945119857788 Exp Pred:  4.033803462982178 Unimportant Pred 0.4475477635860443 Delta Fidelity:  1.2946773872203077
+Exp Len:  30 Model Pred:  2.470945119857788 Exp Pred:  3.6034786701202393 Unimportant Pred 0.48569026589393616 Delta Fidelity:  1.7529324879636394
+Exp Len:  40 Model Pred:  2.470945119857788 Exp Pred:  3.3294172286987305 Unimportant Pred 0.6865670680999756 Delta Fidelity:  2.0785509900455272
+Exp Len:  50 Model Pred:  2.470945119857788 Exp Pred:  3.124224901199341 Unimportant Pred 0.6644724607467651 Delta Fidelity:  2.7652358311186567
+Exp Len:  60 Model Pred:  2.470945119857788 Exp Pred:  3.0111093521118164 Unimportant Pred 0.7730656862258911 Delta Fidelity:  3.143265200190853
+Exp Len:  70 Model Pred:  2.470945119857788 Exp Pred:  2.9302268028259277 Unimportant Pred 0.848711371421814 Delta Fidelity:  3.5321107037236414
+Exp Len:  80 Model Pred:  2.470945119857788 Exp Pred:  2.7508583068847656 Unimportant Pred 1.2341065406799316 Delta Fidelity:  4.418650626340988
+Exp Len:  90 Model Pred:  2.470945119857788 Exp Pred:  2.6703383922576904 Unimportant Pred 1.3489550352096558 Delta Fidelity:  5.627020767269788
+Exp Len:  100 Model Pred:  2.470945119857788 Exp Pred:  2.5614101886749268 Unimportant Pred 1.2636735439300537 Delta Fidelity:  13.345168380605
+
+explain 19-th: 26202 on batch 2
+Exp Len:  10 Model Pred:  0.12905320525169373 Exp Pred:  0.23596221208572388 Unimportant Pred 0.22885587811470032 Delta Fidelity:  0.9335291367727724
+Exp Len:  20 Model Pred:  0.12905320525169373 Exp Pred:  0.11896511912345886 Unimportant Pred 0.23399534821510315 Delta Fidelity:  10.402581979320532
+Exp Len:  30 Model Pred:  0.12905320525169373 Exp Pred:  0.14611753821372986 Unimportant Pred 0.2772061228752136 Delta Fidelity:  8.682022201109357
+Exp Len:  40 Model Pred:  0.12905320525169373 Exp Pred:  0.041439205408096313 Unimportant Pred 0.339750736951828 Delta Fidelity:  2.404838633965545
+Exp Len:  50 Model Pred:  0.12905320525169373 Exp Pred:  0.12933865189552307 Unimportant Pred 0.2155311405658722 Delta Fidelity:  302.95656713301315
+Exp Len:  60 Model Pred:  0.12905320525169373 Exp Pred:  0.12656748294830322 Unimportant Pred -0.19962337613105774 Delta Fidelity:  132.22578440658458
+Exp Len:  70 Model Pred:  0.12905320525169373 Exp Pred:  0.1306794285774231 Unimportant Pred -0.20853188633918762 Delta Fidelity:  207.58839591694613
+Exp Len:  80 Model Pred:  0.12905320525169373 Exp Pred:  0.0811203122138977 Unimportant Pred -0.10480335354804993 Delta Fidelity:  4.878832550652497
+Exp Len:  90 Model Pred:  0.12905320525169373 Exp Pred:  0.25268566608428955 Unimportant Pred -0.2012016773223877 Delta Fidelity:  2.6712635205187905
+Exp Len:  100 Model Pred:  0.12905320525169373 Exp Pred:  0.1617145836353302 Unimportant Pred 0.0504913330078125 Delta Fidelity:  2.405344664915953
+
+explain 20-th: 26312 on batch 2
+Exp Len:  10 Model Pred:  3.71987247467041 Exp Pred:  5.295406341552734 Unimportant Pred 2.584782123565674 Delta Fidelity:  0.720448081100827
+Exp Len:  20 Model Pred:  3.71987247467041 Exp Pred:  5.395231246948242 Unimportant Pred -0.4046691358089447 Delta Fidelity:  2.4618855845853203
+Exp Len:  30 Model Pred:  3.71987247467041 Exp Pred:  5.188302993774414 Unimportant Pred -0.40605393052101135 Delta Fidelity:  2.8097525565655967
+Exp Len:  40 Model Pred:  3.71987247467041 Exp Pred:  5.041151523590088 Unimportant Pred -0.38279345631599426 Delta Fidelity:  3.105071509565585
+Exp Len:  50 Model Pred:  3.71987247467041 Exp Pred:  4.848360061645508 Unimportant Pred -0.35593703389167786 Delta Fidelity:  3.6117450963614623
+Exp Len:  60 Model Pred:  3.71987247467041 Exp Pred:  4.6581292152404785 Unimportant Pred -0.34546196460723877 Delta Fidelity:  4.33285929478921
+Exp Len:  70 Model Pred:  3.71987247467041 Exp Pred:  4.475049018859863 Unimportant Pred -0.2635708153247833 Delta Fidelity:  5.274850391799055
+Exp Len:  80 Model Pred:  3.71987247467041 Exp Pred:  4.252854347229004 Unimportant Pred -0.2945857346057892 Delta Fidelity:  7.532072695089394
+Exp Len:  90 Model Pred:  3.71987247467041 Exp Pred:  4.05510139465332 Unimportant Pred 0.002731412649154663 Delta Fidelity:  11.088366308642923
+Exp Len:  100 Model Pred:  3.71987247467041 Exp Pred:  3.9316086769104004 Unimportant Pred -0.1974799931049347 Delta Fidelity:  18.50109913341726
+
+explain 21-th: 26379 on batch 2
+
+explain 22-th: 26442 on batch 2
+Exp Len:  10 Model Pred:  4.770153999328613 Exp Pred:  4.210639476776123 Unimportant Pred 4.780686378479004 Delta Fidelity:  0.018824139009550985
+Exp Len:  20 Model Pred:  4.770153999328613 Exp Pred:  4.271469593048096 Unimportant Pred 4.780168056488037 Delta Fidelity:  0.02008095106505249
+Exp Len:  30 Model Pred:  4.770153999328613 Exp Pred:  4.295107841491699 Unimportant Pred 4.734942436218262 Delta Fidelity:  0.07412240374847928
+Exp Len:  40 Model Pred:  4.770153999328613 Exp Pred:  4.347045421600342 Unimportant Pred 4.730757236480713 Delta Fidelity:  0.09311265458012472
+Exp Len:  50 Model Pred:  4.770153999328613 Exp Pred:  4.771561622619629 Unimportant Pred 4.635280132293701 Delta Fidelity:  95.81673441734418
+Exp Len:  60 Model Pred:  4.770153999328613 Exp Pred:  4.837367057800293 Unimportant Pred 4.3200273513793945 Delta Fidelity:  6.6970118334799515
+Exp Len:  70 Model Pred:  4.770153999328613 Exp Pred:  4.968405723571777 Unimportant Pred 3.3393847942352295 Delta Fidelity:  7.21693196140118
+Exp Len:  80 Model Pred:  4.770153999328613 Exp Pred:  5.015049934387207 Unimportant Pred 2.7104313373565674 Delta Fidelity:  8.410603718184367
+Exp Len:  90 Model Pred:  4.770153999328613 Exp Pred:  5.0405988693237305 Unimportant Pred 2.029413938522339 Delta Fidelity:  10.134191345007793
+Exp Len:  100 Model Pred:  4.770153999328613 Exp Pred:  5.061827659606934 Unimportant Pred -0.5870798826217651 Delta Fidelity:  18.367218612878546
+
+explain 23-th: 26526 on batch 2
+Exp Len:  10 Model Pred:  4.164218902587891 Exp Pred:  5.3189849853515625 Unimportant Pred 0.5013699531555176 Delta Fidelity:  3.1719401912690155
+Exp Len:  20 Model Pred:  4.164218902587891 Exp Pred:  4.863550186157227 Unimportant Pred 0.5591074228286743 Delta Fidelity:  5.155083955859932
+Exp Len:  30 Model Pred:  4.164218902587891 Exp Pred:  4.584540367126465 Unimportant Pred 0.8736799955368042 Delta Fidelity:  7.8286244807017304
+Exp Len:  40 Model Pred:  4.164218902587891 Exp Pred:  4.392062187194824 Unimportant Pred 0.850511908531189 Delta Fidelity:  14.543799259975472
+Exp Len:  50 Model Pred:  4.164218902587891 Exp Pred:  4.170598030090332 Unimportant Pred 0.9641697406768799 Delta Fidelity:  501.64370608461655
+Exp Len:  60 Model Pred:  4.164218902587891 Exp Pred:  4.159890651702881 Unimportant Pred 0.5613501071929932 Delta Fidelity:  832.4075685799273
+Exp Len:  70 Model Pred:  4.164218902587891 Exp Pred:  4.160400390625 Unimportant Pred 0.5613501071929932 Delta Fidelity:  943.5269105894106
+Exp Len:  80 Model Pred:  4.164218902587891 Exp Pred:  4.136618614196777 Unimportant Pred 0.45160815119743347 Delta Fidelity:  134.51347677170796
+Exp Len:  90 Model Pred:  4.164218902587891 Exp Pred:  4.163145065307617 Unimportant Pred -1.3068469762802124 Delta Fidelity:  5094.874222912967
+Exp Len:  100 Model Pred:  4.164218902587891 Exp Pred:  4.1635003089904785 Unimportant Pred -1.3068469762802124 Delta Fidelity:  7613.574485733245
+
+explain 24-th: 26889 on batch 2
+Exp Len:  10 Model Pred:  2.818967819213867 Exp Pred:  2.452676773071289 Unimportant Pred 2.323418140411377 Delta Fidelity:  1.3528850459795254
+Exp Len:  20 Model Pred:  2.818967819213867 Exp Pred:  3.798002243041992 Unimportant Pred 0.9143065214157104 Delta Fidelity:  1.9454487517923382
+Exp Len:  30 Model Pred:  2.818967819213867 Exp Pred:  4.953826904296875 Unimportant Pred 0.312328964471817 Delta Fidelity:  1.1741472176111272
+Exp Len:  40 Model Pred:  2.818967819213867 Exp Pred:  4.719653606414795 Unimportant Pred 0.2958764433860779 Delta Fidelity:  1.327463693798361
+Exp Len:  50 Model Pred:  2.818967819213867 Exp Pred:  4.314257621765137 Unimportant Pred 0.2951190769672394 Delta Fidelity:  1.6878659494236012
+Exp Len:  60 Model Pred:  2.818967819213867 Exp Pred:  4.067716598510742 Unimportant Pred 0.26820191740989685 Delta Fidelity:  2.042657373599367
+Exp Len:  70 Model Pred:  2.818967819213867 Exp Pred:  3.700368881225586 Unimportant Pred 0.23907065391540527 Delta Fidelity:  2.927041135405576
+Exp Len:  80 Model Pred:  2.818967819213867 Exp Pred:  3.5524702072143555 Unimportant Pred 0.24304184317588806 Delta Fidelity:  3.5118167550345647
+Exp Len:  90 Model Pred:  2.818967819213867 Exp Pred:  3.431642770767212 Unimportant Pred 0.27781400084495544 Delta Fidelity:  4.147637849280765
+Exp Len:  100 Model Pred:  2.818967819213867 Exp Pred:  3.4286515712738037 Unimportant Pred 0.27985379099845886 Delta Fidelity:  4.164641126873583
+
+explain 25-th: 27304 on batch 2
+Exp Len:  10 Model Pred:  3.4494404792785645 Exp Pred:  5.500869274139404 Unimportant Pred 0.25800690054893494 Delta Fidelity:  1.5557125778504648
+Exp Len:  20 Model Pred:  3.4494404792785645 Exp Pred:  5.214916229248047 Unimportant Pred 0.3084111511707306 Delta Fidelity:  1.779140454442452
+Exp Len:  30 Model Pred:  3.4494404792785645 Exp Pred:  5.134655952453613 Unimportant Pred 0.32767346501350403 Delta Fidelity:  1.8524438351989854
+Exp Len:  40 Model Pred:  3.4494404792785645 Exp Pred:  4.834783554077148 Unimportant Pred 0.460242360830307 Delta Fidelity:  2.157731303405013
+Exp Len:  50 Model Pred:  3.4494404792785645 Exp Pred:  4.556999683380127 Unimportant Pred 0.5786662101745605 Delta Fidelity:  2.5919826754839153
+Exp Len:  60 Model Pred:  3.4494404792785645 Exp Pred:  4.355824947357178 Unimportant Pred 0.7785844802856445 Delta Fidelity:  2.9467142179242076
+Exp Len:  70 Model Pred:  3.4494404792785645 Exp Pred:  4.160829544067383 Unimportant Pred 0.7307921648025513 Delta Fidelity:  3.821605432300349
+Exp Len:  80 Model Pred:  3.4494404792785645 Exp Pred:  3.9798202514648438 Unimportant Pred 0.5125739574432373 Delta Fidelity:  5.537289836166385
+Exp Len:  90 Model Pred:  3.4494404792785645 Exp Pred:  3.7375757694244385 Unimportant Pred 0.5909563302993774 Delta Fidelity:  9.920631893205531
+Exp Len:  100 Model Pred:  3.4494404792785645 Exp Pred:  3.6682310104370117 Unimportant Pred 0.5112543106079102 Delta Fidelity:  13.429219962644687
+
+explain 26-th: 28197 on batch 2
+
+explain 27-th: 28488 on batch 2
+
+explain 28-th: 29020 on batch 2
+
+explain 29-th: 29049 on batch 2
+Exp Len:  10 Model Pred:  2.67509126663208 Exp Pred:  4.7237348556518555 Unimportant Pred 0.2323620617389679 Delta Fidelity:  1.1923641662149231
+Exp Len:  20 Model Pred:  2.67509126663208 Exp Pred:  4.285232067108154 Unimportant Pred 0.2840332090854645 Delta Fidelity:  1.4849993595837367
+Exp Len:  30 Model Pred:  2.67509126663208 Exp Pred:  3.8216233253479004 Unimportant Pred 0.3520415723323822 Delta Fidelity:  2.026153282535896
+Exp Len:  40 Model Pred:  2.67509126663208 Exp Pred:  3.4265995025634766 Unimportant Pred 0.4180128276348114 Delta Fidelity:  3.0033981413389492
+Exp Len:  50 Model Pred:  2.67509126663208 Exp Pred:  3.3415985107421875 Unimportant Pred 0.44704750180244446 Delta Fidelity:  3.342865039380669
+Exp Len:  60 Model Pred:  2.67509126663208 Exp Pred:  3.169245719909668 Unimportant Pred 0.5339334011077881 Delta Fidelity:  4.332972922377998
+Exp Len:  70 Model Pred:  2.67509126663208 Exp Pred:  2.9831690788269043 Unimportant Pred 0.7351189851760864 Delta Fidelity:  6.297020443098907
+Exp Len:  80 Model Pred:  2.67509126663208 Exp Pred:  2.834679126739502 Unimportant Pred 0.8403688669204712 Delta Fidelity:  11.496628869367754
+Exp Len:  90 Model Pred:  2.67509126663208 Exp Pred:  2.7584424018859863 Unimportant Pred 0.8720871210098267 Delta Fidelity:  21.631428775743707
+Exp Len:  100 Model Pred:  2.67509126663208 Exp Pred:  2.7022271156311035 Unimportant Pred 0.9308817386627197 Delta Fidelity:  64.27694700217896
+
+explain 30-th: 29138 on batch 2
+Exp Len:  10 Model Pred:  4.270175933837891 Exp Pred:  5.521109104156494 Unimportant Pred 2.6345162391662598 Delta Fidelity:  1.3075516210470624
+Exp Len:  20 Model Pred:  4.270175933837891 Exp Pred:  5.480795383453369 Unimportant Pred 0.5166873931884766 Delta Fidelity:  3.1004693851908716
+Exp Len:  30 Model Pred:  4.270175933837891 Exp Pred:  5.088263511657715 Unimportant Pred 0.6213045120239258 Delta Fidelity:  4.460245480732129
+Exp Len:  40 Model Pred:  4.270175933837891 Exp Pred:  4.767525672912598 Unimportant Pred 0.4289275109767914 Delta Fidelity:  7.723435082136646
+Exp Len:  50 Model Pred:  4.270175933837891 Exp Pred:  4.540200233459473 Unimportant Pred 0.9939460754394531 Delta Fidelity:  12.13309269939712
+Exp Len:  60 Model Pred:  4.270175933837891 Exp Pred:  4.358942031860352 Unimportant Pred 0.8886048793792725 Delta Fidelity:  38.09529910397731
+Exp Len:  70 Model Pred:  4.270175933837891 Exp Pred:  4.270047664642334 Unimportant Pred -1.776902437210083 Delta Fidelity:  47143.652416356876
+Exp Len:  80 Model Pred:  4.270175933837891 Exp Pred:  4.270088195800781 Unimportant Pred -1.776902437210083 Delta Fidelity:  68921.97010869565
+Exp Len:  90 Model Pred:  4.270175933837891 Exp Pred:  4.270140647888184 Unimportant Pred -1.776902437210083 Delta Fidelity:  171373.5472972973
+Exp Len:  100 Model Pred:  4.270175933837891 Exp Pred:  4.270164489746094 Unimportant Pred -1.776902437210083 Delta Fidelity:  528401.7708333334
+
+explain 31-th: 29350 on batch 2
+Exp Len:  10 Model Pred:  4.906517028808594 Exp Pred:  5.1554365158081055 Unimportant Pred 0.20484134554862976 Delta Fidelity:  18.888339116933768
+Exp Len:  20 Model Pred:  4.906517028808594 Exp Pred:  4.991495132446289 Unimportant Pred 0.862177848815918 Delta Fidelity:  47.59272102888694
+Exp Len:  30 Model Pred:  4.906517028808594 Exp Pred:  4.904614448547363 Unimportant Pred -0.6095752716064453 Delta Fidelity:  2899.269172932331
+Exp Len:  40 Model Pred:  4.906517028808594 Exp Pred:  4.9049072265625 Unimportant Pred -0.6095752716064453 Delta Fidelity:  3426.5651658767774
+Exp Len:  50 Model Pred:  4.906517028808594 Exp Pred:  4.904808044433594 Unimportant Pred -0.6095752716064453 Delta Fidelity:  3227.7020089285716
+Exp Len:  60 Model Pred:  4.906517028808594 Exp Pred:  4.904951095581055 Unimportant Pred -0.6095752716064453 Delta Fidelity:  3522.5590742996346
+Exp Len:  70 Model Pred:  4.906517028808594 Exp Pred:  4.90510368347168 Unimportant Pred -0.6095752716064453 Delta Fidelity:  3902.862348178138
+Exp Len:  80 Model Pred:  4.906517028808594 Exp Pred:  4.905315399169922 Unimportant Pred -0.6095752716064453 Delta Fidelity:  4590.509523809524
+Exp Len:  90 Model Pred:  4.906517028808594 Exp Pred:  4.905439376831055 Unimportant Pred -0.6095752716064453 Delta Fidelity:  5118.6212389380535
+Exp Len:  100 Model Pred:  4.906517028808594 Exp Pred:  4.905640602111816 Unimportant Pred -0.6095752716064453 Delta Fidelity:  6293.843307943417
+
+explain 32-th: 29455 on batch 2
+
+explain 33-th: 29551 on batch 2
+Exp Len:  10 Model Pred:  0.10718902945518494 Exp Pred:  0.21881061792373657 Unimportant Pred -0.6999770402908325 Delta Fidelity:  7.231272022019549
+Exp Len:  20 Model Pred:  0.10718902945518494 Exp Pred:  0.10643599927425385 Unimportant Pred -1.1793516874313354 Delta Fidelity:  1708.4849312357771
+Exp Len:  30 Model Pred:  0.10718902945518494 Exp Pred:  0.11448433995246887 Unimportant Pred -0.8290069103240967 Delta Fidelity:  128.32845704481392
+Exp Len:  40 Model Pred:  0.10718902945518494 Exp Pred:  0.11594080924987793 Unimportant Pred -0.8290069103240967 Delta Fidelity:  106.97206302505269
+Exp Len:  50 Model Pred:  0.10718902945518494 Exp Pred:  0.11704060435295105 Unimportant Pred -0.8290069103240967 Delta Fidelity:  95.0300788954635
+Exp Len:  60 Model Pred:  0.10718902945518494 Exp Pred:  0.11449724435806274 Unimportant Pred -0.8290069103240967 Delta Fidelity:  128.1018623864809
+Exp Len:  70 Model Pred:  0.10718902945518494 Exp Pred:  0.1115204393863678 Unimportant Pred -0.8290069103240967 Delta Fidelity:  216.14115372442168
+Exp Len:  80 Model Pred:  0.10718902945518494 Exp Pred:  0.11040893197059631 Unimportant Pred -0.8290069103240967 Delta Fidelity:  290.7528831380389
+Exp Len:  90 Model Pred:  0.10718902945518494 Exp Pred:  0.10976460576057434 Unimportant Pred -0.8290069103240967 Delta Fidelity:  363.48988683437085
+Exp Len:  100 Model Pred:  0.10718902945518494 Exp Pred:  0.10865631699562073 Unimportant Pred -0.8290069103240967 Delta Fidelity:  638.0453142137548
+
+explain 34-th: 29711 on batch 2
+Exp Len:  10 Model Pred:  2.610927104949951 Exp Pred:  4.831876754760742 Unimportant Pred 0.3895302414894104 Delta Fidelity:  1.0002013614535512
+Exp Len:  20 Model Pred:  2.610927104949951 Exp Pred:  4.173758506774902 Unimportant Pred 0.4687395989894867 Delta Fidelity:  1.370709280258246
+Exp Len:  30 Model Pred:  2.610927104949951 Exp Pred:  3.806511640548706 Unimportant Pred 0.5318193435668945 Delta Fidelity:  1.738988502675663
+Exp Len:  40 Model Pred:  2.610927104949951 Exp Pred:  3.5642778873443604 Unimportant Pred 0.6192570924758911 Delta Fidelity:  2.089126111033168
+Exp Len:  50 Model Pred:  2.610927104949951 Exp Pred:  3.423255205154419 Unimportant Pred 0.6349449157714844 Delta Fidelity:  2.4324927189901473
+Exp Len:  60 Model Pred:  2.610927104949951 Exp Pred:  3.2754359245300293 Unimportant Pred 0.5271611213684082 Delta Fidelity:  3.1357988369489718
+Exp Len:  70 Model Pred:  2.610927104949951 Exp Pred:  3.1484968662261963 Unimportant Pred 0.6065796613693237 Delta Fidelity:  3.728534579069521
+Exp Len:  80 Model Pred:  2.610927104949951 Exp Pred:  3.036484479904175 Unimportant Pred 0.6568981409072876 Delta Fidelity:  4.591693339242105
+Exp Len:  90 Model Pred:  2.610927104949951 Exp Pred:  2.9362401962280273 Unimportant Pred 0.8063606023788452 Delta Fidelity:  5.547168407768043
+Exp Len:  100 Model Pred:  2.610927104949951 Exp Pred:  2.8330295085906982 Unimportant Pred 0.7347317934036255 Delta Fidelity:  8.447433619768884
+
+explain 35-th: 29912 on batch 2
+
+explain 36-th: 29943 on batch 2
+
+explain 37-th: 29959 on batch 2
+Exp Len:  10 Model Pred:  -0.8363382816314697 Exp Pred:  -0.4386526644229889 Unimportant Pred -0.5541459321975708 Delta Fidelity:  0.7095865106078597
+Exp Len:  20 Model Pred:  -0.8363382816314697 Exp Pred:  0.09256413578987122 Unimportant Pred -0.11508385837078094 Delta Fidelity:  0.7764587643801285
+Exp Len:  30 Model Pred:  -0.8363382816314697 Exp Pred:  -0.20498213171958923 Unimportant Pred 0.27167022228240967 Delta Fidelity:  1.7549658842612463
+Exp Len:  40 Model Pred:  -0.8363382816314697 Exp Pred:  -0.7243975400924683 Unimportant Pred -0.17916977405548096 Delta Fidelity:  5.870682099662736
+Exp Len:  50 Model Pred:  -0.8363382816314697 Exp Pred:  -0.8627262115478516 Unimportant Pred -0.11948949098587036 Delta Fidelity:  27.16578348196135
+Exp Len:  60 Model Pred:  -0.8363382816314697 Exp Pred:  -0.8329511880874634 Unimportant Pred -0.2817640006542206 Delta Fidelity:  163.731610530391
+Exp Len:  70 Model Pred:  -0.8363382816314697 Exp Pred:  -0.8327168226242065 Unimportant Pred -0.6177006959915161 Delta Fidelity:  60.37279041443102
+Exp Len:  80 Model Pred:  -0.8363382816314697 Exp Pred:  -0.8180615901947021 Unimportant Pred -0.6037265062332153 Delta Fidelity:  12.72723655717603
+Exp Len:  90 Model Pred:  -0.8363382816314697 Exp Pred:  -0.8366650342941284 Unimportant Pred -0.7672827243804932 Delta Fidelity:  211.33892739875958
+Exp Len:  100 Model Pred:  -0.8363382816314697 Exp Pred:  -0.852495551109314 Unimportant Pred -0.889301061630249 Delta Fidelity:  3.277953621520323
+
+explain 38-th: 30077 on batch 2
+Exp Len:  10 Model Pred:  0.3224043548107147 Exp Pred:  -0.11671900749206543 Unimportant Pred 0.36403688788414 Delta Fidelity:  0.09480828543282839
+Exp Len:  20 Model Pred:  0.3224043548107147 Exp Pred:  0.386213093996048 Unimportant Pred 0.37406936287879944 Delta Fidelity:  0.8096854557496126
+Exp Len:  30 Model Pred:  0.3224043548107147 Exp Pred:  0.34755775332450867 Unimportant Pred 0.30848589539527893 Delta Fidelity:  0.5533430962739689
+Exp Len:  40 Model Pred:  0.3224043548107147 Exp Pred:  0.43344637751579285 Unimportant Pred 0.32269737124443054 Delta Fidelity:  0.0026387886907829196
+Exp Len:  50 Model Pred:  0.3224043548107147 Exp Pred:  0.40552636981010437 Unimportant Pred 0.30618008971214294 Delta Fidelity:  0.19518613809700006
+Exp Len:  60 Model Pred:  0.3224043548107147 Exp Pred:  0.361227422952652 Unimportant Pred 0.33592647314071655 Delta Fidelity:  0.348301125520655
+Exp Len:  70 Model Pred:  0.3224043548107147 Exp Pred:  0.34582167863845825 Unimportant Pred 0.33092284202575684 Delta Fidelity:  0.3637686047177555
+Exp Len:  80 Model Pred:  0.3224043548107147 Exp Pred:  0.3191131055355072 Unimportant Pred 0.2798263728618622 Delta Fidelity:  12.936723532181535
+Exp Len:  90 Model Pred:  0.3224043548107147 Exp Pred:  0.24702021479606628 Unimportant Pred -0.01334652304649353 Delta Fidelity:  4.453866261417403
+Exp Len:  100 Model Pred:  0.3224043548107147 Exp Pred:  0.22774454951286316 Unimportant Pred -0.025887101888656616 Delta Fidelity:  3.679401786254005
+runtime: 3192.91s
+PYTHONPATH=/dcs/pg21/u2188448/TGNNExplainer_Ext/tgnnexplainer
+#Dataset: wikipedia, #Users: 8227, #Items: 1000, #Interactions: 157474, #Timestamps: 152757
+#node feats shape: (9228, 172), #edge feats shape: (157475, 172)
+443 events to explain
+[2025-01-28 18:12:38,744][src.models.ext.tgat.module][INFO] - Aggregation uses attention model
+[2025-01-28 18:12:38,754][src.models.ext.tgat.module][INFO] - Using scaled prod attention
+[2025-01-28 18:12:38,764][src.models.ext.tgat.module][INFO] - Using scaled prod attention
+[2025-01-28 18:12:38,764][src.models.ext.tgat.module][INFO] - Using time encoding
+USING EXPLAINER: tgnnexplainer
+USING MODEL: tgat
+Initializing TGNNExplainer
+120 160
+Running results batch 3 with 40 events
+
+explain 0-th: 30140 on batch 3
+Exp Len:  10 Model Pred:  -3.1107051372528076 Exp Pred:  -3.053285598754883 Unimportant Pred 0.2921619713306427 Delta Fidelity:  59.2632263790562
+Exp Len:  20 Model Pred:  -3.1107051372528076 Exp Pred:  -3.882162094116211 Unimportant Pred 0.322278767824173 Delta Fidelity:  4.45000057946828
+Exp Len:  30 Model Pred:  -3.1107051372528076 Exp Pred:  -3.7587711811065674 Unimportant Pred 0.4828896224498749 Delta Fidelity:  5.54510577090751
+Exp Len:  40 Model Pred:  -3.1107051372528076 Exp Pred:  -3.6205103397369385 Unimportant Pred 0.6343556642532349 Delta Fidelity:  7.346062345494833
+Exp Len:  50 Model Pred:  -3.1107051372528076 Exp Pred:  -3.66625714302063 Unimportant Pred 0.6793808937072754 Delta Fidelity:  6.822198446969599
+Exp Len:  60 Model Pred:  -3.1107051372528076 Exp Pred:  -3.318218231201172 Unimportant Pred 0.917123556137085 Delta Fidelity:  19.40999778255989
+Exp Len:  70 Model Pred:  -3.1107051372528076 Exp Pred:  -3.04400634765625 Unimportant Pred 0.8628122806549072 Delta Fidelity:  59.5740558703151
+Exp Len:  80 Model Pred:  -3.1107051372528076 Exp Pred:  -3.139613151550293 Unimportant Pred 0.734130859375 Delta Fidelity:  133.0024247622661
+Exp Len:  90 Model Pred:  -3.1107051372528076 Exp Pred:  -2.9187397956848145 Unimportant Pred 0.6848313808441162 Delta Fidelity:  19.771988459450967
+Exp Len:  100 Model Pred:  -3.1107051372528076 Exp Pred:  -3.005204677581787 Unimportant Pred 0.6307499408721924 Delta Fidelity:  35.46387465791038
+
+explain 1-th: 30300 on batch 3
+Exp Len:  10 Model Pred:  2.4871773719787598 Exp Pred:  3.98187255859375 Unimportant Pred 2.2327022552490234 Delta Fidelity:  0.1702521818552461
+Exp Len:  20 Model Pred:  2.4871773719787598 Exp Pred:  4.1417036056518555 Unimportant Pred 0.13480055332183838 Delta Fidelity:  1.4217827259435938
+Exp Len:  30 Model Pred:  2.4871773719787598 Exp Pred:  3.7822461128234863 Unimportant Pred -0.05535411834716797 Delta Fidelity:  1.963240567962073
+Exp Len:  40 Model Pred:  2.4871773719787598 Exp Pred:  3.3564915657043457 Unimportant Pred -0.20606790482997894 Delta Fidelity:  3.098126426840453
+Exp Len:  50 Model Pred:  2.4871773719787598 Exp Pred:  3.2006168365478516 Unimportant Pred -0.4022691547870636 Delta Fidelity:  4.050023401089834
+Exp Len:  60 Model Pred:  2.4871773719787598 Exp Pred:  3.0168285369873047 Unimportant Pred -0.4440649449825287 Delta Fidelity:  5.5342884347549735
+Exp Len:  70 Model Pred:  2.4871773719787598 Exp Pred:  2.9622182846069336 Unimportant Pred -0.44145193696022034 Delta Fidelity:  6.1650043840145825
+Exp Len:  80 Model Pred:  2.4871773719787598 Exp Pred:  2.8450746536254883 Unimportant Pred -0.43285223841667175 Delta Fidelity:  8.158848250984258
+Exp Len:  90 Model Pred:  2.4871773719787598 Exp Pred:  2.8485164642333984 Unimportant Pred -0.6705888509750366 Delta Fidelity:  8.739066131069185
+Exp Len:  100 Model Pred:  2.4871773719787598 Exp Pred:  2.829425811767578 Unimportant Pred -0.7566244602203369 Delta Fidelity:  9.477915616505538
+
+explain 2-th: 30360 on batch 3
+
+explain 3-th: 30378 on batch 3
+
+explain 4-th: 30399 on batch 3
+Exp Len:  10 Model Pred:  2.9140658378601074 Exp Pred:  5.043381690979004 Unimportant Pred 2.8304786682128906 Delta Fidelity:  0.039255411321332735
+Exp Len:  20 Model Pred:  2.9140658378601074 Exp Pred:  4.233280181884766 Unimportant Pred -0.0278729647397995 Delta Fidelity:  2.230068840537802
+Exp Len:  30 Model Pred:  2.9140658378601074 Exp Pred:  3.912294864654541 Unimportant Pred 0.39701545238494873 Delta Fidelity:  2.521515922611513
+Exp Len:  40 Model Pred:  2.9140658378601074 Exp Pred:  3.6946029663085938 Unimportant Pred 0.45098361372947693 Delta Fidelity:  3.1556246773636834
+Exp Len:  50 Model Pred:  2.9140658378601074 Exp Pred:  3.3687429428100586 Unimportant Pred 0.48555633425712585 Delta Fidelity:  5.341173938965546
+Exp Len:  60 Model Pred:  2.9140658378601074 Exp Pred:  3.1265692710876465 Unimportant Pred 0.7280856370925903 Delta Fidelity:  10.286799453385152
+Exp Len:  70 Model Pred:  2.9140658378601074 Exp Pred:  3.0301363468170166 Unimportant Pred 0.562596321105957 Delta Fidelity:  20.25897480665934
+Exp Len:  80 Model Pred:  2.9140658378601074 Exp Pred:  2.9254279136657715 Unimportant Pred -0.3184950053691864 Delta Fidelity:  284.5044249412456
+Exp Len:  90 Model Pred:  2.9140658378601074 Exp Pred:  2.9353466033935547 Unimportant Pred -0.3184950053691864 Delta Fidelity:  151.90059014318044
+Exp Len:  100 Model Pred:  2.9140658378601074 Exp Pred:  2.8948845863342285 Unimportant Pred -0.609178900718689 Delta Fidelity:  183.6816921891314
+
+explain 5-th: 30425 on batch 3
+Exp Len:  10 Model Pred:  0.10125018656253815 Exp Pred:  0.05424189567565918 Unimportant Pred -0.26927173137664795 Delta Fidelity:  7.8820546535251035
+Exp Len:  20 Model Pred:  0.10125018656253815 Exp Pred:  0.3181016743183136 Unimportant Pred -0.30381181836128235 Delta Fidelity:  1.8679235688713065
+Exp Len:  30 Model Pred:  0.10125018656253815 Exp Pred:  0.5421698093414307 Unimportant Pred 0.43993982672691345 Delta Fidelity:  0.7681437220457245
+Exp Len:  40 Model Pred:  0.10125018656253815 Exp Pred:  0.5103994607925415 Unimportant Pred 0.9753561019897461 Delta Fidelity:  2.136398548114811
+Exp Len:  50 Model Pred:  0.10125018656253815 Exp Pred:  0.4346482455730438 Unimportant Pred 0.28009361028671265 Delta Fidelity:  0.5364261095429442
+Exp Len:  60 Model Pred:  0.10125018656253815 Exp Pred:  0.5117772817611694 Unimportant Pred -0.10284897685050964 Delta Fidelity:  0.4971636849311871
+Exp Len:  70 Model Pred:  0.10125018656253815 Exp Pred:  0.47081735730171204 Unimportant Pred 0.3791276514530182 Delta Fidelity:  0.7518997543388266
+Exp Len:  80 Model Pred:  0.10125018656253815 Exp Pred:  0.38501012325286865 Unimportant Pred 0.21021133661270142 Delta Fidelity:  0.383990606006772
+Exp Len:  90 Model Pred:  0.10125018656253815 Exp Pred:  0.23372280597686768 Unimportant Pred 0.34683266282081604 Delta Fidelity:  1.8538357386153814
+Exp Len:  100 Model Pred:  0.10125018656253815 Exp Pred:  0.14935283362865448 Unimportant Pred 0.07375958561897278 Delta Fidelity:  0.5714987141098486
+
+explain 6-th: 30475 on batch 3
+
+explain 7-th: 30534 on batch 3
+Exp Len:  10 Model Pred:  1.996645450592041 Exp Pred:  3.222503185272217 Unimportant Pred 0.41609641909599304 Delta Fidelity:  1.2893413214123175
+Exp Len:  20 Model Pred:  1.996645450592041 Exp Pred:  2.7029550075531006 Unimportant Pred 0.4722457826137543 Delta Fidelity:  2.1582600050565794
+Exp Len:  30 Model Pred:  1.996645450592041 Exp Pred:  2.5535852909088135 Unimportant Pred 0.49804922938346863 Delta Fidelity:  2.690768576290414
+Exp Len:  40 Model Pred:  1.996645450592041 Exp Pred:  2.5769236087799072 Unimportant Pred 0.5686806440353394 Delta Fidelity:  2.46082811563346
+Exp Len:  50 Model Pred:  1.996645450592041 Exp Pred:  2.6552491188049316 Unimportant Pred 0.6415071487426758 Delta Fidelity:  2.0575930066203685
+Exp Len:  60 Model Pred:  1.996645450592041 Exp Pred:  2.962771415710449 Unimportant Pred 0.7496130466461182 Delta Fidelity:  1.2907555008037557
+Exp Len:  70 Model Pred:  1.996645450592041 Exp Pred:  3.203216552734375 Unimportant Pred 0.9152646064758301 Delta Fidelity:  0.8962429501221761
+Exp Len:  80 Model Pred:  1.996645450592041 Exp Pred:  3.2159106731414795 Unimportant Pred 0.9889422655105591 Delta Fidelity:  0.8264839892459263
+Exp Len:  90 Model Pred:  1.996645450592041 Exp Pred:  2.942061424255371 Unimportant Pred 0.9955403804779053 Delta Fidelity:  1.0589043320635039
+Exp Len:  100 Model Pred:  1.996645450592041 Exp Pred:  2.9083919525146484 Unimportant Pred 0.8913564682006836 Delta Fidelity:  1.2122766361709372
+
+explain 8-th: 30725 on batch 3
+Exp Len:  10 Model Pred:  -5.088187217712402 Exp Pred:  -5.494969367980957 Unimportant Pred -0.40240731835365295 Delta Fidelity:  11.519138428923764
+Exp Len:  20 Model Pred:  -5.088187217712402 Exp Pred:  -5.721707344055176 Unimportant Pred -0.7902867794036865 Delta Fidelity:  6.784157692226635
+Exp Len:  30 Model Pred:  -5.088187217712402 Exp Pred:  -6.350216865539551 Unimportant Pred -0.5030224323272705 Delta Fidelity:  3.633167250293577
+Exp Len:  40 Model Pred:  -5.088187217712402 Exp Pred:  -5.914251804351807 Unimportant Pred -0.26538512110710144 Delta Fidelity:  5.83828695069162
+Exp Len:  50 Model Pred:  -5.088187217712402 Exp Pred:  -5.8571672439575195 Unimportant Pred 0.10337015986442566 Delta Fidelity:  6.75122525994191
+Exp Len:  60 Model Pred:  -5.088187217712402 Exp Pred:  -5.867105484008789 Unimportant Pred 0.6745730638504028 Delta Fidelity:  7.398414610256442
+Exp Len:  70 Model Pred:  -5.088187217712402 Exp Pred:  -5.320572376251221 Unimportant Pred 0.5985374450683594 Delta Fidelity:  24.471118115018662
+Exp Len:  80 Model Pred:  -5.088187217712402 Exp Pred:  -5.221953392028809 Unimportant Pred 0.5982106924057007 Delta Fidelity:  42.50998385187931
+Exp Len:  90 Model Pred:  -5.088187217712402 Exp Pred:  -5.089761734008789 Unimportant Pred 0.2679537534713745 Delta Fidelity:  3401.769155057541
+Exp Len:  100 Model Pred:  -5.088187217712402 Exp Pred:  -5.089923858642578 Unimportant Pred 0.2679537534713745 Delta Fidelity:  3084.1959774848983
+
+explain 9-th: 30741 on batch 3
+Exp Len:  10 Model Pred:  4.406528949737549 Exp Pred:  5.62186336517334 Unimportant Pred 0.35021159052848816 Delta Fidelity:  3.3376141642089174
+Exp Len:  20 Model Pred:  4.406528949737549 Exp Pred:  5.521988868713379 Unimportant Pred 0.5123536586761475 Delta Fidelity:  3.491093875104786
+Exp Len:  30 Model Pred:  4.406528949737549 Exp Pred:  5.227671146392822 Unimportant Pred 0.47528210282325745 Delta Fidelity:  4.787534805697827
+Exp Len:  40 Model Pred:  4.406528949737549 Exp Pred:  5.059187889099121 Unimportant Pred 0.32098183035850525 Delta Fidelity:  6.259850088586093
+Exp Len:  50 Model Pred:  4.406528949737549 Exp Pred:  4.987663269042969 Unimportant Pred 0.2902555763721466 Delta Fidelity:  7.083170338804343
+Exp Len:  60 Model Pred:  4.406528949737549 Exp Pred:  4.902475357055664 Unimportant Pred 0.27364110946655273 Delta Fidelity:  8.333335576761291
+Exp Len:  70 Model Pred:  4.406528949737549 Exp Pred:  4.753724098205566 Unimportant Pred 0.3326171338558197 Delta Fidelity:  11.733780940942507
+Exp Len:  80 Model Pred:  4.406528949737549 Exp Pred:  4.645018577575684 Unimportant Pred 0.16514942049980164 Delta Fidelity:  17.78433539305287
+Exp Len:  90 Model Pred:  4.406528949737549 Exp Pred:  4.573302268981934 Unimportant Pred 0.3615669906139374 Delta Fidelity:  24.25425108434906
+Exp Len:  100 Model Pred:  4.406528949737549 Exp Pred:  4.4850006103515625 Unimportant Pred 0.21742799878120422 Delta Fidelity:  53.38361541195987
+
+explain 10-th: 31025 on batch 3
+Exp Len:  10 Model Pred:  4.103675365447998 Exp Pred:  4.976425647735596 Unimportant Pred 3.0304040908813477 Delta Fidelity:  1.2297575793999858
+Exp Len:  20 Model Pred:  4.103675365447998 Exp Pred:  5.0084943771362305 Unimportant Pred 0.2337755262851715 Delta Fidelity:  4.276987761278664
+Exp Len:  30 Model Pred:  4.103675365447998 Exp Pred:  4.740200042724609 Unimportant Pred 0.2597806453704834 Delta Fidelity:  6.038877764368423
+Exp Len:  40 Model Pred:  4.103675365447998 Exp Pred:  4.529515266418457 Unimportant Pred 0.042547136545181274 Delta Fidelity:  9.536748951067745
+Exp Len:  50 Model Pred:  4.103675365447998 Exp Pred:  4.350424766540527 Unimportant Pred 0.08929376304149628 Delta Fidelity:  16.269063205957437
+Exp Len:  60 Model Pred:  4.103675365447998 Exp Pred:  4.3055830001831055 Unimportant Pred 0.3941443860530853 Delta Fidelity:  18.37241560608458
+Exp Len:  70 Model Pred:  4.103675365447998 Exp Pred:  4.293174743652344 Unimportant Pred 0.5522971153259277 Delta Fidelity:  18.740843815816955
+Exp Len:  80 Model Pred:  4.103675365447998 Exp Pred:  4.29389762878418 Unimportant Pred 0.5522971153259277 Delta Fidelity:  18.669624616155918
+Exp Len:  90 Model Pred:  4.103675365447998 Exp Pred:  4.29396915435791 Unimportant Pred 0.5522971153259277 Delta Fidelity:  18.662607279333457
+Exp Len:  100 Model Pred:  4.103675365447998 Exp Pred:  4.282590866088867 Unimportant Pred 0.5953904390335083 Delta Fidelity:  19.608613640785368
+
+explain 11-th: 31115 on batch 3
+Exp Len:  10 Model Pred:  0.20487821102142334 Exp Pred:  0.2126750946044922 Unimportant Pred 0.18879073858261108 Delta Fidelity:  2.0633208470300435
+Exp Len:  20 Model Pred:  0.20487821102142334 Exp Pred:  -0.08026039600372314 Unimportant Pred 0.30065563321113586 Delta Fidelity:  0.3358977698213482
+Exp Len:  30 Model Pred:  0.20487821102142334 Exp Pred:  -0.24453577399253845 Unimportant Pred 0.5016913414001465 Delta Fidelity:  0.6604448020670789
+Exp Len:  40 Model Pred:  0.20487821102142334 Exp Pred:  -0.019757837057113647 Unimportant Pred 0.8027999401092529 Delta Fidelity:  2.6617354347276665
+Exp Len:  50 Model Pred:  0.20487821102142334 Exp Pred:  -0.12127748131752014 Unimportant Pred 0.8471843004226685 Delta Fidelity:  1.9693235607666653
+Exp Len:  60 Model Pred:  0.20487821102142334 Exp Pred:  -0.13303309679031372 Unimportant Pred 0.9207160472869873 Delta Fidelity:  2.1184193003223903
+Exp Len:  70 Model Pred:  0.20487821102142334 Exp Pred:  0.07425940036773682 Unimportant Pred 0.7825080156326294 Delta Fidelity:  4.422255888875706
+Exp Len:  80 Model Pred:  0.20487821102142334 Exp Pred:  0.14144232869148254 Unimportant Pred 0.6840821504592896 Delta Fidelity:  7.554146357505444
+Exp Len:  90 Model Pred:  0.20487821102142334 Exp Pred:  0.17164769768714905 Unimportant Pred 0.6754152774810791 Delta Fidelity:  14.1597892794012
+Exp Len:  100 Model Pred:  0.20487821102142334 Exp Pred:  0.16024333238601685 Unimportant Pred 0.6235916614532471 Delta Fidelity:  9.380857823139245
+
+explain 12-th: 31319 on batch 3
+
+explain 13-th: 31423 on batch 3
+Exp Len:  10 Model Pred:  0.479077011346817 Exp Pred:  0.4969165027141571 Unimportant Pred 0.17944693565368652 Delta Fidelity:  16.795886694487415
+Exp Len:  20 Model Pred:  0.479077011346817 Exp Pred:  0.482156902551651 Unimportant Pred 0.1937779188156128 Delta Fidelity:  92.63284757702431
+Exp Len:  30 Model Pred:  0.479077011346817 Exp Pred:  0.4796372354030609 Unimportant Pred -0.5506274700164795 Delta Fidelity:  1838.022608788169
+Exp Len:  40 Model Pred:  0.479077011346817 Exp Pred:  0.4850042164325714 Unimportant Pred -1.2126744985580444 Delta Fidelity:  285.4214567285453
+Exp Len:  50 Model Pred:  0.479077011346817 Exp Pred:  0.47898754477500916 Unimportant Pred -1.2126744985580444 Delta Fidelity:  18909.31412391739
+Exp Len:  60 Model Pred:  0.479077011346817 Exp Pred:  0.4588535726070404 Unimportant Pred -1.2126744985580444 Delta Fidelity:  83.65300934590458
+Exp Len:  70 Model Pred:  0.479077011346817 Exp Pred:  0.4759521782398224 Unimportant Pred -1.2126744985580444 Delta Fidelity:  541.3893964826613
+Exp Len:  80 Model Pred:  0.479077011346817 Exp Pred:  0.4756210744380951 Unimportant Pred -1.2126744985580444 Delta Fidelity:  489.5203687414843
+Exp Len:  90 Model Pred:  0.479077011346817 Exp Pred:  0.4699173867702484 Unimportant Pred -1.2126744985580444 Delta Fidelity:  184.69659927248117
+Exp Len:  100 Model Pred:  0.479077011346817 Exp Pred:  0.4726216495037079 Unimportant Pred -1.2126744985580444 Delta Fidelity:  262.06919937582524
+
+explain 14-th: 31650 on batch 3
+
+explain 15-th: 31663 on batch 3
+Exp Len:  10 Model Pred:  4.51347541809082 Exp Pred:  5.151952743530273 Unimportant Pred 0.8597707748413086 Delta Fidelity:  5.722528424536813
+Exp Len:  20 Model Pred:  4.51347541809082 Exp Pred:  4.785909652709961 Unimportant Pred 0.9957935810089111 Delta Fidelity:  12.912040375540837
+Exp Len:  30 Model Pred:  4.51347541809082 Exp Pred:  4.5447845458984375 Unimportant Pred 1.0637428760528564 Delta Fidelity:  110.18296527566251
+Exp Len:  40 Model Pred:  4.51347541809082 Exp Pred:  4.518531799316406 Unimportant Pred -1.0811917781829834 Delta Fidelity:  1106.4567615993965
+Exp Len:  50 Model Pred:  4.51347541809082 Exp Pred:  4.515714168548584 Unimportant Pred -1.0811917781829834 Delta Fidelity:  2499.013312034079
+Exp Len:  60 Model Pred:  4.51347541809082 Exp Pred:  4.511836051940918 Unimportant Pred -1.0811917781829834 Delta Fidelity:  3412.701425247237
+Exp Len:  70 Model Pred:  4.51347541809082 Exp Pred:  4.513228416442871 Unimportant Pred -1.0811917781829834 Delta Fidelity:  22650.323359073358
+Exp Len:  80 Model Pred:  4.51347541809082 Exp Pred:  4.513504981994629 Unimportant Pred -1.0811917781829834 Delta Fidelity:  189239.7983870968
+Exp Len:  90 Model Pred:  4.51347541809082 Exp Pred:  4.51346492767334 Unimportant Pred -1.0811917781829834 Delta Fidelity:  533312.1590909091
+Exp Len:  100 Model Pred:  4.51347541809082 Exp Pred:  4.5132341384887695 Unimportant Pred -1.0811917781829834 Delta Fidelity:  23187.485177865612
+
+explain 16-th: 31869 on batch 3
+Exp Len:  10 Model Pred:  0.24321255087852478 Exp Pred:  -0.25232580304145813 Unimportant Pred 0.37870797514915466 Delta Fidelity:  0.27343075101813213
+Exp Len:  20 Model Pred:  0.24321255087852478 Exp Pred:  -0.36453738808631897 Unimportant Pred 0.48270484805107117 Delta Fidelity:  0.394063876963055
+Exp Len:  30 Model Pred:  0.24321255087852478 Exp Pred:  -0.386669784784317 Unimportant Pred 0.5121707916259766 Delta Fidelity:  0.4269975922795484
+Exp Len:  40 Model Pred:  0.24321255087852478 Exp Pred:  -0.5562163591384888 Unimportant Pred 0.6902741193771362 Delta Fidelity:  0.5592261712040124
+Exp Len:  50 Model Pred:  0.24321255087852478 Exp Pred:  -0.6916285753250122 Unimportant Pred 0.5994887351989746 Delta Fidelity:  0.38110880483758275
+Exp Len:  60 Model Pred:  0.24321255087852478 Exp Pred:  -0.7205374240875244 Unimportant Pred 0.49969562888145447 Delta Fidelity:  0.26613030834264356
+Exp Len:  70 Model Pred:  0.24321255087852478 Exp Pred:  -1.0265949964523315 Unimportant Pred 0.26966649293899536 Delta Fidelity:  0.02083303262457129
+Exp Len:  80 Model Pred:  0.24321255087852478 Exp Pred:  -0.4857918918132782 Unimportant Pred 0.16374585032463074 Delta Fidelity:  0.10900715537544362
+Exp Len:  90 Model Pred:  0.24321255087852478 Exp Pred:  -0.44323235750198364 Unimportant Pred 0.2876752018928528 Delta Fidelity:  0.06477235167965086
+Exp Len:  100 Model Pred:  0.24321255087852478 Exp Pred:  -0.07308152318000793 Unimportant Pred -0.276833176612854 Delta Fidelity:  1.6441842264649582
+
+explain 17-th: 32596 on batch 3
+
+explain 18-th: 32674 on batch 3
+
+explain 19-th: 32829 on batch 3
+Exp Len:  10 Model Pred:  1.0999610424041748 Exp Pred:  1.6355997323989868 Unimportant Pred 0.9134447574615479 Delta Fidelity:  0.3482128689106335
+Exp Len:  20 Model Pred:  1.0999610424041748 Exp Pred:  2.2800207138061523 Unimportant Pred 0.24861213564872742 Delta Fidelity:  0.7214456415953923
+Exp Len:  30 Model Pred:  1.0999610424041748 Exp Pred:  2.0621137619018555 Unimportant Pred 0.2368171215057373 Delta Fidelity:  0.8970965870668292
+Exp Len:  40 Model Pred:  1.0999610424041748 Exp Pred:  1.9032690525054932 Unimportant Pred 0.26392748951911926 Delta Fidelity:  1.0407384743737456
+Exp Len:  50 Model Pred:  1.0999610424041748 Exp Pred:  1.818138837814331 Unimportant Pred 0.26490771770477295 Delta Fidelity:  1.1627389903115803
+Exp Len:  60 Model Pred:  1.0999610424041748 Exp Pred:  1.7015968561172485 Unimportant Pred 0.28780874609947205 Delta Fidelity:  1.3499068336580549
+Exp Len:  70 Model Pred:  1.0999610424041748 Exp Pred:  1.636892318725586 Unimportant Pred 0.30645686388015747 Delta Fidelity:  1.4778505434818807
+Exp Len:  80 Model Pred:  1.0999610424041748 Exp Pred:  1.5241680145263672 Unimportant Pred 0.323637992143631 Delta Fidelity:  1.8300572627951168
+Exp Len:  90 Model Pred:  1.0999610424041748 Exp Pred:  1.4546571969985962 Unimportant Pred 0.3320457339286804 Delta Fidelity:  2.1649947385349297
+Exp Len:  100 Model Pred:  1.0999610424041748 Exp Pred:  1.4165488481521606 Unimportant Pred 0.3681071698665619 Delta Fidelity:  2.3116931835340253
+
+explain 20-th: 33034 on batch 3
+
+explain 21-th: 33085 on batch 3
+Exp Len:  10 Model Pred:  1.6552400588989258 Exp Pred:  1.910119652748108 Unimportant Pred 1.4459450244903564 Delta Fidelity:  0.8211525734477347
+Exp Len:  20 Model Pred:  1.6552400588989258 Exp Pred:  4.770415306091309 Unimportant Pred 0.5851222276687622 Delta Fidelity:  0.3435176984648391
+Exp Len:  30 Model Pred:  1.6552400588989258 Exp Pred:  4.625489711761475 Unimportant Pred 0.5976799726486206 Delta Fidelity:  0.3560509081218449
+Exp Len:  40 Model Pred:  1.6552400588989258 Exp Pred:  4.318877220153809 Unimportant Pred 0.6423474550247192 Delta Fidelity:  0.38026673400104405
+Exp Len:  50 Model Pred:  1.6552400588989258 Exp Pred:  3.868283748626709 Unimportant Pred 0.6285116672515869 Delta Fidelity:  0.46394402262055306
+Exp Len:  60 Model Pred:  1.6552400588989258 Exp Pred:  3.4083187580108643 Unimportant Pred 0.653071403503418 Delta Fidelity:  0.5716621027357066
+Exp Len:  70 Model Pred:  1.6552400588989258 Exp Pred:  3.063509464263916 Unimportant Pred 0.6786932945251465 Delta Fidelity:  0.6934374634949066
+Exp Len:  80 Model Pred:  1.6552400588989258 Exp Pred:  2.8185067176818848 Unimportant Pred 0.5907865762710571 Delta Fidelity:  0.9150554385711773
+Exp Len:  90 Model Pred:  1.6552400588989258 Exp Pred:  2.6693201065063477 Unimportant Pred 0.5509260892868042 Delta Fidelity:  1.0889810643820415
+Exp Len:  100 Model Pred:  1.6552400588989258 Exp Pred:  2.5533368587493896 Unimportant Pred 0.5761016607284546 Delta Fidelity:  1.201583613648497
+
+explain 22-th: 33085 on batch 3
+Exp Len:  10 Model Pred:  1.6552400588989258 Exp Pred:  1.910119652748108 Unimportant Pred 1.4459450244903564 Delta Fidelity:  0.8211525734477347
+Exp Len:  20 Model Pred:  1.6552400588989258 Exp Pred:  4.770415306091309 Unimportant Pred 0.5851222276687622 Delta Fidelity:  0.3435176984648391
+Exp Len:  30 Model Pred:  1.6552400588989258 Exp Pred:  4.625489711761475 Unimportant Pred 0.5976799726486206 Delta Fidelity:  0.3560509081218449
+Exp Len:  40 Model Pred:  1.6552400588989258 Exp Pred:  4.318877220153809 Unimportant Pred 0.6423474550247192 Delta Fidelity:  0.38026673400104405
+Exp Len:  50 Model Pred:  1.6552400588989258 Exp Pred:  3.868283748626709 Unimportant Pred 0.6285116672515869 Delta Fidelity:  0.46394402262055306
+Exp Len:  60 Model Pred:  1.6552400588989258 Exp Pred:  3.4083187580108643 Unimportant Pred 0.653071403503418 Delta Fidelity:  0.5716621027357066
+Exp Len:  70 Model Pred:  1.6552400588989258 Exp Pred:  3.063509464263916 Unimportant Pred 0.6786932945251465 Delta Fidelity:  0.6934374634949066
+Exp Len:  80 Model Pred:  1.6552400588989258 Exp Pred:  2.8185067176818848 Unimportant Pred 0.5907865762710571 Delta Fidelity:  0.9150554385711773
+Exp Len:  90 Model Pred:  1.6552400588989258 Exp Pred:  2.6693201065063477 Unimportant Pred 0.5509260892868042 Delta Fidelity:  1.0889810643820415
+Exp Len:  100 Model Pred:  1.6552400588989258 Exp Pred:  2.5533368587493896 Unimportant Pred 0.5761016607284546 Delta Fidelity:  1.201583613648497
+
+explain 23-th: 33155 on batch 3
+Exp Len:  10 Model Pred:  -2.2122366428375244 Exp Pred:  -4.3265790939331055 Unimportant Pred 0.22766929864883423 Delta Fidelity:  1.153978599929298
+Exp Len:  20 Model Pred:  -2.2122366428375244 Exp Pred:  -5.041447639465332 Unimportant Pred 0.1290566623210907 Delta Fidelity:  0.8275428407245867
+Exp Len:  30 Model Pred:  -2.2122366428375244 Exp Pred:  -4.982115268707275 Unimportant Pred 0.10189726948738098 Delta Fidelity:  0.8354640130118552
+Exp Len:  40 Model Pred:  -2.2122366428375244 Exp Pred:  -5.148980617523193 Unimportant Pred 0.170699805021286 Delta Fidelity:  0.8114212435266391
+Exp Len:  50 Model Pred:  -2.2122366428375244 Exp Pred:  -5.1327338218688965 Unimportant Pred 0.1963178813457489 Delta Fidelity:  0.8247070195705881
+Exp Len:  60 Model Pred:  -2.2122366428375244 Exp Pred:  -5.1139726638793945 Unimportant Pred 0.40961477160453796 Delta Fidelity:  0.9035458068651899
+Exp Len:  70 Model Pred:  -2.2122366428375244 Exp Pred:  -4.751430988311768 Unimportant Pred 0.5052369832992554 Delta Fidelity:  1.0702109631664447
+Exp Len:  80 Model Pred:  -2.2122366428375244 Exp Pred:  -4.6559977531433105 Unimportant Pred 0.9102226495742798 Delta Fidelity:  1.2777268936983341
+Exp Len:  90 Model Pred:  -2.2122366428375244 Exp Pred:  -4.6434326171875 Unimportant Pred 0.9989529848098755 Delta Fidelity:  1.3208271408502845
+Exp Len:  100 Model Pred:  -2.2122366428375244 Exp Pred:  -4.611797332763672 Unimportant Pred 0.976344108581543 Delta Fidelity:  1.3288185478306047
+
+explain 24-th: 33214 on batch 3
+Exp Len:  10 Model Pred:  3.607513904571533 Exp Pred:  4.496870994567871 Unimportant Pred 3.6083590984344482 Delta Fidelity:  0.0009503425254286996
+Exp Len:  20 Model Pred:  3.607513904571533 Exp Pred:  4.680663585662842 Unimportant Pred -0.11597593128681183 Delta Fidelity:  3.4696835879146417
+Exp Len:  30 Model Pred:  3.607513904571533 Exp Pred:  4.460341453552246 Unimportant Pred -0.24389061331748962 Delta Fidelity:  4.51604139956802
+Exp Len:  40 Model Pred:  3.607513904571533 Exp Pred:  4.140471935272217 Unimportant Pred -0.5328881740570068 Delta Fidelity:  7.768720687415339
+Exp Len:  50 Model Pred:  3.607513904571533 Exp Pred:  3.974123477935791 Unimportant Pred -0.535612940788269 Delta Fidelity:  11.301196549068981
+Exp Len:  60 Model Pred:  3.607513904571533 Exp Pred:  3.77413010597229 Unimportant Pred -0.18120908737182617 Delta Fidelity:  22.739223197331576
+Exp Len:  70 Model Pred:  3.607513904571533 Exp Pred:  3.787069082260132 Unimportant Pred -0.18120908737182617 Delta Fidelity:  21.10060562282485
+Exp Len:  80 Model Pred:  3.607513904571533 Exp Pred:  3.6822807788848877 Unimportant Pred 0.15980327129364014 Delta Fidelity:  46.11280951545783
+Exp Len:  90 Model Pred:  3.607513904571533 Exp Pred:  3.645946502685547 Unimportant Pred 0.17662259936332703 Delta Fidelity:  89.27034532066155
+Exp Len:  100 Model Pred:  3.607513904571533 Exp Pred:  3.6414427757263184 Unimportant Pred 0.008479595184326172 Delta Fidelity:  106.07586361975433
+
+explain 25-th: 33338 on batch 3
+Exp Len:  10 Model Pred:  2.669041156768799 Exp Pred:  4.7991204261779785 Unimportant Pred -0.024968594312667847 Delta Fidelity:  1.2647462419690627
+Exp Len:  20 Model Pred:  2.669041156768799 Exp Pred:  4.435647964477539 Unimportant Pred -0.00904834270477295 Delta Fidelity:  1.5159510807880388
+Exp Len:  30 Model Pred:  2.669041156768799 Exp Pred:  4.353703498840332 Unimportant Pred -0.012482047080993652 Delta Fidelity:  1.591727396572821
+Exp Len:  40 Model Pred:  2.669041156768799 Exp Pred:  4.141487121582031 Unimportant Pred 0.0082511305809021 Delta Fidelity:  1.8070544453054995
+Exp Len:  50 Model Pred:  2.669041156768799 Exp Pred:  4.056522369384766 Unimportant Pred -0.06419700384140015 Delta Fidelity:  1.9699280507423467
+Exp Len:  60 Model Pred:  2.669041156768799 Exp Pred:  3.852001667022705 Unimportant Pred -0.030158430337905884 Delta Fidelity:  2.2817326222727066
+Exp Len:  70 Model Pred:  2.669041156768799 Exp Pred:  3.605355739593506 Unimportant Pred -0.015514463186264038 Delta Fidelity:  2.867151349769861
+Exp Len:  80 Model Pred:  2.669041156768799 Exp Pred:  3.6004576683044434 Unimportant Pred -0.04508572816848755 Delta Fidelity:  2.913977636559666
+Exp Len:  90 Model Pred:  2.669041156768799 Exp Pred:  3.482059955596924 Unimportant Pred 0.043054938316345215 Delta Fidelity:  3.229920663873353
+Exp Len:  100 Model Pred:  2.669041156768799 Exp Pred:  3.4159703254699707 Unimportant Pred 0.1361665278673172 Delta Fidelity:  3.391050631087113
+
+explain 26-th: 33632 on batch 3
+Exp Len:  10 Model Pred:  0.31140443682670593 Exp Pred:  0.3588603734970093 Unimportant Pred -0.19690260291099548 Delta Fidelity:  10.711137012617145
+Exp Len:  20 Model Pred:  0.31140443682670593 Exp Pred:  0.21284663677215576 Unimportant Pred 0.25885939598083496 Delta Fidelity:  0.5331393437839331
+Exp Len:  30 Model Pred:  0.31140443682670593 Exp Pred:  0.25873810052871704 Unimportant Pred 1.274397611618042 Delta Fidelity:  18.28479523129671
+Exp Len:  40 Model Pred:  0.31140443682670593 Exp Pred:  0.278573602437973 Unimportant Pred 0.9141258001327515 Delta Fidelity:  18.3583930938073
+Exp Len:  50 Model Pred:  0.31140443682670593 Exp Pred:  0.42874571681022644 Unimportant Pred -0.7110002040863037 Delta Fidelity:  8.713085804557414
+Exp Len:  60 Model Pred:  0.31140443682670593 Exp Pred:  0.39089497923851013 Unimportant Pred -3.5382027626037598 Delta Fidelity:  48.42849328524403
+Exp Len:  70 Model Pred:  0.31140443682670593 Exp Pred:  0.38928303122520447 Unimportant Pred -3.5499775409698486 Delta Fidelity:  49.58207075538847
+Exp Len:  80 Model Pred:  0.31140443682670593 Exp Pred:  0.37962815165519714 Unimportant Pred -3.902754068374634 Delta Fidelity:  61.76970157364468
+Exp Len:  90 Model Pred:  0.31140443682670593 Exp Pred:  0.31947317719459534 Unimportant Pred -3.1007235050201416 Delta Fidelity:  422.8823566347297
+Exp Len:  100 Model Pred:  0.31140443682670593 Exp Pred:  0.30033987760543823 Unimportant Pred -2.878730535507202 Delta Fidelity:  288.3201136654411
+
+explain 27-th: 34282 on batch 3
+
+explain 28-th: 34310 on batch 3
+Exp Len:  10 Model Pred:  5.452579498291016 Exp Pred:  5.552620887756348 Unimportant Pred 5.056341171264648 Delta Fidelity:  3.960743939523932
+Exp Len:  20 Model Pred:  5.452579498291016 Exp Pred:  5.495131492614746 Unimportant Pred 4.094797134399414 Delta Fidelity:  31.908783253770814
+Exp Len:  30 Model Pred:  5.452579498291016 Exp Pred:  5.545184135437012 Unimportant Pred 2.2413010597229004 Delta Fidelity:  34.67729627302967
+Exp Len:  40 Model Pred:  5.452579498291016 Exp Pred:  5.527248859405518 Unimportant Pred -0.5866726636886597 Delta Fidelity:  80.87992279348374
+Exp Len:  50 Model Pred:  5.452579498291016 Exp Pred:  5.5146484375 Unimportant Pred -0.6565580368041992 Delta Fidelity:  98.42503533894659
+Exp Len:  60 Model Pred:  5.452579498291016 Exp Pred:  5.458524703979492 Unimportant Pred -0.4601565897464752 Delta Fidelity:  994.5385236204684
+Exp Len:  70 Model Pred:  5.452579498291016 Exp Pred:  5.449522495269775 Unimportant Pred -0.2846960127353668 Delta Fidelity:  1876.7647500389955
+Exp Len:  80 Model Pred:  5.452579498291016 Exp Pred:  5.428122520446777 Unimportant Pred -0.10408163070678711 Delta Fidelity:  227.20146227334763
+Exp Len:  90 Model Pred:  5.452579498291016 Exp Pred:  5.403201103210449 Unimportant Pred 0.2774272859096527 Delta Fidelity:  104.80600278598605
+Exp Len:  100 Model Pred:  5.452579498291016 Exp Pred:  5.412032127380371 Unimportant Pred 0.6024327278137207 Delta Fidelity:  119.61680033868805
+
+explain 29-th: 34314 on batch 3
+Exp Len:  10 Model Pred:  3.3269948959350586 Exp Pred:  2.978816032409668 Unimportant Pred 2.5986204147338867 Delta Fidelity:  2.0919549045172174
+Exp Len:  20 Model Pred:  3.3269948959350586 Exp Pred:  4.016854286193848 Unimportant Pred 0.7791774272918701 Delta Fidelity:  3.6932417020335375
+Exp Len:  30 Model Pred:  3.3269948959350586 Exp Pred:  3.770188570022583 Unimportant Pred 0.5071583986282349 Delta Fidelity:  6.362537784666002
+Exp Len:  40 Model Pred:  3.3269948959350586 Exp Pred:  3.7976863384246826 Unimportant Pred -1.304782509803772 Delta Fidelity:  9.840368843843882
+Exp Len:  50 Model Pred:  3.3269948959350586 Exp Pred:  3.878117084503174 Unimportant Pred -1.4412232637405396 Delta Fidelity:  8.651834853653831
+Exp Len:  60 Model Pred:  3.3269948959350586 Exp Pred:  3.905325412750244 Unimportant Pred -1.403428554534912 Delta Fidelity:  8.179446376995614
+Exp Len:  70 Model Pred:  3.3269948959350586 Exp Pred:  3.8065104484558105 Unimportant Pred -1.296461582183838 Delta Fidelity:  9.641932266459298
+Exp Len:  80 Model Pred:  3.3269948959350586 Exp Pred:  3.71823787689209 Unimportant Pred -1.264350414276123 Delta Fidelity:  11.735278416957547
+Exp Len:  90 Model Pred:  3.3269948959350586 Exp Pred:  3.6671206951141357 Unimportant Pred -1.3230928182601929 Delta Fidelity:  13.671670086240555
+Exp Len:  100 Model Pred:  3.3269948959350586 Exp Pred:  3.603020191192627 Unimportant Pred -1.9974164962768555 Delta Fidelity:  19.289577744110478
+
+explain 30-th: 34381 on batch 3
+Exp Len:  10 Model Pred:  3.3537955284118652 Exp Pred:  3.4061532020568848 Unimportant Pred 3.2549197673797607 Delta Fidelity:  1.8884674231799057
+Exp Len:  20 Model Pred:  3.3537955284118652 Exp Pred:  3.6457581520080566 Unimportant Pred 0.05404511094093323 Delta Fidelity:  11.30196179506443
+Exp Len:  30 Model Pred:  3.3537955284118652 Exp Pred:  3.6490585803985596 Unimportant Pred 0.017146974802017212 Delta Fidelity:  11.300596302717246
+Exp Len:  40 Model Pred:  3.3537955284118652 Exp Pred:  3.6417276859283447 Unimportant Pred 0.38869601488113403 Delta Fidelity:  10.297910240751857
+Exp Len:  50 Model Pred:  3.3537955284118652 Exp Pred:  3.6417276859283447 Unimportant Pred 0.38855424523353577 Delta Fidelity:  10.298402612457823
+Exp Len:  60 Model Pred:  3.3537955284118652 Exp Pred:  3.6417276859283447 Unimportant Pred 0.3830656409263611 Delta Fidelity:  10.317464756660526
+Exp Len:  70 Model Pred:  3.3537955284118652 Exp Pred:  3.5753281116485596 Unimportant Pred 0.39992791414260864 Delta Fidelity:  13.333784001937202
+Exp Len:  80 Model Pred:  3.3537955284118652 Exp Pred:  3.467332363128662 Unimportant Pred 0.5722500085830688 Delta Fidelity:  24.499058184658804
+Exp Len:  90 Model Pred:  3.3537955284118652 Exp Pred:  3.3721132278442383 Unimportant Pred 0.9190483093261719 Delta Fidelity:  132.91774046596382
+Exp Len:  100 Model Pred:  3.3537955284118652 Exp Pred:  3.3534765243530273 Unimportant Pred -0.8867607116699219 Delta Fidelity:  13293.110612855007
+
+explain 31-th: 34509 on batch 3
+Exp Len:  10 Model Pred:  3.996145248413086 Exp Pred:  2.6797571182250977 Unimportant Pred 3.238919734954834 Delta Fidelity:  0.5752296728398147
+Exp Len:  20 Model Pred:  3.996145248413086 Exp Pred:  5.331364154815674 Unimportant Pred 0.137857586145401 Delta Fidelity:  2.8896292913218793
+Exp Len:  30 Model Pred:  3.996145248413086 Exp Pred:  4.911327362060547 Unimportant Pred 0.19602635502815247 Delta Fidelity:  4.1523089631194265
+Exp Len:  40 Model Pred:  3.996145248413086 Exp Pred:  4.583809852600098 Unimportant Pred 0.3978382647037506 Delta Fidelity:  6.123062301305884
+Exp Len:  50 Model Pred:  3.996145248413086 Exp Pred:  4.393632888793945 Unimportant Pred 0.4358862340450287 Delta Fidelity:  8.956904951702992
+Exp Len:  60 Model Pred:  3.996145248413086 Exp Pred:  4.3664679527282715 Unimportant Pred 0.4173085391521454 Delta Fidelity:  9.664102869088348
+Exp Len:  70 Model Pred:  3.996145248413086 Exp Pred:  4.311336994171143 Unimportant Pred 0.34747523069381714 Delta Fidelity:  11.576032896876725
+Exp Len:  80 Model Pred:  3.996145248413086 Exp Pred:  4.192218780517578 Unimportant Pred 1.0845673084259033 Delta Fidelity:  14.849418525472037
+Exp Len:  90 Model Pred:  3.996145248413086 Exp Pred:  4.1813764572143555 Unimportant Pred 1.0843641757965088 Delta Fidelity:  15.719711011229013
+Exp Len:  100 Model Pred:  3.996145248413086 Exp Pred:  4.160353660583496 Unimportant Pred 0.8146418333053589 Delta Fidelity:  19.374789470627523
+
+explain 32-th: 34656 on batch 3
+Exp Len:  10 Model Pred:  0.7179418802261353 Exp Pred:  0.5042051076889038 Unimportant Pred 0.7184135913848877 Delta Fidelity:  0.002206972404199996
+Exp Len:  20 Model Pred:  0.7179418802261353 Exp Pred:  0.7662079334259033 Unimportant Pred 1.0525894165039062 Delta Fidelity:  6.933393432703113
+Exp Len:  30 Model Pred:  0.7179418802261353 Exp Pred:  0.7142349481582642 Unimportant Pred 0.9054697751998901 Delta Fidelity:  50.58843581167996
+Exp Len:  40 Model Pred:  0.7179418802261353 Exp Pred:  0.7037523984909058 Unimportant Pred 0.9447319507598877 Delta Fidelity:  15.982970679660589
+Exp Len:  50 Model Pred:  0.7179418802261353 Exp Pred:  0.7204301357269287 Unimportant Pred 0.7007849216461182 Delta Fidelity:  6.895175585684856
+Exp Len:  60 Model Pred:  0.7179418802261353 Exp Pred:  0.816845178604126 Unimportant Pred 0.39357393980026245 Delta Fidelity:  3.2796473499417234
+Exp Len:  70 Model Pred:  0.7179418802261353 Exp Pred:  0.8098596334457397 Unimportant Pred 0.3591512143611908 Delta Fidelity:  3.9033881192433295
+Exp Len:  80 Model Pred:  0.7179418802261353 Exp Pred:  0.7533539533615112 Unimportant Pred 0.4012380838394165 Delta Fidelity:  8.943384793542002
+Exp Len:  90 Model Pred:  0.7179418802261353 Exp Pred:  0.7000107765197754 Unimportant Pred 0.3991270959377289 Delta Fidelity:  17.779986637148728
+Exp Len:  100 Model Pred:  0.7179418802261353 Exp Pred:  0.7323408126831055 Unimportant Pred 0.3125043213367462 Delta Fidelity:  28.157473486385125
+
+explain 33-th: 34692 on batch 3
+Exp Len:  10 Model Pred:  1.8637938499450684 Exp Pred:  3.5837221145629883 Unimportant Pred 0.5117200613021851 Delta Fidelity:  0.7861221984995083
+Exp Len:  20 Model Pred:  1.8637938499450684 Exp Pred:  3.111114740371704 Unimportant Pred 0.5510220527648926 Delta Fidelity:  1.0524731905445384
+Exp Len:  30 Model Pred:  1.8637938499450684 Exp Pred:  2.9555606842041016 Unimportant Pred 0.6254500150680542 Delta Fidelity:  1.1342566892659462
+Exp Len:  40 Model Pred:  1.8637938499450684 Exp Pred:  2.7479991912841797 Unimportant Pred 0.6493613719940186 Delta Fidelity:  1.3734733564398243
+Exp Len:  50 Model Pred:  1.8637938499450684 Exp Pred:  2.50490140914917 Unimportant Pred 0.7975783348083496 Delta Fidelity:  1.6630836742283377
+Exp Len:  60 Model Pred:  1.8637938499450684 Exp Pred:  2.335686683654785 Unimportant Pred 0.7014153003692627 Delta Fidelity:  2.463225687150059
+Exp Len:  70 Model Pred:  1.8637938499450684 Exp Pred:  2.1387176513671875 Unimportant Pred 0.8532967567443848 Delta Fidelity:  3.675553327771582
+Exp Len:  80 Model Pred:  1.8637938499450684 Exp Pred:  1.9855437278747559 Unimportant Pred 1.050325870513916 Delta Fidelity:  6.681468542423863
+Exp Len:  90 Model Pred:  1.8637938499450684 Exp Pred:  1.973451852798462 Unimportant Pred 1.1406177282333374 Delta Fidelity:  6.594832140783886
+Exp Len:  100 Model Pred:  1.8637938499450684 Exp Pred:  1.8679108619689941 Unimportant Pred 1.3281645774841309 Delta Fidelity:  130.1014593467686
+
+explain 34-th: 34868 on batch 3
+Exp Len:  10 Model Pred:  -0.11002108454704285 Exp Pred:  -0.29916301369667053 Unimportant Pred -0.10518145561218262 Delta Fidelity:  0.025587287581441884
+Exp Len:  20 Model Pred:  -0.11002108454704285 Exp Pred:  -0.2079443633556366 Unimportant Pred -0.09988325834274292 Delta Fidelity:  0.10352825525905726
+Exp Len:  30 Model Pred:  -0.11002108454704285 Exp Pred:  -0.28100940585136414 Unimportant Pred -0.07607287168502808 Delta Fidelity:  0.19854112025343815
+Exp Len:  40 Model Pred:  -0.11002108454704285 Exp Pred:  -0.26322972774505615 Unimportant Pred -0.06665003299713135 Delta Fidelity:  0.2830848876708406
+Exp Len:  50 Model Pred:  -0.11002108454704285 Exp Pred:  -0.23407840728759766 Unimportant Pred -0.06173139810562134 Delta Fidelity:  0.3892530112262001
+Exp Len:  60 Model Pred:  -0.11002108454704285 Exp Pred:  -0.17854997515678406 Unimportant Pred -0.07036414742469788 Delta Fidelity:  0.5786893202194614
+Exp Len:  70 Model Pred:  -0.11002108454704285 Exp Pred:  -0.18371373414993286 Unimportant Pred -0.028631597757339478 Delta Fidelity:  1.1044451139739113
+Exp Len:  80 Model Pred:  -0.11002108454704285 Exp Pred:  -0.17903614044189453 Unimportant Pred -0.019941717386245728 Delta Fidelity:  1.305213275463228
+Exp Len:  90 Model Pred:  -0.11002108454704285 Exp Pred:  -0.17630162835121155 Unimportant Pred -0.005348473787307739 Delta Fidelity:  1.5792358473853039
+Exp Len:  100 Model Pred:  -0.11002108454704285 Exp Pred:  -0.16092801094055176 Unimportant Pred 0.0350242555141449 Delta Fidelity:  2.8492260353727095
+
+explain 35-th: 35021 on batch 3
+Exp Len:  10 Model Pred:  2.690809488296509 Exp Pred:  4.38423490524292 Unimportant Pred -0.0756603479385376 Delta Fidelity:  1.6336531910708838
+Exp Len:  20 Model Pred:  2.690809488296509 Exp Pred:  4.014312744140625 Unimportant Pred -0.05026724934577942 Delta Fidelity:  2.0710766864672796
+Exp Len:  30 Model Pred:  2.690809488296509 Exp Pred:  3.856106758117676 Unimportant Pred 0.005742192268371582 Delta Fidelity:  2.3041908408832046
+Exp Len:  40 Model Pred:  2.690809488296509 Exp Pred:  3.575467586517334 Unimportant Pred 0.2813480794429779 Delta Fidelity:  2.7236074746835017
+Exp Len:  50 Model Pred:  2.690809488296509 Exp Pred:  3.3410463333129883 Unimportant Pred 0.6324598789215088 Delta Fidelity:  3.165538257560341
+Exp Len:  60 Model Pred:  2.690809488296509 Exp Pred:  3.245373487472534 Unimportant Pred 0.8393949270248413 Delta Fidelity:  3.33850477856931
+Exp Len:  70 Model Pred:  2.690809488296509 Exp Pred:  3.123633861541748 Unimportant Pred 0.8921362161636353 Delta Fidelity:  4.155665399909772
+Exp Len:  80 Model Pred:  2.690809488296509 Exp Pred:  3.133777141571045 Unimportant Pred 0.8589497804641724 Delta Fidelity:  4.135425452153755
+Exp Len:  90 Model Pred:  2.690809488296509 Exp Pred:  3.0546703338623047 Unimportant Pred 0.6306062936782837 Delta Fidelity:  5.662063450148511
+Exp Len:  100 Model Pred:  2.690809488296509 Exp Pred:  3.0466463565826416 Unimportant Pred 0.24701717495918274 Delta Fidelity:  6.8677321861214295
+
+explain 36-th: 35054 on batch 3
+Exp Len:  10 Model Pred:  3.8822431564331055 Exp Pred:  5.07698392868042 Unimportant Pred 3.024111747741699 Delta Fidelity:  0.7182574066483527
+Exp Len:  20 Model Pred:  3.8822431564331055 Exp Pred:  5.141279220581055 Unimportant Pred -0.4570564925670624 Delta Fidelity:  3.4465253002397374
+Exp Len:  30 Model Pred:  3.8822431564331055 Exp Pred:  4.691349029541016 Unimportant Pred -0.2969887852668762 Delta Fidelity:  5.165247318804963
+Exp Len:  40 Model Pred:  3.8822431564331055 Exp Pred:  4.41603946685791 Unimportant Pred -0.5680376887321472 Delta Fidelity:  8.33703935050364
+Exp Len:  50 Model Pred:  3.8822431564331055 Exp Pred:  4.23954963684082 Unimportant Pred -0.7358263731002808 Delta Fidelity:  12.924673306411362
+Exp Len:  60 Model Pred:  3.8822431564331055 Exp Pred:  4.076410293579102 Unimportant Pred -0.946593165397644 Delta Fidelity:  24.86948302791271
+Exp Len:  70 Model Pred:  3.8822431564331055 Exp Pred:  4.005208969116211 Unimportant Pred -0.9725117683410645 Delta Fidelity:  39.480525674931556
+Exp Len:  80 Model Pred:  3.8822431564331055 Exp Pred:  4.0005059242248535 Unimportant Pred -0.8816384077072144 Delta Fidelity:  40.28217547325767
+Exp Len:  90 Model Pred:  3.8822431564331055 Exp Pred:  4.007813930511475 Unimportant Pred -1.0356048345565796 Delta Fidelity:  39.16395377096616
+Exp Len:  100 Model Pred:  3.8822431564331055 Exp Pred:  3.9742379188537598 Unimportant Pred -0.8120901584625244 Delta Fidelity:  51.02826716841085
+
+explain 37-th: 35248 on batch 3
+Exp Len:  10 Model Pred:  -1.097193717956543 Exp Pred:  0.014567390084266663 Unimportant Pred -1.2365238666534424 Delta Fidelity:  0.1253238197389659
+Exp Len:  20 Model Pred:  -1.097193717956543 Exp Pred:  0.3461786210536957 Unimportant Pred -0.6987591981887817 Delta Fidelity:  0.2760441703081127
+Exp Len:  30 Model Pred:  -1.097193717956543 Exp Pred:  0.1950480043888092 Unimportant Pred -0.5700143575668335 Delta Fidelity:  0.407957235301849
+Exp Len:  40 Model Pred:  -1.097193717956543 Exp Pred:  -0.4068918526172638 Unimportant Pred -0.5225528478622437 Delta Fidelity:  0.8324486705709057
+Exp Len:  50 Model Pred:  -1.097193717956543 Exp Pred:  -0.641242504119873 Unimportant Pred -0.35203132033348083 Delta Fidelity:  1.6343029144560912
+Exp Len:  60 Model Pred:  -1.097193717956543 Exp Pred:  -0.7650998830795288 Unimportant Pred -0.20915073156356812 Delta Fidelity:  2.674072485331888
+Exp Len:  70 Model Pred:  -1.097193717956543 Exp Pred:  -0.8152607679367065 Unimportant Pred -0.0439113974571228 Delta Fidelity:  3.7359319668925277
+Exp Len:  80 Model Pred:  -1.097193717956543 Exp Pred:  -0.993809700012207 Unimportant Pred 0.3497298061847687 Delta Fidelity:  13.995620918122613
+Exp Len:  90 Model Pred:  -1.097193717956543 Exp Pred:  -1.5002586841583252 Unimportant Pred 0.45049354434013367 Delta Fidelity:  3.8397960430078015
+Exp Len:  100 Model Pred:  -1.097193717956543 Exp Pred:  -1.5917787551879883 Unimportant Pred 0.5319948196411133 Delta Fidelity:  3.2940514066446847
+
+explain 38-th: 35310 on batch 3
+Exp Len:  10 Model Pred:  0.867621898651123 Exp Pred:  0.868788480758667 Unimportant Pred 0.6821146011352539 Delta Fidelity:  159.01778050275905
+Exp Len:  20 Model Pred:  0.867621898651123 Exp Pred:  0.18083831667900085 Unimportant Pred 0.6425292491912842 Delta Fidelity:  0.3277490251200789
+Exp Len:  30 Model Pred:  0.867621898651123 Exp Pred:  0.1343872845172882 Unimportant Pred 0.6780190467834473 Delta Fidelity:  0.2585841533022174
+Exp Len:  40 Model Pred:  0.867621898651123 Exp Pred:  0.13123443722724915 Unimportant Pred 0.8724689483642578 Delta Fidelity:  0.00658220022345647
+Exp Len:  50 Model Pred:  0.867621898651123 Exp Pred:  0.09168359637260437 Unimportant Pred 0.9426069259643555 Delta Fidelity:  0.09663787326007908
+Exp Len:  60 Model Pred:  0.867621898651123 Exp Pred:  0.16949665546417236 Unimportant Pred 0.9653382301330566 Delta Fidelity:  0.13996962928293108
+Exp Len:  70 Model Pred:  0.867621898651123 Exp Pred:  0.2871451675891876 Unimportant Pred 0.9903765916824341 Delta Fidelity:  0.21147220286804816
+Exp Len:  80 Model Pred:  0.867621898651123 Exp Pred:  0.4393993318080902 Unimportant Pred 0.9579133987426758 Delta Fidelity:  0.21085180250355545
+Exp Len:  90 Model Pred:  0.867621898651123 Exp Pred:  0.5408087968826294 Unimportant Pred 0.9745544195175171 Delta Fidelity:  0.3271977784481309
+Exp Len:  100 Model Pred:  0.867621898651123 Exp Pred:  0.6626589298248291 Unimportant Pred 0.9492201805114746 Delta Fidelity:  0.3981123142761758
+runtime: 4243.45s

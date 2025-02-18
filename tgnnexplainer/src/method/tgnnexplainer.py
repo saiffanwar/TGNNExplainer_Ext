@@ -356,22 +356,26 @@ class MCTS(object):
     def mcts(self, verbose=False):
 
         start_time = time.time()
-        pbar = tqdm(range(self.n_rollout), total=self.n_rollout, desc='mcts simulating')
+        if verbose == True:
+            pbar = tqdm(range(self.n_rollout), total=self.n_rollout, desc='mcts simulating')
+        else:
+            pbar = range(self.n_rollout)
 #        for rollout_idx in range(self.n_rollout):
         for rollout_idx in pbar:
             self.mcts_rollout(self.root)
             if verbose:
                 elapsed_time = time.time() - start_time
-            pbar.set_postfix({'states': len(self.state_map)})
+            if verbose:
+                pbar.set_postfix({'states': len(self.state_map)})
             # print(f"At the {rollout_idx} rollout, {len(self.state_map)} states have been explored. Time: {elapsed_time:.2f} s")
 
             # record
-            self.recorder['rollout'].append(rollout_idx)
-            self.recorder['runtime'].append(elapsed_time)
+#            self.recorder['rollout'].append(rollout_idx)
+#            self.recorder['runtime'].append(elapsed_time)
             # self.recorder['best_reward'].append( np.max(list(map(lambda x: x.P, self.state_map.values()))) )
             curr_best_node = find_best_node_result(self.state_map.values(), self.min_atoms)
-            self.recorder['best_reward'].append( curr_best_node.P )
-            self.recorder['num_states'].append( len(self.state_map) )
+#            self.recorder['best_reward'].append( curr_best_node.P )
+#            self.recorder['num_states'].append( len(self.state_map) )
 
         end_time = time.time()
         self.run_time = end_time - start_time
@@ -383,7 +387,6 @@ class MCTS(object):
     def _initialize_tree(self):
         # reset the search tree
         # self.root_coalition = self.events.index.values.tolist()
-        print('Candidate events:', len(self.candidate_events))
         self.root_coalition = copy.copy( self.candidate_events )
         self.root = MCTSNode(self.root_coalition, created_by_remove=-1, c_puct=self.c_puct, Sparsity=1.0)
         self.root_key = self._node_key(self.root_coalition)
@@ -404,7 +407,7 @@ class TGNNExplainer(BaseExplainerTG):
     """
 
     def __init__(self, model, model_name: str, explainer_name: str, dataset_name: str, all_events: DataFrame,  explanation_level: str, device,
-                verbose: bool = True, results_dir = None, debug_mode: bool = True,
+                verbose: bool = False, results_dir = None, debug_mode: bool = True,
                 # specific params
                 rollout: int = 20, min_atoms: int = 1, c_puct: float = 10.0,
                 # expand_atoms=14,
@@ -644,14 +647,14 @@ class TGNNExplainer(BaseExplainerTG):
         if isinstance(event_idxs, int):
             event_idxs = [event_idxs]
 
-#        exp_sizes = [10,20,30, 40, 50, 60, 70, 80, 90, 100]
-        exp_sizes = [10,25,50,75,100]
+        exp_sizes = [10,20,30, 40, 50, 60, 70, 80, 90, 100]
+#        exp_sizes = [10,25,50,75,100]
         results_dict = {e: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'unimportant_predictions': [], 'delta_fidelity': []} for e in exp_sizes}
         rb = [str(results_batch) if results_batch is not None else ''][0]
         print(f'Running results batch {rb} with {len(event_idxs)} events')
 
         for i, event_idx in enumerate(event_idxs[1:]):
-#            try:
+            try:
                 print(f'\nexplain {i}-th: {event_idx} on batch {rb}')
                 self._initialize(event_idx, exp_size=max(exp_sizes))
 
@@ -675,8 +678,8 @@ class TGNNExplainer(BaseExplainerTG):
 #                print(results_dict)
                     with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:
                         pck.dump(results_dict, f)
-#            except:
-#                pass
+            except:
+                pass
 
         import time
         with open(results_dir + f'/intermediate_results/tgnne_results_{self.dataset_name}_{self.model_name}_{rb}.pkl', 'wb') as f:

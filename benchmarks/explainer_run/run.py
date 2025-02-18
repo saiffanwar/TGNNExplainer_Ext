@@ -266,9 +266,10 @@ def pipeline(config: DictConfig):
 
 
 
+    experiment_result_batch = 60
     if config.explainers.explainer_name in ['tgnnexplainer', 'sa_explainer', 'temp_me']:
-        target_event_idxs = target_event_idxs[config.results_batch*40:config.results_batch*40+40]
-        print(config.results_batch*40, config.results_batch*40+40)
+        target_event_idxs = target_event_idxs[config.results_batch*experiment_result_batch:config.results_batch*experiment_result_batch+experiment_result_batch]
+        print(config.results_batch*experiment_result_batch, config.results_batch*experiment_result_batch+experiment_result_batch)
 #
 
 
@@ -288,7 +289,7 @@ def pipeline(config: DictConfig):
         explainer = explainer[0]
 
         sa_explainer = SA_Explainer(model, tgnnexplainer=explainer, model_name=config.models.model_name, dataset_name=config.datasets.dataset_name)
-        sa_explainer(target_event_idxs, num_iter=100, results_dir=config.explainers.results_dir, results_batch=config.results_batch)
+        sa_explainer(target_event_idxs, num_iter=500, results_dir=config.explainers.results_dir, results_batch=config.results_batch)
 #                print(f'Model Prediction: {model_pred} Explanation Prediction: {exp_pred}')
 #                print(f'Event {event_idx} Score: {score} Explanation: {exp} Sparsity: {len(exp)}')
 #

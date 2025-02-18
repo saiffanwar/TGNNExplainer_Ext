@@ -1,0 +1,5 @@
+- datasets=reddit
+- device_id=0
+- explainers=sa_explainer
+- models=tgn
+- results_batch=2
