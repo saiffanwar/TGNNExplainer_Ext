@@ -33,8 +33,8 @@ class ArgDefaults:
         self.preload = True
         self.base_type = "tgn"
         self.data = "wikipedia"
-        self.bs = 100
-        self.test_bs = 100
+        self.bs = 50
+        self.test_bs = 50
         self.n_degree = 20
         self.n_head = 4
         self.n_epoch = 150
@@ -42,7 +42,7 @@ class ArgDefaults:
         self.hid_dim = 64
         self.temp = 0.07
         self.prior_p = 0.3
-        self.lr = 1e-2
+        self.lr = 1e-3
         self.drop_out = 0.1
         self.if_attn = True
         self.if_bern = True
@@ -239,7 +239,7 @@ def pipeline(config: DictConfig):
         args.device = device
         args.n_degree = degree_dict[args.data]
         args.ratios = [0.01, 0.02, 0.04, 0.06, 0.08, 0.10, 0.12, 0.14, 0.16, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.30]
-        args.temp_me_train = True
+        args.temp_me_train = False
         args.data_dir = data_dir
         base_model = model
 
@@ -266,7 +266,7 @@ def pipeline(config: DictConfig):
 
 
 
-    if config.explainers.explainer_name in ['tgnnexplainer', 'sa_explainer', 'temp_me']:
+    if config.explainers.explainer_name in ['tgnnexplainer', 'sa_explainer', 'temp_me', 'pg_explainer_tg']:
         target_event_idxs = target_event_idxs[config.results_batch*40:config.results_batch*40+40]
         print(config.results_batch*40, config.results_batch*40+40)
 #
@@ -306,7 +306,7 @@ def pipeline(config: DictConfig):
         explain_results = start_multi_process(explainer, target_event_idxs, config.explainers.parallel_degree)
     else:
         tgnne_results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
-        explainer(event_idxs=target_event_idxs)
+        explainer(event_idxs=target_event_idxs, results_batch=config.results_batch)
     end_time = time.time()
     print(f'runtime: {end_time - start_time:.2f}s')
 

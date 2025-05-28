@@ -1,0 +1,4 @@
+dataset_name: 'independent_cascade'
+dataset_path: ''
+explain_idx_filepath: ''
+explain_idx_filename: 'independent_cascade'

@@ -261,7 +261,8 @@ class SA_Explainer:
         print(f'Running results batch {rb} with {len(event_idxs)} events')
 
         if testing_gammas:
-            gammas = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+#            gammas = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
+            gammas = [0.9]
             sa_results_gammas = {g: {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for g in gammas}
             filename = f'/sa_results_{self.dataset}_{self.model_name}_gammas_{rb}'
 #            exp_sizes = [self.subgraph_size]
@@ -274,7 +275,7 @@ class SA_Explainer:
 
 
         for target_index in event_idxs:
-#            try:
+            try:
                 print(f'---- Explaining event: {event_idxs.index(target_index)} out of {len(event_idxs)} ------')
                 self.target_index = target_index
 #            self.tgnnexplainer.model.eval()
@@ -331,8 +332,8 @@ class SA_Explainer:
 
                     with open(results_dir + f'/intermediate_results/sa_results_{self.dataset}_{self.model_name}_gammas_{rb}.pkl', 'wb') as f:
                         pck.dump(sa_results_gammas, f)
-#            except:
-#                pass
+            except:
+                pass
 
 #        with open(results_dir + f'/sa_results_{self.dataset}_{self.model_name}_gammas_{rb}.pkl', 'wb') as f:
 #            pck.dump(sa_results_gammas, f)

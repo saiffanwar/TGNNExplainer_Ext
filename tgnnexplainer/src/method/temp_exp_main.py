@@ -35,7 +35,7 @@ def norm_imp(imp):
 
 ### Load data and train val test split
 def load_data(mode, args=None):
-    g_df = pd.read_csv(osp.join(args.data_dir, '{}.csv'.format(args.data)))
+    g_df = pd.read_csv(osp.join(args.data_dir, 'ml_{}.csv'.format(args.data)))
     val_time, test_time = list(np.quantile(g_df.ts, [0.70, 0.85]))
     src_l = g_df.u.values
     dst_l = g_df.i.values
@@ -359,6 +359,7 @@ def eval_one_epoch(args, base_model, explainer, full_ngh_finder, src, dst, ts, v
     idx_list = np.arange(num_test_instance)
     criterion = torch.nn.BCEWithLogitsLoss()
     base_model.set_neighbor_sampler(full_ngh_finder)
+    num_test_batch = 100
     for k in tqdm(range(num_test_batch)):
         s_idx = k * args.test_bs
         e_idx = min(num_test_instance - 1, s_idx + args.test_bs)
@@ -477,14 +478,14 @@ def eval_one_epoch(args, base_model, explainer, full_ngh_finder, src, dst, ts, v
         return best_accuracy
 
 def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
-    if args.base_type == "tgat":
-        Explainer = TempME(base_model, base_model_type=args.base_type, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim,
-                                temp=args.temp, if_cat_feature=True,
-                                dropout_p=args.drop_out, device=args.device, data_dir=args.data_dir)
-#        Explainer = TempME_TGAT(base_model, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim, temp=args.temp,
+#    if args.base_type == "tgat":
+#        Explainer = TempME(base_model, base_model_type=args.base_type, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim,
+#                                temp=args.temp, if_cat_feature=True,
 #                                dropout_p=args.drop_out, device=args.device, data_dir=args.data_dir)
-    else:
-        Explainer = TempME(base_model, base_model_type=args.base_type, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim,
+##        Explainer = TempME_TGAT(base_model, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim, temp=args.temp,
+##                                dropout_p=args.drop_out, device=args.device, data_dir=args.data_dir)
+#    else:
+    Explainer = TempME(base_model, base_model_type=args.base_type, data=args.data, out_dim=args.out_dim, hid_dim=args.hid_dim,
                                 temp=args.temp, if_cat_feature=True,
                                 dropout_p=args.drop_out, device=args.device, data_dir=args.data_dir)
     Explainer = Explainer.to(args.device)
@@ -492,8 +493,8 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                                  lr=args.lr,
                                  betas=(0.9, 0.999), eps=1e-8,
                                  weight_decay=args.weight_decay)
-#    criterion = torch.nn.BCEWithLogitsLoss()
-    criterion = torch.nn.L1Loss()
+    criterion = torch.nn.BCEWithLogitsLoss()
+#    criterion = torch.nn.L1Loss()
     rand_sampler, src_l, dst_l, ts_l, label_l, e_idx_l, ngh_finder = load_data(mode="training", args=args)
     test_rand_sampler, test_src_l, test_dst_l, test_ts_l, test_label_l, test_e_idx_l, full_ngh_finder = load_data(
         mode="test", args=args)
@@ -518,6 +519,7 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
         train_pred_loss = []
         train_kl_loss = []
 #        np.random.shuffle(idx_list)
+        num_batch = 500
         Explainer.train()
         for k in tqdm(range(num_batch)):
             s_idx = k * args.bs
@@ -526,7 +528,6 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                 continue
             batch_idx = idx_list[s_idx:e_idx]
 #            print(batch_idx)
-            batch_idx = [10]
             src_l_cut, dst_l_cut = src_l[batch_idx], dst_l[batch_idx]
             ts_l_cut = ts_l[batch_idx]
             e_l_cut = e_idx_l[batch_idx]
@@ -547,9 +548,10 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                 else:
                     pos_out_ori, neg_out_ori = base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
                                                             subgraph_src, subgraph_tgt, subgraph_bgd)  # [B, 1]
-                y_pred = torch.cat([pos_out_ori, neg_out_ori], dim=0).sigmoid()  # [B*2, 1]
+                y_pred = torch.cat([pos_out_ori, neg_out_ori], dim=0)  # [B*2, 1]
+#                y_pred = pos_out_ori
                 y_ori = torch.where(y_pred > 0.5, 1., 0.).view(y_pred.size(0), 1)
-            optimizer.zero_grad()
+#            optimizer.zero_grad()
             graphlet_imp_src = Explainer(walks_src, ts_l_cut, src_edge)
             graphlet_imp_tgt = Explainer(walks_tgt, ts_l_cut, tgt_edge)
             graphlet_imp_bgd = Explainer(walks_bgd, ts_l_cut, bgd_edge)
@@ -579,10 +581,13 @@ def train(args, base_model, train_pack, test_pack, train_edge, test_edge):
                                                             training=args.if_bern)
                 pos_logit, neg_logit = base_model.contrast(src_l_cut, dst_l_cut, dst_l_fake, ts_l_cut, e_l_cut,
                                                     subgraph_src, subgraph_tgt, subgraph_bgd, explain_weights=explanation)
+#            if k%100 == 0:
+#                print(pos_logit, neg_logit)
 
             pred = torch.cat([pos_logit, neg_logit], dim=0).to(args.device)
-#            pred_loss = criterion(pred, y_ori)
-            pred_loss = criterion(pos_logit, pos_out_ori)
+#            pred = pos_logit.to(args.device)
+            pred_loss = criterion(pred, y_pred)
+#            pred_loss = criterion(pos_logit, pos_out_ori)
             kl_loss = Explainer.kl_loss(graphlet_imp_src, walks_src, target=args.prior_p) + \
                       Explainer.kl_loss(graphlet_imp_tgt, walks_tgt, target=args.prior_p) + \
                       Explainer.kl_loss(graphlet_imp_bgd, walks_bgd, target=args.prior_p)
@@ -659,7 +664,7 @@ class TempME_Executor():
     def __call__(self, target_event_idxs, results_batch=None):
 
         rb = ['' if results_batch is None else f'_{results_batch}'][0]
-        exp_sizes = [10, 25, 50, 75, 100]
+        exp_sizes = [10,20,30,40,50,60,70,80,90,100]
 #        results = {'target_event_idxs': [], 'explanations': [], 'explanation_predictions': [], 'model_predictions': []}
         results = {e:{'target_event_idxs': [], 'explanation_predictions': [], 'model_predictions': [], 'delta_fidelity': []} for e in exp_sizes}
         for target_idx in tqdm(target_event_idxs):

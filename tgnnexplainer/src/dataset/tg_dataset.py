@@ -22,6 +22,7 @@ def check_wiki_reddit_dataformat(df):
 
 
 def verify_dataframe_unify(df):
+    print(df.columns)
     for col in ['u', 'i', 'ts', 'label', 'e_idx', 'idx']:
         assert col in df.columns.to_list()
 
@@ -86,7 +87,7 @@ def generate_explain_index(file, explainer_idx_dir, dataset_name, explain_idx_na
         # indices = (df.label == 1) | (df.label == 0)
         explain_idxs = np.random.choice(df[indices].e_idx.values, size=size, replace=False)
         # import ipdb; ipdb.set_trace()
-    elif dataset_name in ['wikipedia', 'reddit']:
+    elif dataset_name in ['wikipedia', 'reddit', 'independent_cascade']:
 #        np.random.seed(1024)
         e_num = len(df)
         start_ratio = 0.0
@@ -112,7 +113,7 @@ def generate_explain_index(file, explainer_idx_dir, dataset_name, explain_idx_na
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', type=str, default='reddit')
+    parser.add_argument('-d', type=str, default='independent_cascade')
     parser.add_argument('-c', type=str, choices=['format', 'index'], default='index')
     args = parser.parse_args()
 

@@ -1,0 +1,5 @@
+- datasets=reddit
+- device_id=0
+- explainers=temp_me
+- models=tgat
+- results_batch=0

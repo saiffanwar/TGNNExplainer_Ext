@@ -6,7 +6,7 @@ import sys
 import argparse
 import torch
 import numpy as np
-import pickle
+import pickle as pck
 from pathlib import Path
 
 from evaluation import eval_edge_prediction
@@ -27,7 +27,7 @@ parser.add_argument('--n_degree', type=int, default=10, help='Number of neighbor
 parser.add_argument('--n_head', type=int, default=2, help='Number of heads used in attention layer')
 parser.add_argument('--n_epoch', type=int, default=50, help='Number of epochs')
 parser.add_argument('--n_layer', type=int, default=1, help='Number of network layers')
-parser.add_argument('--lr', type=float, default=0.0001, help='Learning rate')
+parser.add_argument('--lr', type=float, default=1e-6, help='Learning rate')
 parser.add_argument('--patience', type=int, default=5, help='Patience for early stopping')
 parser.add_argument('--n_runs', type=int, default=1, help='Number of runs')
 parser.add_argument('--drop_out', type=float, default=0.1, help='Dropout probability')
@@ -175,6 +175,7 @@ for i in range(args.n_runs):
     train_losses = []
 
     early_stopper = EarlyStopMonitor(max_round=args.patience)
+    losses = []
     for epoch in range(NUM_EPOCH):
         start_epoch = time.time()
         ### Training
@@ -188,6 +189,7 @@ for i in range(args.n_runs):
         m_loss = []
 
         logger.info('start {} epoch'.format(epoch))
+#        num_batch = 500
         for k in tqdm(range(0, num_batch, args.backprop_every)):
             loss = 0
             optimizer.zero_grad()
@@ -241,64 +243,68 @@ for i in range(args.n_runs):
         if USE_MEMORY:
             # Backup memory at the end of training, so later we can restore it and use it for the
             # validation on unseen nodes
-            train_memory_backup = tgn.memory.backup_memory()
-
-        val_ap, val_auc, val_acc = eval_edge_prediction(model=tgn,
-                                                negative_edge_sampler=val_rand_sampler,
-                                                data=val_data,
-                                                n_neighbors=NUM_NEIGHBORS)
-        if USE_MEMORY:
+#            train_memory_backup = tgn.memory.backup_memory()
+#
+#        val_ap, val_auc, val_acc = eval_edge_prediction(model=tgn,
+#                                                negative_edge_sampler=val_rand_sampler,
+#                                                data=val_data,
+#                                                n_neighbors=NUM_NEIGHBORS)
+#        if USE_MEMORY:
             val_memory_backup = tgn.memory.backup_memory()
             # Restore memory we had at the end of training to be used when validating on new nodes.
             # Also backup memory after validation so it can be used for testing (since test edges are
             # strictly later in time than validation edges)
             tgn.memory.restore_memory(train_memory_backup)
 
-        # Validate on unseen nodes
-        nn_val_ap, nn_val_auc, nn_val_acc = eval_edge_prediction(model=tgn,
-                                                    negative_edge_sampler=val_rand_sampler,
-                                                    data=new_node_val_data,
-                                                    n_neighbors=NUM_NEIGHBORS)
+#        # Validate on unseen nodes
+#        nn_val_ap, nn_val_auc, nn_val_acc = eval_edge_prediction(model=tgn,
+#                                                    negative_edge_sampler=val_rand_sampler,
+#                                                    data=new_node_val_data,
+#                                                    n_neighbors=NUM_NEIGHBORS)
+#
+#        if USE_MEMORY:
+#            # Restore memory we had at the end of validation
+#            tgn.memory.restore_memory(val_memory_backup)
+#
+#        new_nodes_val_aps.append(nn_val_ap)
+#        val_aps.append(val_ap)
+#        train_losses.append(np.mean(m_loss))
+        print('Loss: ', np.mean(m_loss))
+#
+#        # Save temporary results to disk
+#        pck.dump({
+#            "val_aps": val_aps,
+#            "new_nodes_val_aps": new_nodes_val_aps,
+#            "train_losses": train_losses,
+#            "epoch_times": epoch_times,
+#            "total_epoch_times": total_epoch_times
+#        }, open(results_path, "wb"))
+#
+#        total_epoch_time = time.time() - start_epoch
+#        total_epoch_times.append(total_epoch_time)
+        losses.append(np.mean(m_loss))
+#        logger.info('epoch: {} took {:.2f}s'.format(epoch, total_epoch_time))
+#        logger.info('Epoch mean loss: {}'.format(np.mean(m_loss)))
+#        logger.info(
+#            'val auc: {}, new node val auc: {}'.format(val_auc, nn_val_auc))
+#        logger.info(
+#            'val ap: {}, new node val ap: {}'.format(val_ap, nn_val_ap))
+#        logger.info(
+#            'val acc: {}, new node val acc: {}'.format(val_acc, nn_val_acc))
 
-        if USE_MEMORY:
-            # Restore memory we had at the end of validation
-            tgn.memory.restore_memory(val_memory_backup)
+        with open(f'losses_{args.data}.pkl', 'wb') as f:
+            pck.dump(losses, f)
 
-        new_nodes_val_aps.append(nn_val_ap)
-        val_aps.append(val_ap)
-        train_losses.append(np.mean(m_loss))
-
-        # Save temporary results to disk
-        pickle.dump({
-            "val_aps": val_aps,
-            "new_nodes_val_aps": new_nodes_val_aps,
-            "train_losses": train_losses,
-            "epoch_times": epoch_times,
-            "total_epoch_times": total_epoch_times
-        }, open(results_path, "wb"))
-
-        total_epoch_time = time.time() - start_epoch
-        total_epoch_times.append(total_epoch_time)
-
-        logger.info('epoch: {} took {:.2f}s'.format(epoch, total_epoch_time))
-        logger.info('Epoch mean loss: {}'.format(np.mean(m_loss)))
-        logger.info(
-            'val auc: {}, new node val auc: {}'.format(val_auc, nn_val_auc))
-        logger.info(
-            'val ap: {}, new node val ap: {}'.format(val_ap, nn_val_ap))
-        logger.info(
-            'val acc: {}, new node val acc: {}'.format(val_acc, nn_val_acc))
-
-        # Early stopping
-        if early_stopper.early_stop_check(val_acc):
-            logger.info('No improvement over {} epochs, stop training'.format(early_stopper.max_round))
-            logger.info(f'Loading the best model at epoch {early_stopper.best_epoch}')
-            best_model_path = get_checkpoint_path(early_stopper.best_epoch)
-            tgn.load_state_dict(torch.load(best_model_path))
-            logger.info(f'Loaded the best model at epoch {early_stopper.best_epoch} for inference')
-            tgn.eval()
-            break
-        # else:
+#        # Early stopping
+#        if early_stopper.early_stop_check(val_acc):
+#            logger.info('No improvement over {} epochs, stop training'.format(early_stopper.max_round))
+#            logger.info(f'Loading the best model at epoch {early_stopper.best_epoch}')
+#            best_model_path = get_checkpoint_path(early_stopper.best_epoch)
+#            tgn.load_state_dict(torch.load(best_model_path))
+#            logger.info(f'Loaded the best model at epoch {early_stopper.best_epoch} for inference')
+#            tgn.eval()
+#            break
+#        # else:
         torch.save(tgn.state_dict(), get_checkpoint_path(epoch))
 
     # Training has finished, we have loaded the best model, and we want to backup its current
@@ -306,39 +312,39 @@ for i in range(args.n_runs):
     # nodes
     if USE_MEMORY:
         val_memory_backup = tgn.memory.backup_memory()
-
-    ### Test
-    tgn.embedding_module.neighbor_finder = full_ngh_finder
-    test_ap, test_auc, test_acc = eval_edge_prediction(model=tgn,
-                                            negative_edge_sampler=test_rand_sampler,
-                                            data=test_data,
-                                            n_neighbors=NUM_NEIGHBORS)
+#
+#    ### Test
+#    tgn.embedding_module.neighbor_finder = full_ngh_finder
+#    test_ap, test_auc, test_acc = eval_edge_prediction(model=tgn,
+#                                            negative_edge_sampler=test_rand_sampler,
+#                                            data=test_data,
+#                                            n_neighbors=NUM_NEIGHBORS)
 
     if USE_MEMORY:
         tgn.memory.restore_memory(val_memory_backup)
 
-    # Test on unseen nodes
-    nn_test_ap, nn_test_auc, nn_test_acc = eval_edge_prediction(model=tgn,
-                                                negative_edge_sampler=nn_test_rand_sampler,
-                                                data=new_node_test_data,
-                                                n_neighbors=NUM_NEIGHBORS)
-
-    logger.info(
-        'Test statistics: Old nodes -- auc: {}, ap: {}, acc: {}'.format(test_auc, test_ap, test_acc))
-    logger.info(
-        'Test statistics: New nodes -- auc: {}, ap: {}, acc: {}'.format(nn_test_auc, nn_test_ap, nn_test_acc))
-
-    # Save results for this run
-    pickle.dump({
-        "val_aps": val_aps,
-        "new_nodes_val_aps": new_nodes_val_aps,
-        "test_ap": test_ap,
-        "new_node_test_ap": nn_test_ap,
-        "epoch_times": epoch_times,
-        "train_losses": train_losses,
-        "total_epoch_times": total_epoch_times
-    }, open(results_path, "wb"))
-
+#    # Test on unseen nodes
+#    nn_test_ap, nn_test_auc, nn_test_acc = eval_edge_prediction(model=tgn,
+#                                                negative_edge_sampler=nn_test_rand_sampler,
+#                                                data=new_node_test_data,
+#                                                n_neighbors=NUM_NEIGHBORS)
+##
+##    logger.info(
+#        'Test statistics: Old nodes -- auc: {}, ap: {}, acc: {}'.format(test_auc, test_ap, test_acc))
+#    logger.info(
+#        'Test statistics: New nodes -- auc: {}, ap: {}, acc: {}'.format(nn_test_auc, nn_test_ap, nn_test_acc))
+#
+#    # Save results for this run
+#    pck.dump({
+#        "val_aps": val_aps,
+#        "new_nodes_val_aps": new_nodes_val_aps,
+#        "test_ap": test_ap,
+#        "new_node_test_ap": nn_test_ap,
+#        "epoch_times": epoch_times,
+#        "train_losses": train_losses,
+#        "total_epoch_times": total_epoch_times
+#    }, open(results_path, "wb"))
+#
     logger.info('Saving TGN model')
     if USE_MEMORY:
         # Restore memory at the end of validation (save a model which is ready for testing)

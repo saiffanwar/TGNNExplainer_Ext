@@ -5,6 +5,7 @@ import time
 import random
 import sys
 import argparse
+import pickle as pck
 
 import torch
 import pandas as pd
@@ -46,7 +47,7 @@ parser.add_argument('--n_degree', type=int, default=20, help='number of neighbor
 parser.add_argument('--n_head', type=int, default=2, help='number of heads used in attention layer')
 parser.add_argument('--n_epoch', type=int, default=50, help='number of epochs')
 parser.add_argument('--n_layer', type=int, default=2, help='number of network layers')
-parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
+parser.add_argument('--lr', type=float, default=1e-6, help='learning rate')
 parser.add_argument('--drop_out', type=float, default=0.1, help='dropout probability')
 parser.add_argument('--gpu', type=int, default=0, help='idx for the gpu to use')
 parser.add_argument('--node_dim', type=int, default=100, help='Dimentions of the node embedding')
@@ -83,24 +84,24 @@ TIME_DIM = args.time_dim
 
 # import ipdb; ipdb.set_trace()
 
-MODEL_SAVE_PATH = f'src/models/ext/tgat/saved_models/tgat_{args.data}_best.pth'
-get_checkpoint_path = lambda epoch: f'src/models/ext/tgat/saved_checkpoints/{args.data}-{args.agg_method}-{args.attn_mode}-{epoch}.pth'
+MODEL_SAVE_PATH = f'saved_models/tgat_{args.data}_best.pth'
+get_checkpoint_path = lambda epoch: f'saved_checkpoints/{args.data}-{args.agg_method}-{args.attn_mode}-{epoch}.pth'
 
-### set up logger
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('src/models/ext/tgat/log/{}.log'.format(str(time.time())))
-fh.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.WARN)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
-ch.setFormatter(formatter)
-logger.addHandler(fh)
-logger.addHandler(ch)
-logger.info(args)
-
+#### set up logger
+#logging.basicConfig(level=logging.INFO)
+#logger = logging.getLogger()
+#logger.setLevel(logging.DEBUG)
+#fh = logging.FileHandler('src/models/ext/tgat/log/{}.log'.format(str(time.time())))
+#fh.setLevel(logging.DEBUG)
+#ch = logging.StreamHandler()
+#ch.setLevel(logging.WARN)
+#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#fh.setFormatter(formatter)
+#ch.setFormatter(formatter)
+#logger.addHandler(fh)
+#logger.addHandler(ch)
+#logger.info(args)
+#
 
 def eval_one_epoch(hint, tgan, sampler, src, dst, ts, label):
     val_acc, val_ap, val_f1, val_auc = [], [], [], []
@@ -138,9 +139,9 @@ def eval_one_epoch(hint, tgan, sampler, src, dst, ts, label):
     return np.mean(val_acc), np.mean(val_ap), 0, np.mean(val_auc)
 
 ### Load data and train val test split
-g_df = pd.read_csv('src/models/ext/tgat/processed/ml_{}.csv'.format(DATA))
-e_feat = np.load('src/models/ext/tgat/processed/ml_{}.npy'.format(DATA))
-n_feat = np.load('src/models/ext/tgat/processed/ml_{}_node.npy'.format(DATA))
+g_df = pd.read_csv('processed/ml_{}.csv'.format(DATA))
+e_feat = np.load('processed/ml_{}.npy'.format(DATA))
+n_feat = np.load('processed/ml_{}_node.npy'.format(DATA))
 
 val_time, test_time = list(np.quantile(g_df.ts, [0.70, 0.85]))
 
@@ -253,22 +254,24 @@ tgan = tgan.to(device)
 
 num_instance = len(train_src_l)
 num_batch = math.ceil(num_instance / BATCH_SIZE)
-
-logger.info('num of training instances: {}'.format(num_instance))
-logger.info('num of batches per epoch: {}'.format(num_batch))
+#
+#logger.info('num of training instances: {}'.format(num_instance))
+#ogger.info('num of batches per epoch: {}'.format(num_batch))
 idx_list = np.arange(num_instance)
 np.random.shuffle(idx_list)
 
+losses = []
 early_stopper = EarlyStopMonitor()
 for epoch in range(NUM_EPOCH):
-    print('cp path', get_checkpoint_path(epoch))
-    torch.cuda.empty_cache()
+#    print('cp path', get_checkpoint_path(epoch))
+#    torch.cuda.empty_cache()
     # Training
     # training use only training graph
     tgan.ngh_finder = train_ngh_finder
     acc, ap, f1, auc, m_loss = [], [], [], [], []
     np.random.shuffle(idx_list)
-    logger.info('start {} epoch'.format(epoch))
+#    logger.info('start {} epoch'.format(epoch))
+    num_batch= 100
     for k in tqdm(range(num_batch), total=num_batch):
         # percent = 100 * k / num_batch
         # if k % int(0.2 * num_batch) == 0:
@@ -307,52 +310,57 @@ for epoch in range(NUM_EPOCH):
             # f1.append(f1_score(true_label, pred_label))
             m_loss.append(loss.cpu().detach().item())
             auc.append(roc_auc_score(true_label, pred_score))
+    losses.append(np.mean(m_loss))
 
-    # validation phase use all information
-    tgan.ngh_finder = full_ngh_finder
-    # import ipdb; ipdb.set_trace()
-    val_acc, val_ap, val_f1, val_auc = eval_one_epoch('val for old nodes', tgan, val_rand_sampler, val_src_l,
-    val_dst_l, val_ts_l, val_label_l) #!  where warnings come from
-
-    nn_val_acc, nn_val_ap, nn_val_f1, nn_val_auc = eval_one_epoch('val for new nodes', tgan, val_rand_sampler, nn_val_src_l,
-    nn_val_dst_l, nn_val_ts_l, nn_val_label_l)
-
-    logger.info('epoch: {}:'.format(epoch))
-    logger.info('Epoch mean loss: {}'.format(np.mean(m_loss)))
-    logger.info('train acc: {}, val acc: {}, new node val acc: {}'.format(np.mean(acc), val_acc, nn_val_acc))
-    logger.info('train auc: {}, val auc: {}, new node val auc: {}'.format(np.mean(auc), val_auc, nn_val_auc))
-    logger.info('train ap: {}, val ap: {}, new node val ap: {}'.format(np.mean(ap), val_ap, nn_val_ap))
-    # logger.info('train f1: {}, val f1: {}, new node val f1: {}'.format(np.mean(f1), val_f1, nn_val_f1))
-
-    if early_stopper.early_stop_check(val_acc):
-        logger.info('No improvment over {} epochs, stop training'.format(early_stopper.max_round))
-        logger.info(f'Loading the best model at epoch {early_stopper.best_epoch}')
-        best_model_path = get_checkpoint_path(early_stopper.best_epoch)
-        tgan.load_state_dict(torch.load(best_model_path))
-        logger.info(f'Loaded the best model at epoch {early_stopper.best_epoch} for inference')
-        tgan.eval()
-        break
-    # else:
-    torch.save(tgan.state_dict(), get_checkpoint_path(epoch))
+    with open(f'losses_{args.data}_tgat.pkl', 'wb') as f:
+        pck.dump(losses, f)
 
 
-# testing phase use all information
-tgan.ngh_finder = full_ngh_finder
-test_acc, test_ap, test_f1, test_auc = eval_one_epoch('test for old nodes', tgan, test_rand_sampler, test_src_l,
-test_dst_l, test_ts_l, test_label_l)
-
-# nn_test_acc, nn_test_ap, nn_test_f1, nn_test_auc = eval_one_epoch('test for new nodes', tgan, nn_test_rand_sampler, nn_test_src_l,
-# nn_test_dst_l, nn_test_ts_l, nn_test_label_l)
-
-logger.info('Test statistics: Old nodes -- acc: {}, auc: {}, ap: {}'.format(test_acc, test_auc, test_ap))
-# logger.info('Test statistics: New nodes -- acc: {}, auc: {}, ap: {}'.format(nn_test_acc, nn_test_auc, nn_test_ap))
-
-logger.info('Saving TGAN model')
-torch.save(tgan.state_dict(), MODEL_SAVE_PATH)
-logger.info('TGAN models saved')
-
-
-
+#    # validation phase use all information
+#    tgan.ngh_finder = full_ngh_finder
+#    # import ipdb; ipdb.set_trace()
+#    val_acc, val_ap, val_f1, val_auc = eval_one_epoch('val for old nodes', tgan, val_rand_sampler, val_src_l,
+#    val_dst_l, val_ts_l, val_label_l) #!  where warnings come from
+#
+#    nn_val_acc, nn_val_ap, nn_val_f1, nn_val_auc = eval_one_epoch('val for new nodes', tgan, val_rand_sampler, nn_val_src_l,
+#    nn_val_dst_l, nn_val_ts_l, nn_val_label_l)
+#
+#    logger.info('epoch: {}:'.format(epoch))
+#    logger.info('Epoch mean loss: {}'.format(np.mean(m_loss)))
+#    logger.info('train acc: {}, val acc: {}, new node val acc: {}'.format(np.mean(acc), val_acc, nn_val_acc))
+#    logger.info('train auc: {}, val auc: {}, new node val auc: {}'.format(np.mean(auc), val_auc, nn_val_auc))
+#    logger.info('train ap: {}, val ap: {}, new node val ap: {}'.format(np.mean(ap), val_ap, nn_val_ap))
+#    # logger.info('train f1: {}, val f1: {}, new node val f1: {}'.format(np.mean(f1), val_f1, nn_val_f1))
+#
+#    if early_stopper.early_stop_check(val_acc):
+#        logger.info('No improvment over {} epochs, stop training'.format(early_stopper.max_round))
+#        logger.info(f'Loading the best model at epoch {early_stopper.best_epoch}')
+#        best_model_path = get_checkpoint_path(early_stopper.best_epoch)
+#        tgan.load_state_dict(torch.load(best_model_path))
+#        logger.info(f'Loaded the best model at epoch {early_stopper.best_epoch} for inference')
+#        tgan.eval()
+#        break
+#    # else:
+#    torch.save(tgan.state_dict(), get_checkpoint_path(epoch))
+#
+#
+## testing phase use all information
+#tgan.ngh_finder = full_ngh_finder
+#test_acc, test_ap, test_f1, test_auc = eval_one_epoch('test for old nodes', tgan, test_rand_sampler, test_src_l,
+#test_dst_l, test_ts_l, test_label_l)
+#
+## nn_test_acc, nn_test_ap, nn_test_f1, nn_test_auc = eval_one_epoch('test for new nodes', tgan, nn_test_rand_sampler, nn_test_src_l,
+## nn_test_dst_l, nn_test_ts_l, nn_test_label_l)
+#
+#logger.info('Test statistics: Old nodes -- acc: {}, auc: {}, ap: {}'.format(test_acc, test_auc, test_ap))
+## logger.info('Test statistics: New nodes -- acc: {}, auc: {}, ap: {}'.format(nn_test_acc, nn_test_auc, nn_test_ap))
+#
+#logger.info('Saving TGAN model')
+#torch.save(tgan.state_dict(), MODEL_SAVE_PATH)
+#logger.info('TGAN models saved')
+#
+#
+#
 
 
 

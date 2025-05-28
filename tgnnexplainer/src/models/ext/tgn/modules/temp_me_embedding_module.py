@@ -27,7 +27,6 @@ class ScaledDotProductAttention(torch.nn.Module):
         attn = self.dropout(attn) # [n * b, l_v, d]
 
         if explain_weight is not None:
-            print(attn.shape, explain_weight.shape)
             attn = attn * explain_weight  #if exp ==0 => masked!
         output = torch.bmm(attn, v)  # [B*N_src*n_head, 1, d_v]
 

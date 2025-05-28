@@ -1,5 +1,5 @@
 model=tgn
-dataset=reddit # wikipedia, reddit, simulate_v1, simulate_v2
+dataset=independent_cascade # wikipedia, reddit, simulate_v1, simulate_v2
 epoch=4
 
 

@@ -153,7 +153,6 @@ class TempME(nn.Module):
         src_feature = self.attention(updated_feature)  # [bsz, n_walks, hid_dim]
         if self.if_cat:
             event_cat_f = self.compute_catogory_feautres(cat_feat, level="event")  #[bsz, n_walks, 12]
-            print(src_feature.shape, event_cat_f.shape)
             src_feature = torch.cat([src_feature, event_cat_f], dim=-1)
         else:
             src_feature = src_feature
@@ -412,9 +411,7 @@ class TempME_TGAT(nn.Module):
 #        print(src_idx_l.shape, tgt_idx_l.shape)
         src_emb = self.node_raw_embed[torch.from_numpy(np.expand_dims(src_idx_l, 1)).long().to(self.device)]  #[bsz, 1, node_dim]
         tgt_emb = self.node_raw_embed[torch.from_numpy(np.expand_dims(tgt_idx_l, 1)).long().to(self.device)]  # [bsz, 1, node_dim]
-        print(n_walk)
         src_emb = src_emb.repeat(1, n_walk, 1)
-        breakpoint()
         tgt_emb = tgt_emb.repeat(1, n_walk, 1)
         assert combined_features.size(-1) == self.gru_dim
         graphlet_emb = self.attention_encode(combined_features)  # [bsz, n_walk, out_dim]
@@ -506,7 +503,6 @@ class TempME_TGAT(nn.Module):
             X = pack_padded_sequence(X, lengths, batch_first=True, enforce_sorted=False)
         encoded_features = self.self_attention_cat(X)  #[bsz*n_walks, len_walks, out_dim]
         encoded_features = encoded_features.mean(1).view(batch, n_walk, gru_dim)
-        print(encoded_features.shape)
         if mask is not None:
             encoded_features, lengths = pad_packed_sequence(encoded_features, batch_first=True)
         encoded_features = self.MLP_attn(encoded_features)
