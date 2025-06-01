@@ -20,6 +20,7 @@ def _create_explainer_input(model: Union[TGAN, TGN], model_name, all_events, can
     # DONE: explainer input should have both the target event and the event that we want to assign a weight to.
 
     if model_name in ['tgat', 'tgn']:
+        print('Event idx: ', event_idx)
         event_idx_u, event_idx_i, event_idx_t = _set_tgat_data(all_events, event_idx)
         # event_idx_new = _set_tgat_events_idxs(event_idx)
         event_idx_new = event_idx
@@ -43,6 +44,8 @@ def _create_explainer_input(model: Union[TGAN, TGN], model_name, all_events, can
 
         input_expl = torch.cat([ target_event_emb.repeat(candiadte_events_emb.shape[0], 1),  candiadte_events_emb], dim=1)
         # import ipdb; ipdb.set_trace()
+        print(input_expl.shape, input_expl.device)
+
         return input_expl
 
     else:
@@ -112,7 +115,7 @@ class PGExplainerExt(BaseExplainerTG):
         if not self.explainer_ckpt_path.exists():
             self._train() # we need to train the explainer first
         else:
-            state_dict = torch.load(self.explainer_ckpt_path)
+            state_dict = torch.load(self.explainer_ckpt_path, map_location=self.device)
             self.explainer_model.load_state_dict(state_dict)
 
         rb = [str(results_batch) if results_batch is not None else ''][0]
@@ -311,7 +314,7 @@ class PGExplainerExt(BaseExplainerTG):
         explainer_model = PGExplainerExt._create_explainer(model, model_name, device)
         explainer_ckpt_path = PGExplainerExt._ckpt_path(ckpt_dir, model_name, dataset_name, explainer_name)
 
-        state_dict = torch.load(explainer_ckpt_path)
+        state_dict = torch.load(explainer_ckpt_path, map_location=device)
         explainer_model.load_state_dict(state_dict)
 
         return explainer_model, explainer_ckpt_path

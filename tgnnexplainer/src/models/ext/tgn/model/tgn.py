@@ -42,6 +42,7 @@ class TGN(torch.nn.Module):
         self.logger = logging.getLogger(__name__)
 
         self.node_raw_features = torch.from_numpy(node_features.astype(np.float32)).to(self.device)
+        print('Node features shape: ', self.node_raw_features.shape, self.node_raw_features.dtype)
         self.edge_raw_features = torch.from_numpy(edge_features.astype(np.float32)).to(self.device)
         self.node_raw_embed = self.node_raw_features # just a copy for compatiblility in PGExplainerExt._create_explainer_input()
         self.edge_raw_embed = self.edge_raw_features

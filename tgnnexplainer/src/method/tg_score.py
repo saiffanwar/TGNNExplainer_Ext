@@ -33,6 +33,7 @@ def _set_tgat_data(all_events: DataFrame, target_event_idx: Union[int, List]):
         raise ValueError
 
     input_data = [src_idx_l, target_idx_l, cut_time_l]
+    print('Input data', input_data)
     return input_data
 
 
